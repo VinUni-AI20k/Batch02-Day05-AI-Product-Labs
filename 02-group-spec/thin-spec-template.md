@@ -113,9 +113,9 @@ Owner kiểm thử path này là Phung Văn Thạch.
 | Thành viên | Việc phụ trách | Bằng chứng cần có trong repo |
 |---|---|---|
 | **Phung Văn Thạch** | Research / evidence, SPEC, demo script | `evidence-pack-template.md`, `thin-spec-template.md`, script demo 3 phút |
-| **Thành viên 2** | Prototype (chat UI + Safety Card) | Screenshot happy path + repo code Day 06 |
-| **Thành viên 3** | Test failure path (DB miss, triệu chứng khẩn, nhập nhầm thuốc) | Screen recording hoặc screenshot 3 failure case |
-| **Cả nhóm** | DB demo 5–10 hoạt chất (JSON) + rule đối chiếu tình trạng | File `data/drugs-demo.json` trong repo prototype |
+| **Hoàng Phương Thảo** | Prototype (chat UI + Safety Card) | Screenshot happy path + repo code Day 06 |
+| **Thái Thị Yến Nhi** | Test failure path (DB miss, triệu chứng khẩn, nhập nhầm thuốc) | Screen recording hoặc screenshot 3 failure case |
+| **Trịnh Vũ Anh Tuấn** | DB demo 5–10 hoạt chất (JSON) + rule đối chiếu tình trạng | File `data/drugs-demo.json` trong repo prototype |
 | **Phung Văn Thạch** | Repo README + link demo | URL deploy hoặc hướng dẫn chạy local |
 
 ---

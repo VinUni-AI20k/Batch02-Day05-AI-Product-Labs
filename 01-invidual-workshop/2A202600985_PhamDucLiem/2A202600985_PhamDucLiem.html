@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop — Mổ App AI Thật: V-AI Systems</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #eff6ff;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --bg-main: #f9fafb;
+            --bg-card: #ffffff;
+            --asis-color: #ef4444;
+            --asis-bg: #fef2f2;
+            --tobe-color: #10b981;
+            --tobe-bg: #ecfdf5;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            line-height: 1.6;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-left: 0.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 0.6rem 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Main Content Container */
+        .content {
+            margin-left: 280px;
+            padding: 3rem 4rem;
+            max-width: 1000px;
+            width: calc(100% - 280px);
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .header-section h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 1rem;
+        }
+
+        section {
+            margin-bottom: 3.5rem;
+            scroll-margin-top: 2rem;
+        }
+
+        h2.section-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3.subsection-title {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem 0;
+            color: #111827;
+        }
+
+        /* Tables styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 2rem 0;
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f3f4f6;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* Prompt Block */
+        .prompt-box {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 1.2rem;
+            border-radius: 8px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9rem;
+            margin: 0.8rem 0;
+            white-space: pre-wrap;
+        }
+
+        /* Flowboxes for As-Is and To-Be */
+        .flow-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .flow-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .flow-card.asis { border-top: 4px solid var(--asis-color); }
+        .flow-card.tobe { border-top: 4px solid var(--tobe-color); }
+
+        .flow-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .asis .flow-title { color: var(--asis-color); }
+        .tobe .flow-title { color: var(--tobe-color); }
+
+        /* Custom Flowchart using HTML/CSS elements */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            position: relative;
+        }
+
+        .step-item {
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .asis .step-item { background: var(--asis-bg); color: #7f1d1d; }
+        .tobe .step-item { background: var(--tobe-bg); color: #064e3b; }
+
+        .step-item.broken {
+            border: 1px dashed var(--asis-color);
+            background: #fff5f5;
+            font-weight: 600;
+        }
+
+        .step-item:not(:last-child)::after {
+            content: "↓";
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            z-index: 2;
+        }
+
+        /* Finding Box */
+        .finding-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+
+        .finding-box strong {
+            color: #b45309;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .decision-box {
+            background: #f0fdf4;
+            border-left: 4px solid var(--tobe-color);
+            padding: 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+
+        .decision-box strong {
+            color: #047857;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        code.inline-code {
+            background: #e5e7eb;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 1024px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .content { margin-left: 0; width: 100%; padding: 1.5rem; }
+            .flow-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Mục lục báo cáo</h2>
+        <ul>
+            <li><a href="#overview">1. Tổng quan & Định vị</a></li>
+            <li><a href="#promise">2. Promise vs Reality</a></li>
+            <li><a href="#prompts">3. Bộ dữ liệu thử nghiệm</a></li>
+            <li><a href="#matrix">4. Ma trận 4 Paths</a></li>
+            <li><a href="#case1">5. Case 1: Dịch vụ Vinhomes</a></li>
+            <li><a href="#case2">6. Case 2: Combo Cross-Brand</a></li>
+            <li><a href="#case3">7. Case 3: Cứu hộ Khẩn cấp</a></li>
+            <li><a href="#findings">8. Khối quyết định Product</a></li>
+            <li><a href="#spec">9. Đề xuất Thay đổi SPEC</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="header-section" id="overview">
+            <h1>Workshop — Mổ App AI Thật</h1>
+            <p>Phân tích chuyên sâu tính năng hệ sinh thái và thiết kế luồng phục hồi (Recovery Paths) cho Trợ lý ảo V-AI</p>
+            <div class="meta-grid">
+                <div><strong>Sản phẩm phân tích:</strong> V-App — V-AI (Trợ lý Voice/Text ngữ cảnh)</div>
+                <div><strong>Thời gian thiết kế:</strong> 45 Phút (Bản phân tích Product-driven)</div>
+            </div>
+        </div>
+
+        <section id="promise">
+            <h2 class="section-title">1. Khảo sát cam kết: Promise vs Reality</h2>
+            <p><strong>Cam kết từ Product (Promise):</strong> V-AI không chỉ dừng lại là một công cụ trả lời kiến thức thô (Chatbot tĩnh), mà được hứa hẹn trở thành một trợ lý thấu hiểu chân dung cư dân/khách hàng, có khả năng xử lý liên kết chéo các thương hiệu con thuộc tập đoàn và phản ứng linh hoạt theo thời gian thực.</p>
+            <p style="margin-top: 0.5rem;"><strong>Thực tế quan sát (Reality):</strong> Hệ thống hiện tại đang bị kẹt ở tầng cung cấp dữ liệu văn bản thô (Informational Layer). Khi gặp các tác vụ mang tính hành động cao hoặc yêu cầu an toàn tuyệt đối, AI phản hồi dài dòng, thiếu khả năng gọi API thực thi và có xu hướng tự giả định thông tin sai lệch.</p>
+        </section>
+
+        <section id="prompts">
+            <h2 class="section-title">2. Kịch bản Prompts đầu vào đã thử nghiệm</h2>
+            
+            <h3 class="subsection-title">Query 1 — Cư dân Vinhomes phản ánh & gia hạn</h3>
+            <div class="prompt-box">"Nhà tôi ở tòa S2.12 Vinhomes Ocean Park 1. Tôi muốn gia hạn thẻ bơi tháng cho cả nhà (2 người lớn, 2 trẻ em) từ tháng sau. Sẵn tiện báo luôn điều hòa sảnh tầng 1 tòa nhà tôi đang bị chảy nước, block lại giùm."</div>
+
+            <h3 class="subsection-title">Query 2 — Combo hành trình dọc hệ sinh thái (Vinpearl + Vinmec)</h3>
+            <div class="prompt-box">"Tháng tới tôi muốn đặt phòng nghỉ dưỡng 3 ngày 2 đêm tại Vinpearl Phú Quốc cho bố mẹ tôi (62 và 65 tuổi). Tôi cũng muốn đăng ký gói khám tổng quát cho ông bà tại Vinmec Phú Quốc trong chuyến đi luôn. Tư vấn lịch trình và báo giá giùm."</div>
+
+            <h3 class="subsection-title">Query 3 — Lệnh giọng nói xử lý sự cố nguy hiểm (VinFast Voice Command)</h3>
+            <div class="prompt-box">"V-AI ơi, xe đang báo áp suất lốp bánh sau bên phải giảm mạnh còn 1.4 bar trên cao tốc Pháp Vân. Giờ phải làm sao? Có trạm sửa xe hay cứu hộ nào gần đây không?"</div>
+        </section>
+
+        <section id="matrix">
+            <h2 class="section-title">3. Ma trận phân tích 4 Trạng thái dòng chảy (4 Paths)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">Loại luồng (Path)</th>
+                        <th style="width: 40%;">Hành vi kỳ vọng lý tưởng</th>
+                        <th style="width: 40%;">Trạng thái đứt gãy thực tế</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Happy Path</strong></td>
+                        <td>User đưa dữ liệu chuẩn $\rightarrow$ AI nhận diện chính xác cấu trúc thực thể phức tạp chứa nhiều vế lệnh.</td>
+                        <td>AI tách và hiểu đúng các từ khóa chính (`S2.12`, `thẻ bơi`, `điều hòa`).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Low-Confidence Path</strong></td>
+                        <td>Khi thiếu dữ liệu đầu vào cốt lõi, AI chủ động dừng luồng sinh văn bản để hỏi rõ làm rõ nhu cầu.</td>
+                        <td>AI bỏ qua hoàn toàn. Tự động lấy giá phòng ngẫu nhiên và chọn đại gói khám sức khỏe mà không hỏi tuổi cụ thể hay tiền sử bệnh.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Failure Path</strong></td>
+                        <td>Khi thông tin có tính sai lệch lớn hoặc rủi ro, hệ thống có cảnh báo rõ ràng để ngăn chặn hành động lỗi.</td>
+                        <td><strong>Nguy hiểm:</strong> Khuyên tài xế tự lôi bộ vá lốp ra sửa ngay trên làn xe tốc độ cao của cao tốc mà không nhận biết tính chất khẩn cấp.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Correction Path</strong></td>
+                        <td>Khi user phản hồi chỉnh sửa sai sót, AI ghi nhận, cập nhật lại trạng thái xử lý và lưu vào bộ nhớ ưu tiên.</td>
+                        <td>Thông tin sửa đổi chỉ có giá trị tạm thời trong phiên chat, biến mất ngay lập tức khi kết thúc hội thoại.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="case1">
+            <h2 class="section-title">4. Tái thiết kế Luồng 1: Dịch vụ cư dân Vinhomes</h2>
+            <div class="flow-container">
+                <div class="flow-card asis">
+                    <div class="flow-title">❌ Trải nghiệm Hiện tại (As-Is)</div>
+                    <div class="step-list">
+                        <div class="step-item">User gửi yêu cầu kép (Gia hạn + Báo lỗi kỹ thuật tòa nhà)</div>
+                        <div class="step-item broken">AI nhận diện xong trả về một đoạn text hướng dẫn dài 200 chữ</div>
+                        <div class="step-item broken">AI yêu cầu: "Cư dân hãy tự thoát chat, truy cập Menu Con A để tự đăng ký..."</div>
+                        <div class="step-item">User thất vọng, phải tự làm thủ công từ đầu bên ngoài luồng chat</div>
+                    </div>
+                </div>
+                <div class="flow-card tobe">
+                    <div class="flow-title">🟢 Luồng cải tiến đề xuất (To-Be)</div>
+                    <div class="step-list">
+                        <div class="step-item">User gửi yêu cầu tương tự</div>
+                        <div class="step-item">Hệ thống nhận diện mã định danh Token cư dân của tài khoản</div>
+                        <div class="step-item">AI tự đóng gói dữ liệu và đẩy lên 2 khối Widget tương tác nhỏ trực tiếp trong chat</div>
+                        <div class="step-item">User chỉ cần nhấn nút: <code class="inline-code">[Gửi báo cáo lỗi đến BQL]</code> và <code class="inline-code">[Xác nhận thanh toán phí thẻ bơi]</code></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="case2">
+            <h2 class="section-title">5. Tái thiết kế Luồng 2: Lập lịch trình chéo Vinpearl + Vinmec</h2>
+            <div class="flow-container">
+                <div class="flow-card asis">
+                    <div class="flow-title">❌ Trải nghiệm Hiện tại (As-Is)</div>
+                    <div class="step-list">
+                        <div class="step-item">User muốn đặt phòng nghỉ dưỡng kết hợp khám tổng quát cho bố mẹ lớn tuổi</div>
+                        <div class="step-item broken">AI trả thông tin tách rời: bảng giá phòng tĩnh và danh sách gói khám thô dạng danh mục chữ</div>
+                        <div class="step-item broken">Không có sự đồng bộ: Lịch khám bệnh trùng khít với khung giờ buffet sáng miễn phí của resort</div>
+                        <div class="step-item">User phải tự liên hệ hai bên để sắp xếp căn chỉnh lại thời gian thủ công</div>
+                    </div>
+                </div>
+                <div class="flow-card tobe">
+                    <div class="flow-title">🟢 Luồng cải tiến đề xuất (To-Be)</div>
+                    <div class="step-list">
+                        <div class="step-item">User gửi yêu cầu combo kết hợp</div>
+                        <div class="step-item">AI kích hoạt bộ quy tắc kiểm tra điều kiện chéo ngành (Cross-brand Check Engine)</div>
+                        <div class="step-item">AI tự nhận biết khám bệnh cần nhịn ăn sáng $\rightarrow$ Tự động dời lịch buffet nghỉ dưỡng thành suất ăn trưa muộn</div>
+                        <div class="step-item">Hiển thị trọn gói tích hợp kèm nút tùy chỉnh nhanh cấu hình phòng/ngày khám</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="case3">
+            <h2 class="section-title">6. Tái thiết kế Luồng 3: Sự cố khẩn cấp trên xe VinFast</h2>
+            <div class="flow-container">
+                <div class="flow-card asis">
+                    <div class="flow-title">❌ Trải nghiệm Hiện tại (As-Is)</div>
+                    <div class="step-list">
+                        <div class="step-item">Tài xế hoảng loạn báo lốp sụt áp suất khẩn cấp (1.4 bar) khi đang chạy cao tốc</div>
+                        <div class="step-item broken">AI đọc tài liệu hướng dẫn kỹ thuật dài 1 phút bằng giọng nói tĩnh</div>
+                        <div class="step-item broken">AI khuyên tìm bộ dụng cụ sửa chữa khẩn cấp nhưng bỏ qua yếu tố an toàn môi trường cao tốc</div>
+                        <div class="step-item">Tài xế hoang mang, mất tập trung lái xe, gia tăng nguy cơ tai nạn</div>
+                    </div>
+                </div>
+                <div class="flow-card tobe">
+                    <div class="flow-title">🟢 Luồng cải tiến đề xuất (To-Be)</div>
+                    <div class="step-list">
+                        <div class="step-item">Tài xế báo lỗi sụt áp suất khẩn cấp</div>
+                        <div class="step-item">AI kích hoạt ngay chế độ ưu tiên cao nhất (Emergency Protocol) + Đọc định vị GPS của xe</div>
+                        <div class="step-item">Phản hồi Voice siêu ngắn gọn (&lt; 15s): Chỉ dẫn giảm tốc độ, định vị điểm dừng chân khẩn cấp gần nhất cách 1.5km</div>
+                        <div class="step-item">Tự động đẩy số điện thoại Cứu hộ VinFast khu vực lên màn hình lái chính kèm nút gọi 1-click</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="findings">
+            <h2 class="section-title">7. Finding Note & Quyết định Product chiến lược</h2>
+            <div class="finding-box">
+                <strong>Hành vi gãy cốt lõi (Core Product Defect):</strong>
+                Khi người dùng đặt các tác vụ mang tính chất quyết định cao, ảnh hưởng đến chi phí hoặc an toàn, V-AI xử lý rập khuôn như một chatbot cung cấp văn bản, thiếu kết nối dữ liệu nền tảng sâu và không có cơ chế hỏi lại khi thiếu thông tin. Điều này triệt tiêu đi lợi thế cạnh tranh lớn nhất của một trợ lý độc quyền nằm trong hệ sinh thái kín.
+            </div>
+            <div class="decision-box">
+                <strong>Quyết định thay đổi thiết kế cốt lõi (Product Strategy Shift):</strong>
+                Dừng việc đầu tư tối ưu độ dài của câu chữ trả lời. Chuyển dịch toàn bộ tài nguyên kỹ thuật để thiết kế cơ chế <strong>"Hành động trực tiếp (Actionable UI)"</strong> và xây dựng tầng logic xử lý khẩn cấp biệt lập. Mọi luồng tương tác dịch vụ phải gắn chặt với việc định danh và xử lý tự động thay cho người dùng.
+            </div>
+        </section>
+
+        <section id="spec">
+            <h2 class="section-title">8. Đề xuất cập nhật Tài liệu Yêu cầu Sản phẩm (SPEC Changes)</h2>
+            
+            <h3 class="subsection-title">Mô-đun 1: Tương tác hành động trực tiếp (Action-over-Text)</h3>
+            <p>Hệ thống lõi của V-AI bắt buộc phải quét quyền định danh tài khoản cư dân/khách hàng trước khi sinh văn bản. Cấm trả về chữ hướng dẫn nếu hành động đó có thể được đóng gói bằng API. Phải trả về cấu trúc dữ liệu dạng Widget tương tác động:</p>
+            <div class="prompt-box" style="background:#2d3748;">
+{
+  "intent": "Resident_Service_Report",
+  "action_required": true,
+  "ui_component": "Ticket_Creation_Widget",
+  "payload": {
+    "location": "S2.12 - Vinhomes Ocean Park 1",
+    "issue_category": "Kỹ thuật/Điều hòa sảnh"
+  }
+}</div>
+
+            <h3 class="subsection-title">Mô-đun 2: Quy tắc điều phối chéo ngành (Cross-Brand Rules)</h3>
+            <p>Thiết lập bộ lọc kiểm tra xung đột điều kiện (Conflict Checker). Nếu phát hiện đồng thời yêu cầu đặt phòng nghỉ dưỡng <code class="inline-code">Brand: Vinpearl</code> và gói kiểm tra y tế <code class="inline-code">Brand: Vinmec</code> có điều kiện cần nhịn ăn, AI phải tự động gửi lệnh điều chỉnh lịch trình sang hệ thống đặt chỗ lưu trú để khớp dịch vụ linh hoạt.</p>
+
+            <h3 class="subsection-title">Mô-đun 3: Giao thức giọng nói khẩn cấp (Emergency Voice KPI)</h3>
+            <p>Khi các từ khóa thuộc danh mục nguy hiểm được kích hoạt (`áp suất lốp thấp`, `tai nạn`, `cháy nổ`, `cấp cứu`), hệ thống Core Engine phải áp dụng các chỉ số kỹ thuật đặc biệt:</p>
+            <ul>
+                <li><strong>Độ trễ xử lý (Latency):</strong> Phải nhỏ hơn $800\text{ms}$.</li>
+                <li><strong>Độ dài câu thoại (Word Count):</strong> Giới hạn nghiêm ngặt dưới 30 từ ngữ.</li>
+                <li><strong>Can thiệp phần cứng:</strong> Tự động đồng bộ tọa độ GPS lên bản đồ của màn hình chính hoặc màn hình HUD trên ô tô mà không cần thông qua bước xác nhận giọng nói của tài xế.</li>
+            </ul>
+        </section>
+    </div>
+
+</body>
+</html>

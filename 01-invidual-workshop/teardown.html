@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NEO — Chatbot Evaluation Report</title>
+  <style>
+    body{font-family:Segoe UI, Roboto, Arial, sans-serif;line-height:1.6;padding:28px;max-width:980px;margin:auto;background:#faf9f7;color:#1a1a1a}
+    header{display:flex;justify-content:space-between;align-items:end;gap:12px}
+    h1{font-size:28px;margin:0}
+    .meta{color:#6b6760;font-size:13px}
+    section{background:#fff;padding:18px;border-radius:10px;margin-top:18px;border:1px solid #eee}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    pre.code{background:#f4f4f4;padding:12px;border-radius:8px;overflow:auto}
+    ul{margin:6px 0 12px 18px}
+    .badge{background:#111;color:#fff;padding:8px 12px;border-radius:20px}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <p class="meta">Workshop Review · Vietnam Airlines</p>
+      <h1>NEO — Chatbot Evaluation Report</h1>
+      <p class="meta">6 test sessions · 4 / 6 Happy Paths</p>
+    </div>
+    <div class="badge">Score: 4/6</div>
+  </header>
+
+  <section>
+    <h2>Summary</h2>
+    <p>Đánh giá nhanh NEO — chatbot hỗ trợ đặt vé và hỗ trợ hành khách. Trong 6 lượt test: 4 happy, 1 low-confidence, 1 hard failure (không thực hiện giao dịch dù đủ dữ liệu).</p>
+    <div class="grid">
+      <div>
+        <strong>Test sessions</strong>
+        <p>6</p>
+      </div>
+      <div>
+        <strong>Happy</strong>
+        <p>4</p>
+      </div>
+      <div>
+        <strong>Failures</strong>
+        <p>1 hard</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Session Queries (tóm tắt)</h2>
+    <ol>
+      <li><strong>Đặt vé HN → Đà Nẵng, 2 pax, cuối tuần</strong> — Happy: collect đủ thông tin, show tuỳ chọn.</li>
+      <li><strong>Đổi hành lý xách tay</strong> — Low-confidence: phản hồi mơ hồ, đề xuất liên hệ hotline.</li>
+      <li><strong>Hủy vé</strong> — Happy: hướng dẫn đúng, link thanh toán.</li>
+      <li><strong>Hỏi ký hành lý miễn phí</strong> — Happy: trả lời chính xác.</li>
+      <li><strong>Đặt cho người khác, thiếu email</strong> — Failure: yêu cầu thao tác web, không hỗ trợ booking in-chat.</li>
+      <li><strong>Đổi tên hành khách</strong> — Happy: hướng dẫn và phí rõ ràng.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Observed Patterns</h2>
+    <ul>
+      <li><strong>Strengths:</strong> trả lời nhanh, format thân thiện, link dẫn chức năng web.</li>
+      <li><strong>Weakness:</strong> không auto-transition khi đủ dữ liệu (Q5).</li>
+      <li><strong>Recovery:</strong> thiếu low-confidence path; hay trả về hướng dẫn chung.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>As-Is Flow (đặt vé qua chat)</h2>
+    <ol>
+      <li>User: "Đặt vé Đà Nẵng, 2 pax, cuối tuần"</li>
+      <li>NEO: hỏi ngày/giờ/loại vé</li>
+      <li>User trả lời → NEO show tuỳ chọn</li>
+      <li>User chọn nhưng NEO hướng dẫn làm trên website thay vì tiếp tục thanh toán (point of failure)</li>
+    </ol>
+    <p><em>Main problem:</em> hệ thống hứa giao dịch trong chat nhưng không thực hiện chuyển bước khi đủ dữ liệu.</p>
+  </section>
+
+  <section>
+    <h2>To-Be (đề xuất)</h2>
+    <ul>
+      <li>Rule: khi có đủ thông tin, auto-transition sang payment hoặc show confirm action.</li>
+      <li>Fallback: nếu chat không xử lý được, cung cấp pre-filled link + transaction id + human handoff.</li>
+      <li>Low-confidence: khi model không chắc, present 2-3 options để user chọn.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Product Decision</h2>
+    <blockquote style="background:#111;color:#fff;padding:18px;border-radius:10px">"Khi NEO đã thu thập đủ thông tin cho một giao dịch, chatbot phải chuyển người dùng sang bước thực hiện giao dịch ngay lập tức — thay vì trả về hướng dẫn chung hoặc yêu cầu làm lại trên website."</blockquote>
+    <p class="meta">Principle: Đã đủ dữ liệu → phải có hành động tiếp theo.</p>
+    <p><strong>Tags:</strong> intent · UX recovery · fallback · human-handoff</p>
+  </section>
+
+  <section>
+    <h2>Actions / Requirements</h2>
+    <ul>
+      <li>Implement auto-transition to payment flow when required fields present.</li>
+      <li>UX: confirm step UI + pre-filled web link if chat cannot process payment.</li>
+      <li>Test: simulate Q5 to verify booking or explicit handoff.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Checklist</h2>
+    <ul>
+      <li>✅ Có ít nhất 1 screenshot/observation.</li>
+      <li>✅ Có đủ 4 paths mô tả.</li>
+      <li>✅ Finding thành product decision.</li>
+      <li>⬜ Sketch as-is & to-be (đính kèm nếu cần).</li>
+      <li>✅ Một câu nói rõ thay đổi trong SPEC.</li>
+    </ul>
+  </section>
+
+</body>
+</html>

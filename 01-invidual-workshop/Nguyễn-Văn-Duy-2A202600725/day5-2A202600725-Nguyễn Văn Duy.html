@@ -262,6 +262,36 @@
     color: var(--warn);
   }
 
+  /* EVIDENCE */
+  .evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .evidence-card {
+    background: var(--white);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+  }
+  .evidence-card .time {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pink);
+    margin-bottom: 8px;
+  }
+  .evidence-card h3 {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+  .evidence-card p {
+    color: var(--gray-dark);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
   /* SUMMARY TABLE */
   .summary-table {
     width: 100%;
@@ -297,7 +327,7 @@
   /* STAT ROW */
   .stat-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-top: 24px;
   }
@@ -378,7 +408,48 @@
   }
   .reason-text strong { font-weight: 700; }
 
+  .finding-card {
+    margin-top: 24px;
+    background: var(--fail-bg);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 26px;
+  }
+  .finding-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .finding-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--gray-dark);
+  }
+
   /* TO-BE FLOW */
+  .sketch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .sketch-card {
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    background: var(--white);
+  }
+  .sketch-card h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .sketch-card ol {
+    padding-left: 18px;
+    color: var(--gray-dark);
+    font-size: 14px;
+    line-height: 1.7;
+  }
   .tobe-flow {
     border: var(--border);
     border-radius: var(--radius);
@@ -489,6 +560,26 @@
     letter-spacing: 0.08em;
   }
 
+  @media (max-width: 760px) {
+    .report-header { padding: 36px 24px 32px; }
+    .container { padding: 36px 20px; }
+    .evidence-grid,
+    .sketch-grid,
+    .query-body {
+      grid-template-columns: 1fr;
+    }
+    .stat-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .query-card-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .query-text {
+      max-width: 100%;
+    }
+  }
+
   @media print {
     body { background: white; }
     .query-card:hover { transform: none; box-shadow: var(--shadow); }
@@ -546,9 +637,38 @@
     </div>
   </div>
 
-  <!-- SECTION 3: QUERY RESULTS -->
+  <!-- SECTION 3: EVIDENCE -->
   <div class="section">
     <div class="section-title">03</div>
+    <h2>Evidence từ screenshot</h2>
+    <div class="evidence-grid">
+      <div class="evidence-card">
+        <div class="time">11:36</div>
+        <h3>Scope guard hoạt động</h3>
+        <p>Prompt: "địa chỉ của hà nội ở đâu". Moni trả lời: "Mình chỉ có thể hỗ trợ trong phạm vi sản phẩm MoMo", đúng kỳ vọng của happy path out-of-scope.</p>
+      </div>
+      <div class="evidence-card">
+        <div class="time">11:38</div>
+        <h3>Tư vấn tài chính còn generic</h3>
+        <p>Prompt: "mình nên tiết kiệm bao nhiêu 1 tháng". Moni đưa nguyên tắc 20% thu nhập trước khi hỏi thu nhập, mục tiêu hoặc ràng buộc chi tiêu cá nhân.</p>
+      </div>
+      <div class="evidence-card">
+        <div class="time">11:39-11:40</div>
+        <h3>Failure ở tình huống mất tiền</h3>
+        <p>Prompt: "hôm qua mình chuyển tiền bị trừ 2 lần...". Moni chạy trạng thái tìm dữ liệu rồi báo "Moni chưa thể phản hồi lúc này", chỉ có nút Thử lại, không có hotline hoặc handoff CSKH.</p>
+      </div>
+      <div class="evidence-card">
+        <div class="time">11:32</div>
+        <h3>Intent routing bị lệch</h3>
+        <p>Prompt kỹ thuật "viết prompt tính loop..." vẫn kích hoạt quy trình tìm kiếm và cô đọng thông tin, thay vì từ chối nhẹ hoặc redirect vì ngoài scope tài chính/MoMo.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SECTION 4: QUERY RESULTS -->
+  <div class="section">
+    <div class="section-title">04</div>
     <h2>Kết quả test — As-is flow</h2>
     <div class="query-list">
 
@@ -680,9 +800,9 @@
     </div>
   </div>
 
-  <!-- SECTION 4: TỔNG KẾT -->
+  <!-- SECTION 5: TỔNG KẾT -->
   <div class="section">
-    <div class="section-title">04</div>
+    <div class="section-title">05</div>
     <h2>Tổng kết as-is</h2>
     <table class="summary-table">
       <thead>
@@ -723,6 +843,11 @@
           <td>Trigger search sai</td>
           <td><span class="status-badge badge-conf">? Confusion</span></td>
         </tr>
+        <tr>
+          <td>Correction</td>
+          <td>Product có nút feedback "Có/Không", nhưng chưa thấy cơ chế hỏi lại, ghi nhận correction hoặc chuyển người khi user không hài lòng</td>
+          <td><span class="status-badge badge-conf">? Chưa rõ</span></td>
+        </tr>
       </tbody>
     </table>
     <div class="stat-row">
@@ -742,12 +867,16 @@
         <div class="num">1</div>
         <div class="lbl">Confusion</div>
       </div>
+      <div class="stat-card stat-conf">
+        <div class="num">1</div>
+        <div class="lbl">Correction missing</div>
+      </div>
     </div>
   </div>
 
-  <!-- SECTION 5: PATH YẾU NHẤT -->
+  <!-- SECTION 6: PATH YẾU NHẤT -->
   <div class="section">
-    <div class="section-title">05</div>
+    <div class="section-title">06</div>
     <h2>Path yếu nhất: Lỗi giao dịch</h2>
     <div class="weakness-block">
       <div class="weakness-header">
@@ -773,12 +902,43 @@
         </div>
       </div>
     </div>
+
+    <div class="finding-card">
+      <h3>Finding viết thành product decision</h3>
+      <p>
+        Khi user báo sự cố giao dịch có rủi ro mất tiền như "chuyển tiền bị trừ 2 lần",
+        AI/product đi vào trạng thái tìm dữ liệu rồi timeout, chỉ yêu cầu user thử lại.
+        Hậu quả là user không biết kênh khẩn cấp để recover tiền, niềm tin vào MoMo giảm đúng lúc cần hỗ trợ nhất.
+        Lỗi thuộc layer <strong>intent routing + UX recovery + human handoff</strong>.
+        Nên sửa bằng rule ưu tiên cao cho nhóm intent "mất tiền/lỗi giao dịch/hoàn tiền": bỏ qua search pipeline, trả lời bằng checklist an toàn, link CSKH, hotline và nút gọi/chat ngay.
+      </p>
+    </div>
   </div>
 
-  <!-- SECTION 6: TO-BE -->
+  <!-- SECTION 7: TO-BE -->
   <div class="section">
-    <div class="section-title">06</div>
+    <div class="section-title">07</div>
     <h2>Đề xuất to-be</h2>
+    <div class="sketch-grid">
+      <div class="sketch-card">
+        <h3>As-is</h3>
+        <ol>
+          <li>User báo lỗi chuyển tiền bị trừ 2 lần.</li>
+          <li>Moni kích hoạt pipeline tìm dữ liệu.</li>
+          <li>Hệ thống timeout và chỉ hiện nút Thử lại.</li>
+          <li>User không có hotline, ticket, link CSKH hoặc hướng dẫn recovery.</li>
+        </ol>
+      </div>
+      <div class="sketch-card">
+        <h3>To-be</h3>
+        <ol>
+          <li>Detect intent rủi ro cao: mất tiền, trừ tiền, hoàn tiền, lỗi giao dịch.</li>
+          <li>Bỏ qua search pipeline nếu confidence thấp hoặc hệ thống chậm.</li>
+          <li>Trả lời bằng hướng dẫn an toàn, hotline, link CSKH và nút Gọi ngay/Chat ngay.</li>
+          <li>Log correction và trạng thái handoff để support tiếp tục xử lý.</li>
+        </ol>
+      </div>
+    </div>
     <div class="tobe-flow">
       <div class="step">
         <span class="step-label">USER INPUT</span>
@@ -825,17 +985,22 @@
           <td>Query kỹ thuật kích search</td>
           <td>Bổ sung intent filter: detect non-financial query trước khi gọi pipeline search</td>
         </tr>
+        <tr>
+          <td>Correction biến mất</td>
+          <td>Khi user bấm "Không" hoặc retry sau lỗi, log lại prompt, path, trạng thái hệ thống và mở lựa chọn chat CSKH/tạo ticket</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- SECTION 7: KẾT LUẬN -->
+  <!-- SECTION 8: KẾT LUẬN -->
   <div class="section">
-    <div class="section-title">07</div>
+    <div class="section-title">08</div>
     <h2>Kết luận</h2>
     <div class="conclusion-box">
       <p>Moni có nền tốt — scope guard hoạt động, UI/UX nhắn tin mượt, loading state rõ ràng. Vấn đề cốt lõi không phải ở model mà ở <strong>data access</strong> và <strong>intent routing</strong>.</p>
       <p>Promise "phân tích chi tiêu" chưa được fulfill vì thiếu bridge với transaction data. Path lỗi giao dịch cần ưu tiên fix ngay — đây là zero-tolerance failure. 3 low-confidence paths có thể cải thiện bằng clarification flow và scope tie-back, không cần thay model.</p>
+      <p><strong>SPEC impact:</strong> SPEC cần thêm requirement bắt buộc cho high-risk transaction intent: detect trước khi search, fallback dưới 2 giây, handoff CSKH rõ ràng và log correction/retry để support xử lý tiếp.</p>
       <div class="priority-strip">
         <span class="lbl">Ưu tiên fix:</span>
         <span class="chain">Transaction error path → Clarification trước tư vấn → Data access bridge</span>

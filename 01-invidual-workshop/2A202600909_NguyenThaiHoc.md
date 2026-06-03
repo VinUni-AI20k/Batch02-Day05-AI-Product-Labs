@@ -24,7 +24,10 @@ Ghi nhanh:
 
 Evidence cần có:
 
-- **Screenshot:** `ảnh.jpg` (Hiển thị V-AI trả về kết quả lịch họp UBND TP Cần Thơ, sự kiện công nghệ xanh thay vì lịch cá nhân).
+- **Screenshot:** (Hiển thị V-AI trả về kết quả lịch họp UBND TP Cần Thơ, sự kiện công nghệ xanh thay vì lịch cá nhân).
+
+![](nguyenthaihoc.jpg)
+
 - **Prompt/input đã thử:** *"Mở cho tôi báo cáo tháng này... à quên, tìm lịch họp ngày mai trước đi"*
 - **Hành vi quan sát được:** Người dùng bị "ngợp" thông tin rác và quy trình truy xuất lịch làm việc bị đứt gãy hoàn toàn.
 
@@ -45,6 +48,7 @@ AI/product nhận diện sai phạm vi tìm kiếm (Data Scope) và kích hoạt
 hậu quả là user bị ngợp bởi thông tin không liên quan (lịch họp nhà nước) và tác vụ thất bại.
 Lỗi thuộc layer Intent Mapping (Phân loại ý định) và Data-tool selection.
 Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu rõ ràng, bot cần hiển thị các nút Suggestion Chips ngay dưới câu lệnh để user chọn ngữ cảnh [Lịch cá nhân] hoặc [Tin tức sự kiện] trước khi xuất kết quả.
+```
 
 ## 5. Sketch as-is / to-be
 
@@ -114,4 +118,5 @@ Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu
 - [x] Có một câu nói rõ finding này sẽ đổi gì trong SPEC.
 
 **Product Decision:** 
-"Bổ sung logic routing (định tuyến) vào SPEC: Khi Intent (Ý định) của người dùng là 'Truy vấn lịch trình' nhưng thiếu Entity sở hữu rõ ràng (ví dụ: thiếu từ khóa 'của tôi', 'phòng ban'), hệ thống không được mặc định gọi Web Search API. Thay vào đó, bắt buộc kích hoạt Fallback UI: Hiển thị câu hỏi xác nhận kèm 2 Suggestion Chips (Lịch cá nhân / Sự kiện công cộng) để người dùng chủ động điều hướng luồng dữ liệu."
+```Bổ sung logic routing (định tuyến) vào SPEC: Khi Intent (Ý định) của người dùng là 'Truy vấn lịch trình' nhưng thiếu Entity sở hữu rõ ràng (ví dụ: thiếu từ khóa 'của tôi', 'phòng ban'), hệ thống không được mặc định gọi Web Search API. Thay vào đó, bắt buộc kích hoạt Fallback UI: Hiển thị câu hỏi xác nhận kèm 2 Suggestion Chips (Lịch cá nhân / Sự kiện công cộng) để người dùng chủ động điều hướng luồng dữ liệu.
+```

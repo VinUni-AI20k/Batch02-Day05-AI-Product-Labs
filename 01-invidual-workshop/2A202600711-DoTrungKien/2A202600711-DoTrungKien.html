@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>App Teardown — Ada Health · Đỗ Trung Kiên 2A202600711</title>
+<style>
+  :root{
+    --bg:#0e1320; --panel:#171f33; --ink:#eef2ff; --muted:#9aa7c7;
+    --accent:#5b8cff; --good:#3ddc97; --warn:#ffb454; --bad:#ff6b6b; --line:#2a3552;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--ink); overflow:hidden;
+  }
+  .deck{height:100vh;width:100vw;position:relative}
+  .slide{
+    position:absolute;inset:0;display:none;flex-direction:column;
+    padding:5vh 7vw;animation:fade .35s ease;
+  }
+  .slide.active{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  h1{font-size:clamp(28px,5vw,56px);line-height:1.1;margin-bottom:18px}
+  h2{font-size:clamp(22px,3.4vw,38px);color:var(--accent);margin-bottom:24px;
+     border-left:5px solid var(--accent);padding-left:16px}
+  h3{font-size:clamp(16px,2vw,22px);color:var(--good);margin:14px 0 8px}
+  p,li,td,th{font-size:clamp(14px,1.7vw,21px);line-height:1.55;color:var(--ink)}
+  .muted{color:var(--muted)}
+  .sub{font-size:clamp(15px,2.1vw,24px);color:var(--muted);margin-bottom:8px}
+  ul{margin-left:1.2em}li{margin:7px 0}
+  .grid{display:grid;gap:18px}
+  .cols-2{grid-template-columns:1fr 1fr}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card.good{border-left:5px solid var(--good)}
+  .card.warn{border-left:5px solid var(--warn)}
+  .card.bad{border-left:5px solid var(--bad)}
+  .card.acc{border-left:5px solid var(--accent)}
+  table{border-collapse:collapse;width:100%;margin-top:10px}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:#1d273f;color:var(--accent)}
+  code,pre{font-family:"Cascadia Code",Consolas,monospace}
+  pre{background:#0a0f1c;border:1px solid var(--line);border-radius:12px;
+      padding:18px;color:#cfe0ff;font-size:clamp(12px,1.5vw,17px);
+      white-space:pre-wrap;overflow:auto;line-height:1.45}
+  .tag{display:inline-block;background:var(--accent);color:#fff;border-radius:999px;
+       padding:4px 14px;font-size:14px;margin-bottom:18px;font-weight:600}
+  .shots{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px;flex:1;min-height:0}
+  .shots figure{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+       padding:8px;display:flex;flex-direction:column;min-height:0}
+  .shots img{width:100%;height:100%;object-fit:contain;border-radius:8px;flex:1;min-height:0}
+  .shots figcaption{font-size:13px;color:var(--muted);margin-top:6px;text-align:center}
+  .center{justify-content:center;align-items:flex-start}
+  .pill{font-size:14px;padding:3px 10px;border-radius:8px;font-weight:600}
+  .p-good{background:rgba(61,220,151,.15);color:var(--good)}
+  .p-warn{background:rgba(255,180,84,.15);color:var(--warn)}
+  .p-bad{background:rgba(255,107,107,.15);color:var(--bad)}
+  .nav{position:fixed;bottom:18px;right:24px;display:flex;gap:10px;align-items:center;z-index:10}
+  .nav button{background:var(--panel);color:var(--ink);border:1px solid var(--line);
+       border-radius:10px;padding:8px 14px;cursor:pointer;font-size:16px}
+  .nav button:hover{border-color:var(--accent)}
+  .counter{position:fixed;bottom:24px;left:24px;color:var(--muted);font-size:14px;z-index:10}
+  .bar{position:fixed;top:0;left:0;height:4px;background:var(--accent);transition:width .3s;z-index:10}
+  .flow{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .flow pre{height:100%}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1: TITLE -->
+  <section class="slide active center">
+    <span class="tag">Day 05 · Batch 02 · App Teardown</span>
+    <h1>Mổ App AI Thật:<br/>Ada Health — Symptom Checker</h1>
+    <p class="sub">Dùng app thật như một bài needfinding — tìm chỗ product gãy rồi viết thành quyết định product.</p>
+    <p style="margin-top:24px"><b>Đỗ Trung Kiên</b> · 2A202600711</p>
+    <p class="muted">Vai trò nhóm: Member 3 — Competitor / Analog Research</p>
+  </section>
+
+  <!-- 2: PROMISE VS REALITY -->
+  <section class="slide">
+    <h2>1 · Promise vs Reality</h2>
+    <div class="grid cols-2">
+      <div class="card acc">
+        <h3>Ada hứa gì?</h3>
+        <p>"Hiểu triệu chứng của bạn và gợi ý nên làm gì tiếp theo" — bước sàng lọc trước khi đi khám.</p>
+        <h3>User được hứa</h3>
+        <p>Người có triệu chứng nhưng chưa biết mức độ nghiêm trọng / chưa biết nên đi khám hay tự chăm sóc.</p>
+        <h3>Kỳ vọng AI</h3>
+        <p>Hỏi vài câu → đưa một kết luận rõ ràng, an tâm: ở nhà, đi khám, hay cấp cứu.</p>
+      </div>
+      <div class="card bad">
+        <h3>Reality — điểm gãy</h3>
+        <ul>
+          <li>Hỏi khá nhiều câu, vài câu user không rõ vì sao bị hỏi → mệt.</li>
+          <li>Kết quả trả về <b>nhiều bệnh cùng lúc</b> (Flu + COVID-19...) → lo lắng hơn là an tâm.</li>
+          <li>Có disclaimer rõ, nhưng user vẫn phân vân <i>"giờ tôi làm gì?"</i></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3: EVIDENCE / SCREENSHOTS -->
+  <section class="slide">
+    <h2>2 · Evidence — dùng thử thật</h2>
+    <p class="sub">Kịch bản test: "Sốt + đau họng 2 ngày"</p>
+    <div class="shots">
+      <figure><img src="../Screenshot/z7896448324872_69bc86bcbafc8d660b49baec7c88a745.jpg" alt="Ada"/><figcaption>Màn hình tổng quan</figcaption></figure>
+      <figure><img src="../Screenshot/z7896448348863_d28c4c4805b978972aa5969b2438a838.jpg" alt="Ada"/><figcaption>Nhập triệu chứng & follow-up</figcaption></figure>
+      <figure><img src="../Screenshot/z7896448330483_d617c9d83f8b1e264a501364cdf03dbf.jpg" alt="Ada"/><figcaption>Quá trình hỏi thích ứng</figcaption></figure>
+      <figure><img src="../Screenshot/z7896448337313_ecb3ddb2dba72a62710363546399c88c.jpg" alt="Ada"/><figcaption>Kết quả: Flu / COVID-19</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 4: FOUR PATHS -->
+  <section class="slide">
+    <h2>3 · Bốn Paths</h2>
+    <table>
+      <tr><th>Path</th><th>Quan sát trên Ada</th></tr>
+      <tr><td><span class="pill p-good">Happy</span></td><td>Triệu chứng rõ → hỏi 6–10 câu thích ứng → mức triage (1/8) + possible causes + disclaimer rõ.</td></tr>
+      <tr><td><span class="pill p-warn">Low-confidence</span></td><td>Triệu chứng mơ hồ → <b>hỏi thêm</b> thay vì đoán bừa (điểm mạnh). Nhưng không giải thích "vì sao hỏi câu này".</td></tr>
+      <tr><td><span class="pill p-bad">Failure</span></td><td>Trả <b>nhiều bệnh khả dĩ cùng lúc</b>, không có câu kết luận thẳng thắn "tôi không chắc" → lo quá mức hoặc xem nhẹ.</td></tr>
+      <tr><td><span class="pill p-warn">Correction</span></td><td>Sửa lại câu trả lời được, nhưng correction <b>không được học lại</b>; mỗi lần đánh giá độc lập, không nhớ ngữ cảnh.</td></tr>
+    </table>
+  </section>
+
+  <!-- 5: FINDING -> DECISION -->
+  <section class="slide">
+    <h2>4 · Finding → Quyết định product</h2>
+    <div class="grid cols-2">
+      <div>
+        <h3>Finding chính — Intent + UX Recovery</h3>
+        <pre>Khi user nhập triệu chứng phổ biến nhưng mơ hồ,
+Ada trả về danh sách nhiều bệnh khả dĩ
+mà KHÔNG có một câu kết luận rõ,
+=> user lo lắng hơn, vẫn không biết làm gì.
+
+Sửa: low-confidence path → rút còn 3 mức
+hành động rõ (Tự chăm sóc / Đi khám / Cấp cứu)
++ 1 câu lý do, thay vì liệt kê danh sách bệnh.</pre>
+      </div>
+      <div>
+        <h3>Finding phụ — Safety</h3>
+        <pre>Khi user có triệu chứng red-flag
+(đau ngực + khó thở),
+checker có thể vẫn hỏi thêm nhiều câu
+thay vì cảnh báo ngay,
+=> chậm trễ trong tình huống nguy cấp.
+
+Sửa: red-flag rule cứng → phát hiện từ khóa
+nguy cấp -> chuyển thẳng "Gọi cấp cứu",
+bỏ qua phần hỏi thêm.</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6: AS-IS / TO-BE -->
+  <section class="slide">
+    <h2>5 · Sketch As-is / To-be</h2>
+    <div class="flow">
+      <div class="card bad">
+        <h3>AS-IS — Ada hiện tại</h3>
+<pre>User nhập triệu chứng
+      │
+6–10 câu hỏi thích ứng
+      ▼
+Danh sách NHIỀU bệnh khả dĩ
+(Flu + COVID + ...)   ◄── GÃY
+      │
+Disclaimer, nhưng user vẫn
+phân vân "giờ làm gì?"</pre>
+      </div>
+      <div class="card good">
+        <h3>TO-BE — prototype nhóm Day 06</h3>
+<pre>User nhập triệu chứng
+      │
+Kiểm RED-FLAG ngay   ◄── SỬA: Safety
+      │ (đau ngực/khó thở → Cấp cứu)
+      ▼ nếu không red-flag
+Hỏi tối đa 3 câu trọng tâm
+      ▼
+1 KẾT LUẬN rõ + lý do  ◄── SỬA: UX
+Tự chăm sóc / Đi khám / Cấp cứu
+      │
+Nút hành động: đặt lịch / gọi cấp cứu
++ "Tôi không chắc, hỏi thêm"</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7: SPEC CHANGE -->
+  <section class="slide center">
+    <h2>6 · Finding này đổi gì trong SPEC</h2>
+    <pre style="max-width:1000px">Trước teardown:
+  nhóm định để AI trả về "possible causes" giống Ada.
+
+Sau teardown:
+  AI chỉ trả 1 trong 3 mức hành động rõ ràng
+  (Tự chăm sóc / Đi khám / Cấp cứu) + lý do
+  + red-flag gate ở đầu.
+
+Lý do:
+  danh sách bệnh khả dĩ làm user lo lắng
+  và KHÔNG hỗ trợ ra quyết định.</pre>
+    <p class="muted" style="margin-top:24px">Đỗ Trung Kiên · 2A202600711 · Day 05 Batch 02 — AI Product Kickoff Sprint</p>
+  </section>
+
+</div>
+
+<div class="bar"></div>
+<div class="counter"><span id="cur">1</span> / <span id="total">7</span></div>
+<div class="nav">
+  <button onclick="go(-1)">◀ Prev</button>
+  <button onclick="go(1)">Next ▶</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;const total=slides.length;
+  document.getElementById('total').textContent=total;
+  function render(){
+    slides.forEach((s,n)=>s.classList.toggle('active',n===i));
+    document.getElementById('cur').textContent=i+1;
+    document.getElementById('bar').style.width=((i+1)/total*100)+'%';
+  }
+  function go(d){i=Math.max(0,Math.min(total-1,i+d));render();}
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){go(1);e.preventDefault();}
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){go(-1);e.preventDefault();}
+    if(e.key==='Home'){i=0;render();}
+    if(e.key==='End'){i=total-1;render();}
+  });
+  render();
+</script>
+</body>
+</html>

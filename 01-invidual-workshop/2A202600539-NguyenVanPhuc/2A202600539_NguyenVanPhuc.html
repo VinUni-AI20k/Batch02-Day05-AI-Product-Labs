@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoMo Moni - AI Product Analysis</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;background:#f5f7fb;margin:0;color:#333}
+.header{background:linear-gradient(135deg,#d81b60,#ff5aa5);color:white;padding:40px;text-align:center}
+.container{max-width:1200px;margin:auto;padding:24px}
+.card{background:white;border-radius:16px;padding:24px;margin:20px 0;box-shadow:0 4px 15px rgba(0,0,0,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(450px,1fr));gap:20px}
+.path{border-top:6px solid #d81b60}
+img{width:100%;border-radius:12px;border:1px solid #ddd}
+.badge{display:inline-block;padding:6px 12px;border-radius:999px;color:white;font-weight:bold}
+.happy{background:#16a34a}
+.low{background:#f59e0b}
+.fail{background:#dc2626}
+.correct{background:#2563eb}
+pre{background:#f4f4f4;padding:12px;border-radius:8px;overflow:auto}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>MoMo Moni - Workshop AI Product</h1>
+<p>Needfinding → 4 Paths → Product Decision → SPEC</p>
+</div>
+
+<div class="container">
+
+<div class="card">
+<h2>Finding chính</h2>
+<p>Moni hoạt động tốt khi trả lời các câu hỏi về dữ liệu tài chính hiện có. Tuy nhiên với các câu hỏi cần tư vấn cá nhân hóa như "Tôi nên đầu tư gì?", AI chưa có cơ chế low-confidence và chưa tận dụng dữ liệu tài chính cá nhân.</p>
+</div>
+
+<div class="grid">
+
+<div class="card path">
+<span class="badge happy">Happy Path</span>
+<h3>Tài chính của tôi có ổn không?</h3>
+<img src="346a700e-336b-4379-b90e-fcc7509db91c.jpg">
+<p><b>Điểm mạnh:</b> AI sử dụng dữ liệu chi tiêu thực tế để đánh giá tình hình tài chính và đề xuất bước tiếp theo.</p>
+</div>
+
+<div class="card path">
+<span class="badge happy">Happy Path</span>
+<h3>Tháng này tôi tiết kiệm được bao nhiêu?</h3>
+<img src="a3f2d8ea-5580-49d7-8748-8080bf076650.jpg">
+<p><b>Điểm mạnh:</b> AI truy xuất dữ liệu chính xác và trả lời đúng nhu cầu của người dùng.</p>
+</div>
+
+<div class="card path">
+<span class="badge correct">Correction / Augmentation</span>
+<h3>Tôi không muốn cắt giảm chi tiêu ăn uống</h3>
+<img src="847e15a2-e2ed-446a-b531-1a7f1e699193.jpg">
+<p>AI hiểu mong muốn của người dùng và đề xuất các lựa chọn thay thế (giảm nhóm khác, sử dụng ưu đãi).</p>
+<p><b>Đề xuất:</b> Cho phép người dùng chọn phương án phù hợp và lưu preference cho các lần tư vấn sau.</p>
+</div>
+
+<div class="card path">
+<span class="badge fail">Failure Path</span>
+<h3>Tôi nên đầu tư gì?</h3>
+<img src="0e87f719-575e-40c1-84b6-1f7e169327ee.jpg">
+<p>AI trả lời bằng kiến thức chung thay vì sử dụng dữ liệu cá nhân trên MoMo.</p>
+<p><b>Thiếu:</b> Low-confidence flow, hỏi mục tiêu đầu tư, thời gian đầu tư, mức chấp nhận rủi ro.</p>
+</div>
+
+</div>
+
+<div class="card">
+<h2>Product Decision</h2>
+<pre>
+Khi user hỏi: "Tôi nên đầu tư gì?"
+
+AI trả lời bằng các lựa chọn đầu tư phổ biến
+mà không dùng dữ liệu tài chính của user.
+
+Impact:
+- Không tạo khác biệt so với chatbot thông thường.
+- User không nhận được tư vấn cá nhân hóa.
+
+Layer:
+- Promise
+- Data/Tool
+- UX Recovery
+
+Requirement:
+- Hỏi thêm mục tiêu đầu tư.
+- Hỏi khẩu vị rủi ro.
+- Hỏi thời gian đầu tư.
+- Sử dụng dữ liệu chi tiêu hiện có.
+</pre>
+</div>
+
+<div class="card">
+<h2>To-Be Flow</h2>
+<pre>
+User: Tôi nên đầu tư gì?
+      ↓
+AI phát hiện độ tự tin thấp
+      ↓
+Hỏi:
+- Mục tiêu?
+- Bao lâu?
+- Rủi ro?
+      ↓
+Phân tích dữ liệu MoMo
+      ↓
+Đề xuất cá nhân hóa
+      ↓
+User đánh giá / chỉnh sửa
+      ↓
+Correction Log
+</pre>
+</div>
+
+</div>
+</body>
+</html>

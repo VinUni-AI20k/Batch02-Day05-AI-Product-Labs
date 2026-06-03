@@ -18,7 +18,7 @@ Folder này được chia theo đúng việc cần làm:
 Mỗi học viên nộp **một repo cá nhân**:
 
 ```text
-Day06-MãHọcViên-HọVàTên
+Day06-2A202600805-Trần Văn Huỳnh
 ├── 01-invidual-workshop/
 └── 02-group-spec/
 ```

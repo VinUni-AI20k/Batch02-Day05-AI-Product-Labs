@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vietnam Airlines NEO — Workshop Review</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F6F4EF;
+    --surface: #FFFDF9;
+    --ink: #1A1814;
+    --ink-muted: #6B6760;
+    --ink-faint: #B0AEA9;
+    --accent: #C8451A;
+    --accent-soft: #F5E8E3;
+    --success: #1A6B3E;
+    --success-soft: #E3F0E9;
+    --warn: #8B6A00;
+    --warn-soft: #FDF6DC;
+    --fail: #9B1C1C;
+    --fail-soft: #FCE8E8;
+    --border: rgba(26,24,20,0.12);
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'Instrument Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --r: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── HEADER ── */
+  .hero {
+    padding: 60px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 56px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+  }
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    color: var(--ink);
+  }
+  .hero h1 em { color: var(--accent); font-style: italic; }
+  .hero-meta { font-size: 13px; color: var(--ink-muted); margin-top: 12px; }
+  .score-badge {
+    background: var(--ink);
+    color: #F6F4EF;
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-family: var(--mono);
+    white-space: nowrap;
+  }
+  .score-badge span { font-size: 22px; font-weight: 500; display: block; text-align: center; }
+
+  /* ── SECTION TITLES ── */
+  .section { margin-bottom: 56px; }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: 28px;
+  }
+
+  /* ── SUMMARY CARDS ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 20px;
+  }
+  .stat-card .num {
+    font-family: var(--serif);
+    font-size: 42px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-card .label { font-size: 13px; color: var(--ink-muted); }
+  .stat-card.green .num { color: var(--success); }
+  .stat-card.amber .num { color: var(--warn); }
+  .stat-card.red .num { color: var(--fail); }
+
+  /* ── QUERY CARDS ── */
+  .query-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .query-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .query-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 2px 8px;
+  }
+  .query-topic { font-size: 14px; font-weight: 600; flex: 1; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 100px;
+    padding: 3px 12px;
+  }
+  .badge.pass { background: var(--success-soft); color: var(--success); }
+  .badge.warn { background: var(--warn-soft); color: var(--warn); }
+  .badge.fail { background: var(--fail-soft); color: var(--fail); }
+  .badge::before { font-size: 10px; }
+  .badge.pass::before { content: '✓'; }
+  .badge.warn::before { content: '~'; }
+  .badge.fail::before { content: '✗'; }
+
+  .query-body { padding: 20px; }
+
+  .chat-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .chat-row.user { justify-content: flex-end; }
+  .chat-bubble {
+    max-width: 78%;
+    border-radius: var(--r);
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .chat-row.user .chat-bubble {
+    background: var(--ink);
+    color: #F6F4EF;
+    border-bottom-right-radius: 3px;
+  }
+  .chat-row.bot .chat-bubble {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 3px;
+  }
+  .chat-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--ink-faint);
+    align-self: flex-end;
+    padding-bottom: 2px;
+  }
+
+  .points-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .point-block { background: var(--bg); border-radius: var(--r); padding: 12px 14px; }
+  .point-block h4 { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .point-block ul { list-style: none; padding: 0; }
+  .point-block ul li { font-size: 13px; line-height: 1.5; padding: 2px 0; }
+  .point-block ul li::before { content: '— '; color: var(--ink-faint); }
+
+  .note-box {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 var(--r) var(--r) 0;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin-top: 14px;
+    color: #5C2210;
+  }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    position: relative;
+  }
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 44px;
+    width: 2px;
+    height: calc(100% - 16px);
+    background: var(--border);
+  }
+  .flow-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-family: var(--mono);
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .flow-dot.ok { background: var(--success-soft); color: var(--success); border: 1.5px solid #1A6B3E40; }
+  .flow-dot.fail { background: var(--fail-soft); color: var(--fail); border: 1.5px solid #9B1C1C40; }
+  .flow-dot.neutral { background: var(--bg); color: var(--ink-muted); border: 1.5px solid var(--border); }
+  .flow-text { font-size: 14px; }
+  .flow-text strong { font-weight: 600; }
+
+  /* ── TO-BE MOCKUP ── */
+  .mockup-phone {
+    background: var(--bg);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 380px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+  }
+  .mockup-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .mockup-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .mockup-name { font-size: 14px; font-weight: 600; }
+  .mockup-status { font-size: 11px; color: var(--success); }
+
+  .flight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .flight-card:first-of-type { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .flight-num { font-family: var(--mono); font-size: 12px; color: var(--ink-muted); margin-bottom: 2px; }
+  .flight-time { font-size: 15px; font-weight: 600; }
+  .flight-price {
+    text-align: right;
+    font-family: var(--serif);
+    font-size: 17px;
+    color: var(--accent);
+  }
+  .flight-price small { display: block; font-size: 11px; color: var(--ink-muted); font-family: var(--sans); }
+  .book-btn {
+    display: block;
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--r);
+    padding: 10px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    text-align: center;
+    transition: opacity .15s;
+  }
+  .book-btn:hover { opacity: .88; }
+  .book-btn.ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+
+  /* ── PATTERN PILLS ── */
+  .pattern-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .pattern-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 18px;
+  }
+  .pattern-icon { font-size: 22px; margin-bottom: 8px; }
+  .pattern-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .pattern-card p { font-size: 13px; color: var(--ink-muted); line-height: 1.5; }
+  .pattern-card.strong { border-top: 3px solid var(--success); }
+  .pattern-card.weak { border-top: 3px solid var(--fail); }
+  .pattern-card.mid { border-top: 3px solid var(--warn); }
+
+  /* ── DECISION BLOCK ── */
+  .decision-box {
+    background: var(--ink);
+    color: #F6F4EF;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 56px;
+  }
+  .decision-box .pre { font-family: var(--mono); font-size: 11px; color: #B0AEA9; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+  .decision-box blockquote {
+    font-family: var(--serif);
+    font-size: clamp(18px, 2.5vw, 24px);
+    line-height: 1.4;
+    margin-bottom: 20px;
+    border: none;
+    padding: 0;
+  }
+  .decision-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .decision-tag {
+    background: rgba(255,255,255,.1);
+    color: #F6F4EF;
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .conclusion h2 { font-family: var(--serif); font-size: 22px; margin-bottom: 12px; }
+  .conclusion p { font-size: 14px; color: var(--ink-muted); line-height: 1.7; }
+
+  @media (max-width: 620px) {
+    .hero { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
+    .points-grid { grid-template-columns: 1fr; }
+    .pattern-grid { grid-template-columns: 1fr; }
+    .conclusion { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div>
+      <p class="hero-tag">Workshop Review · Vietnam Airlines</p>
+      <h1>NEO — Chatbot<br><em>Evaluation Report</em></h1>
+      <p class="hero-meta">6 test sessions · 5 nhóm tác vụ · 1 hard failure</p>
+    </div>
+    <div class="score-badge">
+      <span>4 / 6</span>
+      Happy Paths
+    </div>
+  </header>
+
+  <!-- SUMMARY STATS -->
+  <section class="section">
+    <p class="section-label">Kết quả tổng quan</p>
+    <div class="summary-grid">
+      <div class="stat-card green">
+        <div class="num">4</div>
+        <div class="label">Happy Path ✓</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="num">1</div>
+        <div class="label">Low Confidence ~</div>
+      </div>
+      <div class="stat-card red">
+        <div class="num">1</div>
+        <div class="label">Failure ✗</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SESSION QUERIES -->
+  <section class="section">
+    <p class="section-label">Chi tiết test sessions</p>
+    <h2 class="section-title">6 queries thực tế</h2>
+
+    <!-- Q1 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-num">Q1</span>
+        <span class="query-topic">Hành lý ký gửi</span>
+        <span class="badge pass">Happy Path</span>
+      </div>
+      <div class="query-body">
+        <div class="chat-row user"><span class="chat-label">User</span><div class="chat-bubble">Tôi được mang bao nhiêu kg hành lý?</div></div>
+        <div class="chat-row bot"><div class="chat-bubble">Với hạng vé Phổ thông, Quý khách được mang 1 kiện hành lý xách tay tối đa <strong>12kg</strong> và 1 kiện hành lý ký gửi tối đa <strong>23kg</strong>.</div><span class="chat-label">NEO</span></div>
+        <div class="points-grid">
+          <div class="point-block">
+            <h4>✓ Điểm tốt</h4>
+            <ul>
+              <li>Trả lời trực tiếp, số liệu cụ thể</li>
+              <li>Không yêu cầu đọc tài liệu khác</li>
+              <li>Có gợi ý tra cứu bằng mã đặt chỗ</li>
+            </ul>
+          </div>
+          <div class="point-block">
+            <h4>→ Kết luận</h4>
+            <ul><li>FAQ tĩnh — NEO xử lý tốt nhất ở nhóm này</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-num">Q2</span>
+        <span class="query-topic">Lỡ chuyến bay</span>
+        <span class="badge pass">Happy Path</span>
+      </div>
+      <div class="query-body">
+        <div class="chat-row user"><span class="chat-label">User</span><div class="chat-bubble">Nếu tôi lỡ chuyến bay thì sao?</div></div>
+        <div class="chat-row bot"><div class="chat-bubble">NEO giải thích quy định No-show, điều kiện đổi/hoàn vé, mức phí áp dụng và đề nghị cung cấp mã đặt chỗ để hỗ trợ cá nhân hóa.</div><span class="chat-label">NEO</span></div>
+        <div class="points-grid">
+          <div class="point-block">
+            <h4>✓ Điểm tốt</h4>
+            <ul>
+              <li>Nội dung đầy đủ, có hướng dẫn tiếp theo</li>
+              <li>Yêu cầu mã đặt chỗ để cá nhân hóa</li>
+            </ul>
+          </div>
+          <div class="point-block">
+            <h4>△ Hạn chế</h4>
+            <ul>
+              <li>Trả lời theo hướng chính sách</li>
+              <li>Chưa chủ động dẫn đến hành động tiếp theo</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-num">Q3</span>
+        <span class="query-topic">Khởi tạo đặt vé</span>
+        <span class="badge pass">Happy Path</span>
+      </div>
+      <div class="query-body">
+        <div class="chat-row user"><span class="chat-label">User</span><div class="chat-bubble">Đặt vé về Đà Nẵng</div></div>
+        <div class="chat-row bot"><div class="chat-bubble">NEO khởi tạo flow giao dịch, hỏi lần lượt: điểm xuất phát, ngày đi, hạng vé, số lượng hành khách.</div><span class="chat-label">NEO</span></div>
+        <div class="points-grid">
+          <div class="point-block">
+            <h4>✓ Điểm tốt</h4>
+            <ul>
+              <li>Hiểu đúng intent đặt vé</li>
+              <li>Khởi tạo flow giao dịch, không FAQ</li>
+              <li>Nhận biết đủ các trường còn thiếu</li>
+            </ul>
+          </div>
+          <div class="point-block">
+            <h4>→ Kết luận</h4>
+            <ul><li>Intent recognition hoạt động tốt</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-num">Q4</span>
+        <span class="query-topic">NLU — ngôn ngữ tự nhiên</span>
+        <span class="badge pass">Happy Path</span>
+      </div>
+      <div class="query-body">
+        <div class="chat-row user"><span class="chat-label">User</span><div class="chat-bubble">Xuất phát ở HN, ngày thứ 2 tuần sau, mình tôi đi</div></div>
+        <div class="chat-row bot"><div class="chat-bubble">Đã xác nhận: <strong>HAN → DAD</strong> · <strong>07/06/2026</strong> · <strong>1 người lớn</strong> · Hạng phổ thông. Quý khách xác nhận thông tin?</div><span class="chat-label">NEO</span></div>
+        <div class="points-grid">
+          <div class="point-block">
+            <h4>✓ Điểm tốt</h4>
+            <ul>
+              <li>Parse được ngôn ngữ tự nhiên viết tắt</li>
+              <li>Hiểu ngày tương đối "thứ 2 tuần sau"</li>
+              <li>Trích xuất đủ 4 trường dữ liệu</li>
+            </ul>
+          </div>
+          <div class="point-block">
+            <h4>→ Kết luận</h4>
+            <ul><li>Năng lực NLU khá mạnh — highlight của session</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 — FAILURE -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-num">Q5</span>
+        <span class="query-topic">Chuyển sang giao dịch thực</span>
+        <span class="badge fail">Failure</span>
+      </div>
+      <div class="query-body">
+        <div class="chat-row user"><span class="chat-label">User</span><div class="chat-bubble">Bạn sẽ tự động đặt vé sao?</div></div>
+        <div class="chat-row bot"><div class="chat-bubble">Quý khách vui lòng thực hiện các bước đặt vé trực tiếp trên <strong>website hoặc ứng dụng</strong> của Vietnam Airlines.</div><span class="chat-label">NEO</span></div>
+        <div class="note-box">
+          ⚠️ <strong>Hard failure.</strong> Tại thời điểm này NEO đã có đầy đủ điểm đi, điểm đến, ngày bay, số khách, hạng vé — nhưng không tìm được chuyến, không hiển thị giá, không deep-link sang booking. Flow bị dừng hoàn toàn.
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="query-card">
+      <div class="query-header">
+        <span class="query-num">Q6</span>
+        <span class="query-topic">Hướng dẫn đặt vé</span>
+        <span class="badge warn">Low Confidence</span>
+      </div>
+      <div class="query-body">
+        <div class="chat-row user"><span class="chat-label">User</span><div class="chat-bubble">Chỉ tôi cách đặt vé</div></div>
+        <div class="chat-row bot"><div class="chat-bubble">Quý khách có thể đặt vé qua: Website · Ứng dụng · VNeID · Phòng vé · Đại lý.</div><span class="chat-label">NEO</span></div>
+        <div class="points-grid">
+          <div class="point-block">
+            <h4>△ Vấn đề</h4>
+            <ul>
+              <li>Thông tin đúng nhưng sai context</li>
+              <li>User đang giữa chừng flow đặt vé</li>
+              <li>Quay lại FAQ tổng quát gây đứt gãy UX</li>
+            </ul>
+          </div>
+          <div class="point-block">
+            <h4>→ Kết luận</h4>
+            <ul><li>NEO thiếu context awareness giữa các turn</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATTERNS -->
+  <section class="section">
+    <p class="section-label">Pattern quan sát được</p>
+    <h2 class="section-title">Điểm mạnh & điểm yếu</h2>
+    <div class="pattern-grid">
+      <div class="pattern-card strong">
+        <div class="pattern-icon">📖</div>
+        <h3>FAQ — Rất tốt</h3>
+        <p>Hành lý, chính sách No-show, quy định vé. Trả lời nhanh, chính xác, số liệu cụ thể.</p>
+      </div>
+      <div class="pattern-card mid">
+        <div class="pattern-icon">🧠</div>
+        <h3>NLU — Khá tốt</h3>
+        <p>Parse ngôn ngữ viết tắt, hiểu ngày tương đối, trích xuất entity từ câu tự nhiên.</p>
+      </div>
+      <div class="pattern-card weak">
+        <div class="pattern-icon">🔗</div>
+        <h3>FAQ → Giao dịch — Yếu</h3>
+        <p>Dừng ở vai trò thu thập dữ liệu. Không thể chuyển sang tìm chuyến, hiển thị giá, hoặc booking.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- AS-IS FLOW -->
+  <section class="section">
+    <p class="section-label">Path yếu nhất</p>
+    <h2 class="section-title">As-Is — Đặt vé qua hội thoại</h2>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-dot ok">1</div><div class="flow-text">User: <strong>"Đặt vé về Đà Nẵng"</strong></div></div>
+      <div class="flow-step"><div class="flow-dot ok">2</div><div class="flow-text">NEO hỏi điểm xuất phát, ngày đi, số hành khách</div></div>
+      <div class="flow-step"><div class="flow-dot ok">3</div><div class="flow-text">User cung cấp đủ thông tin bằng ngôn ngữ tự nhiên</div></div>
+      <div class="flow-step"><div class="flow-dot ok">4</div><div class="flow-text">NEO parse thành công & xác nhận dữ liệu</div></div>
+      <div class="flow-step"><div class="flow-dot fail">✗</div><div class="flow-text"><strong>NEO không thực hiện bước tiếp theo</strong> — không tìm chuyến, không hiển thị giá</div></div>
+      <div class="flow-step"><div class="flow-dot fail">✗</div><div class="flow-text">Bot yêu cầu user tự vào website → <strong>User phải làm lại từ đầu</strong></div></div>
+    </div>
+    <div class="note-box" style="margin-top: 20px;">
+      "Nếu cuối cùng tôi vẫn phải tự đặt trên website thì tại sao chatbot lại hỏi tôi tất cả những thông tin này?"
+    </div>
+  </section>
+
+  <!-- TO-BE MOCKUP -->
+  <section class="section">
+    <p class="section-label">Đề xuất cải thiện</p>
+    <h2 class="section-title">To-Be — Flow lý tưởng</h2>
+    <div class="mockup-phone">
+      <div class="mockup-header">
+        <div class="mockup-avatar">N</div>
+        <div>
+          <div class="mockup-name">NEO — Vietnam Airlines</div>
+          <div class="mockup-status">● Online</div>
+        </div>
+      </div>
+
+      <div class="chat-row user" style="margin-bottom:10px"><div class="chat-bubble" style="background:#1A1814;color:#F6F4EF;font-size:13px;padding:9px 13px;border-radius:8px 8px 2px 8px;">Đặt vé Hà Nội đi Đà Nẵng thứ Hai tuần sau</div></div>
+      <div class="chat-row bot" style="margin-bottom:12px"><div class="chat-bubble" style="background:#F6F4EF;border:1px solid rgba(26,24,20,.12);font-size:13px;padding:9px 13px;border-radius:8px 8px 8px 2px;">Tôi đã tìm thấy <strong>3 chuyến phù hợp</strong> cho ngày 07/06:</div></div>
+
+      <div class="flight-card">
+        <div>
+          <div class="flight-num">VN167 · Phổ thông</div>
+          <div class="flight-time">08:00 → 09:20</div>
+        </div>
+        <div>
+          <div class="flight-price">1.290.000đ <small>/ khách</small></div>
+          <button class="book-btn" style="padding:6px 14px;font-size:12px;border-radius:6px;width:auto;display:inline-block;">Đặt ngay</button>
+        </div>
+      </div>
+
+      <div class="flight-card">
+        <div>
+          <div class="flight-num">VN171 · Phổ thông</div>
+          <div class="flight-time">13:30 → 14:50</div>
+        </div>
+        <div>
+          <div class="flight-price">1.450.000đ <small>/ khách</small></div>
+          <button class="book-btn ghost" style="padding:6px 14px;font-size:12px;border-radius:6px;width:auto;display:inline-block;">Đặt ngay</button>
+        </div>
+      </div>
+
+      <div class="flight-card">
+        <div>
+          <div class="flight-num">VN177 · Phổ thông</div>
+          <div class="flight-time">18:10 → 19:30</div>
+        </div>
+        <div>
+          <div class="flight-price">1.390.000đ <small>/ khách</small></div>
+          <button class="book-btn ghost" style="padding:6px 14px;font-size:12px;border-radius:6px;width:auto;display:inline-block;">Đặt ngay</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT DECISION -->
+  <div class="decision-box">
+    <p class="pre">Product Decision</p>
+    <blockquote>"Khi NEO đã thu thập đủ thông tin cho một giao dịch, chatbot phải chuyển người dùng sang bước thực hiện giao dịch ngay lập tức — thay vì trả về hướng dẫn chung hoặc yêu cầu làm lại trên website."</blockquote>
+    <p style="font-size:13px;color:#B0AEA9;margin-bottom:16px;">Nguyên tắc: <em>Đã đủ dữ liệu → phải có hành động tiếp theo.</em></p>
+    <div class="decision-tags">
+      <span class="decision-tag">Đặt vé</span>
+      <span class="decision-tag">Đổi vé</span>
+      <span class="decision-tag">Mua hành lý</span>
+      <span class="decision-tag">Check-in</span>
+      <span class="decision-tag">Chọn chỗ ngồi</span>
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <footer class="conclusion">
+    <div>
+      <h2>NEO hôm nay</h2>
+      <p>Chatbot FAQ khá tốt, NLU tương đối mạnh. Xử lý tốt các câu hỏi về hành lý, chính sách, quy định. Điểm yếu lớn nhất: không thể chuyển từ hội thoại sang giao dịch thực.</p>
+    </div>
+    <div>
+      <h2>NEO cần gì</h2>
+      <p>Tích hợp tìm kiếm chuyến bay, hiển thị lựa chọn giá/giờ, và deep-link sang màn hình thanh toán. Đây là bước tạo ra tác động lớn nhất tới conversion và trải nghiệm người dùng.</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

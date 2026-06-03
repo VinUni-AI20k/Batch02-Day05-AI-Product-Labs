@@ -15,7 +15,7 @@ Nhóm tự dùng app/workflow và ghi lại điểm gãy.
 
 | Observation | Screenshot/link | Path liên quan | Điều học được |
 |---|---|---|---|
-| Thử chat với dược sĩ Long Châu: hỏi "Paracetamol 500mg tác dụng gì?" → chờ 3-5 phút mới có người trả lời | [Image](./image.jpg) | Low-confidence, user phải chờ dù câu hỏi đơn giản | AI có thể trả lời ngay loại câu hỏi này; dược sĩ thật chỉ cần vào khi câu hỏi phức tạp |
+| Thử chat với dược sĩ Long Châu: hỏi "NANO FUCOIDAN tác dụng gì?" → chờ 3-5 phút mới có người trả lời | [Image 1](./image_1.jpg) - [Image 2](./image_2.jpg)  | Low-confidence, user phải chờ dù câu hỏi đơn giản | AI có thể trả lời ngay loại câu hỏi này; dược sĩ thật chỉ cần vào khi câu hỏi phức tạp |
 | Hỏi "Tôi đang uống huyết áp, có dùng được Ibuprofen không?" → dược sĩ trả lời sau 8 phút, câu trả lời tốt | — | Người thật nhưng chờ lâu | Câu hỏi tương tác thuốc = cần người thật; nhưng AI nên route ngay thay vì để user chờ hàng |
 
 ## 3. User / review / social evidence

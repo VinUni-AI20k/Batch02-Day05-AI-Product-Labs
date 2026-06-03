@@ -78,11 +78,11 @@ Owner kiểm thử path này là thành viên phụ trách Test / Demo.
 
 | Thành viên | Việc phụ trách | Bằng chứng cần có trong repo |
 |---|---|---|
-| Thành viên 1 | Research / evidence | Screenshot self-use, review Google Play, ghi chú pain ngân sách. |
-| Thành viên 2 | SPEC | Pain statement, build slice, Auto/Aug decision, four paths. |
-| Thành viên 3 | Prototype | UI cảnh báo ngân sách, mock data, logic tính dự báo. |
-| Thành viên 4 | Test / failure path | Test happy, low-confidence, failure, correction; demo script. |
-| Repo owner | Demo script / repo | README, evidence pack, thin SPEC, prototype assets. |
+| Cả nhóm (cả 4 thành viên) | Research / evidence | Screenshot self-use, review Google Play, ghi chú pain ngân sách. |
+| Trương Hải Quân — 2A202600898 | SPEC + tổng hợp repo | Thin SPEC, evidence pack, README, gom assets của nhóm vào repo. |
+| Bùi Minh Hiếu — 2A202600876 | Prototype — UI | Màn hình cảnh báo ngân sách, thông báo, mock data, flow đánh dấu ngoại lệ trên giao diện. |
+| Nguyễn Sĩ Việt — 2A202600658 | Prototype — logic dự báo | Hàm tính tốc độ chi tiêu, dự báo cuối tháng, mức nên chi/ngày; tính lại sau khi đánh dấu ngoại lệ. |
+| Trần Quang Huy — 2A202601010 | Test 4 paths + demo | Test happy/low-confidence/failure/correction, kịch bản demo, video/script trình bày. |
 
 ## 9. Ví dụ cảnh báo trong prototype
 

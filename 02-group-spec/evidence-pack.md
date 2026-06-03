@@ -3,9 +3,9 @@
 
 | Mục | Nội dung |
 |---|---|
-| **Tên nhóm** | *C401-E6* |
-| **Track** | AI Augmentation / Mini Hackathon |
-| **Product/App đã chọn** | AI Food Recommendation |
+| **Tên nhóm** | ** |
+| **Track** | Food, Local delivery |
+| **Product/App đã chọn** | Shopeefood, Grabfood |
 | **Build slice đang nghĩ** | Xây dựng tính năng duy nhất là gợi ý đúng **3 món ăn** dựa trên mô tả tự nhiên của người dùng, có giải thích lý do ngắn gọn vì sao phù hợp. |
 
 ## 2. Self-use Evidence

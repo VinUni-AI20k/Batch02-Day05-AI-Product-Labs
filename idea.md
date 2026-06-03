@@ -45,9 +45,7 @@ Bảng:
 
 Hiểu:
 
-* AI hỏi gì
-* AI quyết định thế nào
-* AI không xử lý được gì
+* Viết theo bảng của evidence-pack-template.md: Self-use evidence
 
 ---
 
@@ -88,6 +86,7 @@ Tìm:
 * Wrong recommendation
 * Confusing output
 * Decision support needs
+* Viết theo bảng trong  3. User / review / social evidence
 
 ---
 
@@ -95,13 +94,14 @@ Tìm:
 
 ### Nhiệm vụ
 
-Nghiên cứu (Ví dụ):
+Nghiên cứu (Ví dụ) Tối thiểu 3 app:
 
 * Ada Health
 * WebMD Symptom Checker
 * MyVinmec
 * Babylon Health (nếu còn tài liệu)
-* ChatGPT Health Use Cases
+* ChatGPT, Gemini, ... (General Chatbot - Health Use Cases)
+* Tìm thêm app khác nếu có
 
 ### Deliverable
 
@@ -114,68 +114,97 @@ Bảng:
 
 ### Mục tiêu
 
-Tìm:
-
-* Họ hỏi gì
-* Họ tránh risk thế nào
-* Họ xử lý uncertainty thế nào
+Viết theo bảng trong 4. Competitor / analog evidence
 
 ---
 
-## Member 4 – SPEC & Workflow Designer
+## Member 4 – Product Slice
 
 ### Nhiệm vụ
 
-Từ evidence của các thành viên:
+Từ evidence của cả nhóm:
+
+* Gom pain points
+* Gom failure modes
+* Viết insight
+* Viết opportunity
+* Chọn build slice cuối cùng
 
 Thiết kế:
 
-* User persona
-* Build slice
+* User segment
+* User journey
+* AI decision
 * 4 paths
-* Failure paths
+* Failure path
 
 ### Deliverable
 
-Thin SPEC v1
+Product Decision Document
 
 Ví dụ:
 
-Path 1:
-Emergency
+User:
+Người có triệu chứng nhẹ nhưng chưa biết có nên đi khám.
 
-Path 2:
-See Doctor
+Pain:
+Không biết mức độ nghiêm trọng của triệu chứng.
 
-Path 3:
-Self Care
+Build Slice:
+Symptom Triage Assistant.
 
-Path 4:
-Insufficient Information
+AI Decision:
+Phân loại:
+
+* Emergency
+* See Doctor
+* Self Care
+
+Failure Mode:
+Triệu chứng quá mơ hồ.
 
 ### Mục tiêu
 
-Biến evidence thành sản phẩm có thể build.
+Biến evidence thành một sản phẩm đủ nhỏ để build trong Day 06. Như synthesis-decide-toolkit.md
 
----
-
-## Member 5 – Synthesizer / Documentation Owner
+## Member 5 – SPEC
 
 ### Nhiệm vụ
 
-Tổng hợp toàn bộ evidence.
+Chịu trách nhiệm toàn bộ tài liệu cuối ngày.
 
 Viết:
 
-* Insight
-* Opportunity
+* Thin SPEC v1
 * Evidence Pack
 * Changelog SPEC
+* Scope / Non-scope
+* Test Plan
+* Success Metrics
+
+Tổng hợp input từ:
+
+* Self-use research
+* Review research
+* Competitor research
+* Product Slice Owner
 
 ### Deliverable
 
-File nộp cuối ngày.
+1. Evidence Pack hoàn chỉnh
+2. Thin SPEC v1 hoàn chỉnh
+
+Bao gồm:
+
+* User
+* Pain Statement
+* Build Slice
+* AI Role
+* 4 Paths
+* Failure Modes
+* Test Cases
+* Backlog
 
 ### Mục tiêu
 
-Đảm bảo mọi quyết định trong SPEC đều truy được về evidence.
+Đảm bảo mọi quyết định trong SPEC đều có evidence hỗ trợ và tài liệu đủ để Day 06 bắt đầu build ngay. Như thin-spec-template.md

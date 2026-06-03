@@ -53,7 +53,7 @@ Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu
 ## 5. Sketch as-is / to-be
 
 ### 💥 AS-IS FLOW (Hiện trạng - Điểm gãy)
-
+```
 👤 User: "Mở báo cáo... à quên, tìm lịch họp ngày mai trước đi"
    │
    ▼
@@ -75,11 +75,10 @@ Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu
 └─────────────────────────────────────────────────────┘
    │
    ✖ Drop-off: User phải tự gõ lại từ đầu hoặc bỏ ngang tác vụ.
-
----
+```
 
 ### 💡 TO-BE FLOW (Đề xuất giải pháp)
-
+```
 👤 User: "Mở báo cáo... à quên, tìm lịch họp ngày mai trước đi"
    │
    ▼
@@ -108,6 +107,7 @@ Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu
 │ 📅 09:00 AM - Họp nhóm dự án                        │
 │ 📅 14:00 PM - Gặp khách hàng đối tác                │
 └─────────────────────────────────────────────────────┘
+```
 
 ## 6. Tự kiểm trước khi nộp
 

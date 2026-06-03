@@ -1,4 +1,5 @@
 # Workshop — Mổ App AI Thật
+---
 
 **Thời gian:** 35-45 phút  
 **Hình thức:** cá nhân trước, chia sẻ theo nhóm sau  

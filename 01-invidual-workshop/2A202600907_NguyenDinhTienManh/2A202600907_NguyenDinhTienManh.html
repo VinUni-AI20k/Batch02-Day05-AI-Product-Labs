@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop — Mổ App AI Thật | Nguyễn Đình Tiến Mạnh</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#111827;--primary:#3B82F6;--secondary:#10B981;--accent:#F59E0B;--muted:#F3F4F6;--border:#E5E7EB;--danger:#EF4444}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;color:var(--fg);background:var(--bg);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* HERO */
+.hero{background:var(--primary);color:#fff;padding:80px 0 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero::after{content:'';position:absolute;bottom:-40px;left:10%;width:200px;height:200px;background:rgba(255,255,255,.05);transform:rotate(45deg)}
+.hero h1{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.hero .subtitle{font-size:18px;font-weight:400;opacity:.9}
+.hero .meta{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}
+.hero .tag{background:rgba(255,255,255,.15);padding:6px 14px;border-radius:6px;font-size:14px;font-weight:500}
+
+/* SECTIONS */
+section{padding:56px 0}
+section.alt{background:var(--muted)}
+section.dark{background:var(--fg);color:#fff}
+section.emerald{background:var(--secondary);color:#fff}
+section.amber{background:var(--accent);color:var(--fg)}
+.section-label{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;opacity:.7}
+.section-title{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.02em;margin-bottom:24px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:14px 16px;text-align:left;border-bottom:2px solid var(--border)}
+th{font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em;background:var(--muted)}
+.dark th{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+.dark td{border-color:rgba(255,255,255,.08)}
+
+/* CARDS */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.card{background:var(--muted);padding:28px;border-radius:8px;transition:all .2s}
+.card:hover{transform:scale(1.02)}
+.card.blue{background:#EFF6FF}.card.green{background:#ECFDF5}.card.red{background:#FEF2F2}.card.yellow{background:#FFFBEB}
+.card .icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;background:#fff;transition:transform .2s}
+.card:hover .icon{transform:scale(1.1)}
+.card h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.card p{font-size:14px;opacity:.85;line-height:1.5}
+
+/* BADGE */
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-ok{background:#D1FAE5;color:#065F46}
+.badge-fail{background:#FEE2E2;color:#991B1B}
+.badge-warn{background:#FEF3C7;color:#92400E}
+.badge-info{background:#DBEAFE;color:#1E40AF}
+
+/* EVIDENCE */
+.evidence-item{background:#fff;padding:24px;border-radius:8px;margin-bottom:16px;border-left:4px solid var(--primary)}
+.evidence-item.fail{border-left-color:var(--danger)}
+.evidence-item.warn{border-left-color:var(--accent)}
+.evidence-item code{background:var(--muted);padding:3px 8px;border-radius:4px;font-size:13px;font-family:'Outfit',sans-serif}
+
+/* FLOW */
+.flow-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:700px){.flow-col{grid-template-columns:1fr}}
+.flow-box{padding:24px;border-radius:8px;position:relative;overflow:hidden}
+.flow-box.asis{background:#FEF2F2;border-left:4px solid var(--danger)}
+.flow-box.tobe{background:#ECFDF5;border-left:4px solid var(--secondary)}
+.flow-box h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.flow-step{background:#fff;padding:12px 16px;border-radius:6px;margin-bottom:10px;font-size:13px;line-height:1.5;position:relative}
+.flow-step::after{content:'↓';display:block;text-align:center;color:#aaa;font-weight:700;padding:4px 0}
+.flow-step:last-child::after{content:''}
+.flow-step.break{background:#FEE2E2;color:#991B1B;font-weight:600;border:2px solid var(--danger)}
+.flow-step.fix{background:#D1FAE5;color:#065F46;font-weight:600;border:2px solid var(--secondary)}
+
+/* CHECKLIST */
+.checklist{list-style:none}
+.checklist li{padding:10px 0;font-size:15px;display:flex;align-items:flex-start;gap:10px;border-bottom:2px solid var(--border)}
+.checklist li:last-child{border-bottom:none}
+.check-icon{width:24px;height:24px;background:var(--secondary);color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+
+/* DECISION BOX */
+.decision-box{background:var(--primary);color:#fff;padding:32px;border-radius:8px;font-size:15px;line-height:1.7;position:relative;overflow:hidden}
+.decision-box::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08)}
+.decision-box h3{font-weight:800;font-size:18px;margin-bottom:12px}
+.decision-box ol{padding-left:20px}
+.decision-box li{margin-bottom:6px}
+
+/* UI MOCK */
+.ui-mock{background:var(--fg);color:#fff;padding:24px;border-radius:8px;font-family:'Outfit',monospace;font-size:13px;line-height:1.7}
+.ui-mock .card-mock{background:rgba(255,255,255,.06);padding:12px 16px;border-radius:6px;margin:8px 0}
+.ui-mock .warn-mock{color:var(--accent);font-weight:600;margin-top:12px}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+<div class="container">
+  <div class="section-label" style="color:rgba(255,255,255,.6)">Workshop — Mổ App AI Thật</div>
+  <h1>Case Study: Tìm Kiếm Đồ Ăn Bằng Mô Tả Mơ Hồ</h1>
+  <p class="subtitle">Phân tích điểm gãy khi user không biết mình muốn ăn gì</p>
+  <div class="meta">
+    <span class="tag">👤 Nguyễn Đình Tiến Mạnh</span>
+    <span class="tag">🎓 2A202600907</span>
+    <span class="tag">📱 GrabFood + ChatGPT</span>
+  </div>
+</div>
+</header>
+
+<!-- 1. SẢN PHẨM -->
+<section>
+<div class="container">
+  <div class="section-label">Mục 1</div>
+  <h2 class="section-title">Sản phẩm lựa chọn dùng thử</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Sản phẩm</th><th>AI Feature</th><th>Cách truy cập</th><th>Vai trò</th></tr></thead>
+    <tbody>
+      <tr><td><strong>GrabFood</strong></td><td>Tìm kiếm món ăn, gợi ý quán, filter danh mục</td><td>App Grab Mobile</td><td><span class="badge badge-info">Phân tích chính</span></td></tr>
+      <tr><td><strong>ChatGPT</strong></td><td>Hiểu mô tả tự nhiên, phân tích ngữ cảnh</td><td>chat.openai.com</td><td><span class="badge badge-warn">Đối chiếu</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- 2. PROMISE VS REALITY -->
+<section class="alt">
+<div class="container">
+  <div class="section-label">Mục 2</div>
+  <h2 class="section-title">Dùng thử: Promise vs Reality</h2>
+
+  <div class="card-grid" style="margin-bottom:28px">
+    <div class="card blue">
+      <div class="icon">🎯</div>
+      <h3>Product hứa gì?</h3>
+      <p>GrabFood hứa giúp tìm và đặt đồ ăn nhanh chóng. Giao diện có danh mục (Cơm, Bún/Phở, Đồ uống...) và thanh search.</p>
+    </div>
+    <div class="card green">
+      <div class="icon">👥</div>
+      <h3>User nào được hứa?</h3>
+      <p>Bất kỳ ai muốn đặt đồ ăn giao tận nơi — đặc biệt dân văn phòng bận rộn trong giờ nghỉ trưa.</p>
+    </div>
+    <div class="card yellow">
+      <div class="icon">🧠</div>
+      <h3>Kỳ vọng AI làm gì?</h3>
+      <p>Khi user mô tả mơ hồ: "đồ nước, thanh đạm, gần Quận 1" → kỳ vọng app hiểu ngữ cảnh và gợi ý phù hợp.</p>
+    </div>
+    <div class="card red">
+      <div class="icon">💥</div>
+      <h3>Điểm gãy ở đâu?</h3>
+      <p>Lớp Search/Filter — <strong>không có Semantic Understanding</strong>. App chỉ keyword matching thuần túy.</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:16px">Evidence thu thập từ thực tế kiểm thử</h3>
+
+  <div class="evidence-item fail">
+    <span class="badge badge-fail">Test 1 — Failure</span>
+    <p style="margin:10px 0"><strong>Input:</strong> <code>"đồ nước thanh đạm"</code></p>
+    <p><strong>Kết quả GrabFood:</strong> <strong>0 quán.</strong> App tìm chính xác chuỗi ký tự "đồ nước thanh đạm" trong tên quán/món → không match → trả rỗng.</p>
+  </div>
+
+  <div class="evidence-item fail">
+    <span class="badge badge-fail">Test 2 — Sai lệch</span>
+    <p style="margin:10px 0"><strong>Input:</strong> <code>"ăn gì buổi trưa nhẹ nhàng"</code></p>
+    <p><strong>Kết quả GrabFood:</strong> Hiển thị quán có chữ "nhẹ" trong tên (VD: "Trà sữa nhẹ tênh") — hoàn toàn lệch khỏi intent.</p>
+  </div>
+
+  <div class="evidence-item warn">
+    <span class="badge badge-warn">Test 3 — Đối chiếu ChatGPT</span>
+    <p style="margin:10px 0"><strong>Input:</strong> <code>"Trưa nay ăn gì đồ nước, thanh đạm ở Quận 1"</code></p>
+    <p><strong>Kết quả ChatGPT:</strong> Hiểu đúng intent → phân tích loại món (đồ nước), taste (thanh đạm), location (Quận 1) → gợi ý phở, bún, súp. <strong>Nhưng quán ảo, sai vị trí.</strong></p>
+  </div>
+
+  <div class="evidence-item" style="border-left-color:var(--secondary)">
+    <span class="badge badge-ok">Test 4 — Happy path</span>
+    <p style="margin:10px 0"><strong>Input:</strong> <code>"phở"</code></p>
+    <p><strong>Kết quả GrabFood:</strong> Nhiều kết quả chính xác. <strong>Chỉ hoạt động khi user đã biết muốn ăn gì.</strong></p>
+  </div>
+</div>
+</section>
+
+<!-- 3. FOUR PATHS -->
+<section class="dark">
+<div class="container">
+  <div class="section-label" style="color:rgba(255,255,255,.5)">Mục 3</div>
+  <h2 class="section-title">Phân tích 4 Luồng Trải Nghiệm</h2>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Path</th><th>Kịch bản</th><th>Trạng thái trên GrabFood</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-ok">Happy</span></td>
+        <td>User biết chính xác tên món ("phở", "cơm tấm") → gõ vào search</td>
+        <td>✅ Hoạt động tốt. Filter chính xác, có rating, giá, thời gian giao.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-warn">Low-confidence</span></td>
+        <td>User mô tả mơ hồ → app đáng lẽ phải hỏi lại hoặc đưa gợi ý</td>
+        <td>❌ <strong>Không tồn tại.</strong> Gõ "đồ nước thanh đạm" → trả rỗng, không suggestion.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-fail">Failure</span></td>
+        <td>User gõ mô tả tự nhiên → kết quả rỗng/sai lệch</td>
+        <td>❌ <strong>Đang xảy ra.</strong> Không giải thích vì sao fail, không fallback.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-info">Correction</span></td>
+        <td>User sửa query → app có học từ hành vi không?</td>
+        <td>❌ <strong>Không có.</strong> User phải tự suy ra tên món rồi gõ lại từ đầu.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- 4. FINDING → DECISION -->
+<section>
+<div class="container">
+  <div class="section-label">Mục 4</div>
+  <h2 class="section-title">Finding thành Quyết Định Sản Phẩm</h2>
+
+  <div style="background:var(--muted);padding:28px;border-radius:8px;font-size:15px;line-height:1.8;margin-bottom:24px">
+    <p><strong>Khi user</strong> [nhập mô tả mơ hồ: "đồ nước thanh đạm", "ăn gì buổi trưa nhẹ nhàng"],</p>
+    <p><strong>AI/product</strong> [chỉ keyword matching thuần túy, không hiểu ngữ nghĩa/ý định],</p>
+    <p><strong>hậu quả là</strong> [trả 0 kết quả hoặc sai lệch, ép user tự chuyển "cảm giác thèm" → "tên món cụ thể" — gây decision fatigue 20–30 phút],</p>
+    <p><strong>Lỗi thuộc layer</strong> [Intent Understanding + Search/Filter — thiếu Semantic Search],</p>
+    <p><strong>Nên sửa bằng</strong> [bổ sung AI layer giữa user input và search engine].</p>
+  </div>
+
+  <div class="decision-box">
+    <h3>📋 Product Decision — Đổi gì trong SPEC</h3>
+    <ol>
+      <li>Parse mô tả tự nhiên → extract tags (loại món, taste, location, mood)</li>
+      <li>Map tags vào dataset có gán metadata chi tiết → rank top 3</li>
+      <li>Hiển thị kèm lý do ngắn gọn vì sao phù hợp</li>
+      <li>Áp dụng hard filter: dị ứng (bắt buộc) + khoảng cách &lt; 3km</li>
+      <li>Nếu không đủ data → hỏi 1 câu clarification thay vì trang rỗng</li>
+    </ol>
+  </div>
+</div>
+</section>
+
+<!-- 5. AS-IS / TO-BE -->
+<section class="alt">
+<div class="container">
+  <div class="section-label">Mục 5</div>
+  <h2 class="section-title">Sơ đồ Luồng: As-is → To-be</h2>
+  <div class="flow-col">
+
+    <div class="flow-box asis">
+      <h3>💥 As-is — GrabFood hiện tại</h3>
+      <div class="flow-step">👤 User: "tôi muốn ăn đồ nước, thanh đạm, loanh quanh Quận 1"</div>
+      <div class="flow-step">📱 GrabFood Search: Keyword matching → tìm "đồ nước thanh đạm" trong tên quán</div>
+      <div class="flow-step break">🛑 ĐIỂM GÃY: 0 kết quả. Không suggestion, không hỏi lại, không giải thích.</div>
+      <div class="flow-step">😤 User: Phải tự nghĩ tên món → gõ "phở" → mất 10–15 phút</div>
+      <div class="flow-step break">✖ Kết quả: Decision fatigue, trải nghiệm kém, user có thể bỏ app.</div>
+    </div>
+
+    <div class="flow-box tobe">
+      <h3>💡 To-be — AI Food Recommendation</h3>
+      <div class="flow-step">👤 User: "tôi muốn ăn đồ nước, thanh đạm, loanh quanh Quận 1"</div>
+      <div class="flow-step fix">🤖 AI Parser: Extract → loại_món: "đồ nước", taste: "thanh đạm", location: "Quận 1"</div>
+      <div class="flow-step fix">🔒 Hard Filter: Check dị ứng → loại bỏ. Check khoảng cách &lt; 3km.</div>
+      <div class="flow-step">📊 Filter dataset 10–20 món → rank theo relevance → chọn top 3</div>
+      <div class="flow-step fix">📱 Hiển thị 3 Card kết quả kèm lý do. User chọn trong &lt; 1 phút. ✅</div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:28px">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">🖥️ UI Mock — Kết quả To-be</h3>
+    <div class="ui-mock">
+      <div>🤖 AI: Dựa trên mô tả của bạn, đây là 3 gợi ý phù hợp nhất:</div>
+      <div class="card-mock">🍜 <strong>1. Phở bò tái — Phở Thìn Bờ Hồ</strong><br>📍 0.8km · ⭐ 4.5 · 💰 55k<br>💡 "Đồ nước, vị thanh, phù hợp buổi trưa nhẹ"</div>
+      <div class="card-mock">🍲 <strong>2. Bún riêu cua — Bún Riêu Cô Tư</strong><br>📍 1.2km · ⭐ 4.3 · 💰 45k<br>💡 "Nước dùng thanh đạm, không dầu mỡ"</div>
+      <div class="card-mock">🥣 <strong>3. Súp nấm chay — Quán Chay An Nhiên</strong><br>📍 1.5km · ⭐ 4.6 · 💰 40k<br>💡 "Thanh đạm nhất, hoàn toàn không thịt"</div>
+      <div class="warn-mock">⚠️ Đã lọc bỏ các món có đậu phộng (dị ứng)</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 6. SELF-CHECK -->
+<section class="emerald">
+<div class="container">
+  <div class="section-label" style="color:rgba(255,255,255,.6)">Mục 6</div>
+  <h2 class="section-title">Tự kiểm trước khi nộp</h2>
+  <ul class="checklist">
+    <li><span class="check-icon">✓</span> Có ít nhất 1 observation cụ thể — Có 4 test cases chi tiết với input/output thực tế.</li>
+    <li><span class="check-icon">✓</span> Có đủ 4 paths — Ghi rõ 3/4 path đang thiếu/gãy trên GrabFood.</li>
+    <li><span class="check-icon">✓</span> Finding viết thành product decision — Theo format: trigger → failure → impact → layer → fix.</li>
+    <li><span class="check-icon">✓</span> Sketch có as-is và to-be — Có cả 2, đánh dấu rõ điểm gãy và path đã sửa.</li>
+    <li><span class="check-icon">✓</span> Có câu nói rõ finding đổi gì trong SPEC — Product Decision với 5 điểm cụ thể.</li>
+  </ul>
+</div>
+</section>
+
+</body>
+</html>

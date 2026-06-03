@@ -63,6 +63,6 @@ Owner kiểm thử path này là **[Điền tên thành viên nhóm phụ trách
 |---|---|---|
 | [NguyenThaiHoc] | Research / evidence | Cập nhật đủ quote phỏng vấn 3-5 user. |
 | [NguyenQuangMinh] | SPEC | File Thin SPEC hoàn thiện. |
-| [NguyenQuangMinh, NguyenTuanDung] | Prototype | File dataset nhỏ (10-20 món) + Script/Prompt. |
+| [PhamDucLiem, NguyenTuanDung] | Prototype | File dataset nhỏ (10-20 món) + Script/Prompt. |
 | [NguyenDinhTienManh] | Test / failure path | Bằng chứng test chặn hard filter <3km và filter dị ứng. |
 | [NguyenMinhChien] | Demo script / repo | LThư mục repo chuẩn hóa. |

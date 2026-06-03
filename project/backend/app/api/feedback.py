@@ -11,7 +11,7 @@ from typing import Optional, List, Any, Dict
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, validator
 
-from models.database import insert_feedback, insert_human_review
+from models.database import insert_feedback, insert_human_review, insert_bad_feedback
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +141,23 @@ async def submit_feedback(payload: FeedbackRequest):
             flagged=flagged,
         )
         logger.info(f"✅ Feedback saved | id={feedback_id} | user='{user_id}' | rating={rating}")
+        
+        # If low rating (<= 2), also insert into bad_feedback_logs for Regression Test dataset
+        if rating <= 2:
+            try:
+                bad_id = insert_bad_feedback(
+                    feedback_id=feedback_id,
+                    user_id=user_id,
+                    session_id=session_id,
+                    rating=rating,
+                    roadmap_data=payload.roadmap_data,
+                    chat_history=payload.chat_history,
+                    confidence_score=confidence_score,
+                    comment=payload.comment
+                )
+                logger.info(f"📉 low rating feedback copied to bad_feedback_logs | bad_id={bad_id}")
+            except Exception as ex:
+                logger.error(f"❌ Failed to save copy to bad_feedback_logs: {ex}")
     except Exception as e:
         logger.error(f"❌ Failed to save feedback: {e}")
         raise HTTPException(

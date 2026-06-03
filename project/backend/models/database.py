@@ -138,6 +138,21 @@ def init_feedback_db():
                 updated_at       TEXT DEFAULT (datetime('now'))
             );
 
+            -- Bảng bad_feedback_logs để Regression Test / Bad feedback logs for regression tests
+            CREATE TABLE IF NOT EXISTS bad_feedback_logs (
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                feedback_id      INTEGER,
+                user_id          TEXT NOT NULL,
+                session_id       TEXT NOT NULL,
+                rating           INTEGER NOT NULL,
+                roadmap_data     TEXT,
+                chat_history     TEXT,
+                confidence_score REAL,
+                comment          TEXT,
+                created_at       TEXT DEFAULT (datetime('now')),
+                FOREIGN KEY (feedback_id) REFERENCES feedback_logs(id)
+            );
+
             -- Index tối ưu / Optimized indexes
             CREATE INDEX IF NOT EXISTS idx_feedback_user_id
                 ON feedback_logs(user_id);
@@ -445,5 +460,42 @@ def get_session(session_id: str) -> Optional[Dict[str, Any]]:
             data["conversation_history"] = json.loads(data.get("conversation_history") or "[]")
             return data
         return None
+    finally:
+        conn.close()
+
+
+def insert_bad_feedback(
+    feedback_id: int,
+    user_id: str,
+    session_id: str,
+    rating: int,
+    roadmap_data: Optional[dict] = None,
+    chat_history: Optional[list] = None,
+    confidence_score: Optional[float] = None,
+    comment: Optional[str] = None
+) -> int:
+    """
+    Lưu phản hồi đánh giá thấp (1-2 sao) vào bảng bad_feedback_logs để chạy Regression Test.
+    """
+    conn = get_feedback_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO bad_feedback_logs
+                (feedback_id, user_id, session_id, rating, roadmap_data,
+                 chat_history, confidence_score, comment)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            feedback_id,
+            user_id,
+            session_id,
+            rating,
+            json.dumps(roadmap_data) if roadmap_data else None,
+            json.dumps(chat_history) if chat_history else None,
+            confidence_score,
+            comment
+        ))
+        conn.commit()
+        return cursor.lastrowid
     finally:
         conn.close()

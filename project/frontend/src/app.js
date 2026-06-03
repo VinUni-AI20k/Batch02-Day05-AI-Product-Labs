@@ -19,7 +19,9 @@
 'use strict';
 
 /* ─── API CONFIGURATION ──────────────────────────────────────── */
-const API_BASE = window.location.origin; // Same-origin backend
+const API_BASE = (window.location.origin === 'null' || window.location.origin.startsWith('file:') || !window.location.port || window.location.port !== '8000') 
+  ? 'http://127.0.0.1:8000' 
+  : window.location.origin;
 const ENDPOINTS = {
   analyze:  `${API_BASE}/api/analyze`,
   chat:     `${API_BASE}/api/chat`,
@@ -53,10 +55,10 @@ function sanitizeInput(input) {
 const AppState = {
   // Form data
   userData: {
-    goal_why:  '',
-    goal_time: '',
-    goal_job:  '',
-    goal_bg:   '',
+    goal_why:   '',
+    goal_time:  '',
+    goal_job:   '',
+    goal_style: '',
   },
 
   // Quiz
@@ -116,123 +118,123 @@ function setState(path, value) {
 const QUIZ_QUESTIONS = [
   {
     id: 1,
-    text: 'Đạo hàm của hàm số f(x) = x² là gì?',
+    text: 'Trong Python, cấu trúc dữ liệu nào sau đây không cho phép thay đổi giá trị (Immutable) sau khi khởi tạo?',
     options: [
-      { label: 'A', text: '2x' },
-      { label: 'B', text: 'x²' },
-      { label: 'C', text: '2' },
-      { label: 'D', text: 'x' },
+      { label: 'A', text: 'List' },
+      { label: 'B', text: 'Dictionary' },
+      { label: 'C', text: 'Tuple' },
+      { label: 'D', text: 'Set' },
     ],
-    correct: 0, // index 0 = A
-    explanation: 'Đạo hàm của xⁿ = n·xⁿ⁻¹. Với n=2: d/dx(x²) = 2x.',
+    correct: 2, // C = Tuple
+    explanation: 'Tuple trong Python là cấu trúc dữ liệu không thể thay đổi giá trị (Immutable). Sau khi khởi tạo, bạn không thể thêm, sửa, hoặc xóa các phần tử trong tuple.',
   },
   {
     id: 2,
-    text: 'Trong xác suất, P(A|B) có nghĩa là gì?',
+    text: 'Kết quả của đoạn code sau là gì? print([x**2 for x in range(3)])',
     options: [
-      { label: 'A', text: 'Xác suất A xảy ra khi B đã xảy ra (xác suất có điều kiện)' },
-      { label: 'B', text: 'Xác suất A và B cùng xảy ra' },
-      { label: 'C', text: 'Xác suất A hoặc B xảy ra' },
-      { label: 'D', text: 'Xác suất A không xảy ra khi B xảy ra' },
+      { label: 'A', text: '[1, 4, 9]' },
+      { label: 'B', text: '[0, 1, 4]' },
+      { label: 'C', text: '[0, 1, 2]' },
+      { label: 'D', text: 'Lỗi cú pháp' },
     ],
-    correct: 0,
-    explanation: 'P(A|B) là xác suất có điều kiện: xác suất A xảy ra biết rằng B đã xảy ra.',
+    correct: 1, // B = [0, 1, 4]
+    explanation: 'range(3) sinh ra dãy số [0, 1, 2]. List comprehension bình phương từng số: 0²=0, 1²=1, 2²=4. Kết quả là [0, 1, 4].',
   },
   {
     id: 3,
-    text: 'Ma trận kích thước 2×3 nhân với ma trận 3×4 cho kết quả có kích thước là gì?',
+    text: 'Khi viết một hàm xử lý ngoại lệ trong Python để tránh chương trình bị crash giữa chừng, cặp từ khóa nào bắt buộc phải sử dụng?',
     options: [
-      { label: 'A', text: '2×4' },
-      { label: 'B', text: '3×3' },
-      { label: 'C', text: '2×3' },
-      { label: 'D', text: '3×4' },
+      { label: 'A', text: 'if / else' },
+      { label: 'B', text: 'try / except' },
+      { label: 'C', text: 'for / while' },
+      { label: 'D', text: 'def / return' },
     ],
-    correct: 0,
-    explanation: 'Phép nhân ma trận (m×k) · (k×n) = (m×n). Ở đây (2×3) · (3×4) = (2×4).',
+    correct: 1, // B = try / except
+    explanation: 'Cấu trúc try/except dùng để bắt và xử lý các ngoại lệ (exceptions) giúp chương trình tiếp tục chạy khi gặp lỗi.',
   },
   {
     id: 4,
-    text: 'Thuật toán nào dưới đây là thuật toán Supervised Learning (học có giám sát)?',
+    text: 'Thư viện Python nào sau đây được sử dụng phổ biến nhất để thao tác với dữ liệu bảng (Tabular Data/DataFrame)?',
     options: [
-      { label: 'A', text: 'K-Means Clustering' },
-      { label: 'B', text: 'Linear Regression' },
-      { label: 'C', text: 'Principal Component Analysis (PCA)' },
-      { label: 'D', text: 'DBSCAN' },
+      { label: 'A', text: 'Requests' },
+      { label: 'B', text: 'Matplotlib' },
+      { label: 'C', text: 'Pandas' },
+      { label: 'D', text: 'Os' },
     ],
-    correct: 1, // B = index 1
-    explanation: 'Linear Regression là supervised learning vì cần nhãn (label) để huấn luyện. K-Means, PCA, DBSCAN đều là unsupervised.',
+    correct: 2, // C = Pandas
+    explanation: 'Pandas là thư viện hàng đầu của Python dùng để thao tác, phân tích và xử lý cấu trúc dữ liệu dạng bảng (DataFrame).',
   },
   {
     id: 5,
-    text: 'Overfitting trong Machine Learning có nghĩa là gì?',
+    text: 'Giá trị trung bình (Mean) của tập dữ liệu [2, 4, 4, 4, 6] là bao nhiêu?',
     options: [
-      { label: 'A', text: 'Model học quá kỹ training data, không tổng quát được cho dữ liệu mới' },
-      { label: 'B', text: 'Model không học đủ từ dữ liệu huấn luyện' },
-      { label: 'C', text: 'Model có quá nhiều tham số nhưng vẫn hoạt động tốt' },
-      { label: 'D', text: 'Model hội tụ quá nhanh trong quá trình training' },
+      { label: 'A', text: '4' },
+      { label: 'B', text: '3' },
+      { label: 'C', text: '5' },
+      { label: 'D', text: '6' },
     ],
-    correct: 0,
-    explanation: 'Overfitting: model "ghi nhớ" training data, dẫn đến validation/test loss cao hơn training loss đáng kể.',
+    correct: 0, // A = 4
+    explanation: 'Mean = (2 + 4 + 4 + 4 + 6) / 5 = 20 / 5 = 4.',
   },
   {
     id: 6,
-    text: 'Thuật toán Gradient Descent được dùng để làm gì trong Machine Learning?',
+    text: 'Trong đại số tuyến tính, một ma trận có kích thước 3×2 nhân với một ma trận kích thước 2×4 sẽ tạo ra một ma trận mới có kích thước bao nhiêu?',
     options: [
-      { label: 'A', text: 'Tăng giá trị của hàm mất mát (loss function)' },
-      { label: 'B', text: 'Tối thiểu hóa hàm mất mát bằng cách cập nhật tham số theo hướng ngược chiều gradient' },
-      { label: 'C', text: 'Tạo dữ liệu giả để augment tập training' },
-      { label: 'D', text: 'Phân tích độ phức tạp tính toán của model' },
+      { label: 'A', text: '2×2' },
+      { label: 'B', text: '3×4' },
+      { label: 'C', text: '2×4' },
+      { label: 'D', text: 'Không thể nhân được' },
     ],
-    correct: 1,
-    explanation: 'Gradient Descent cập nhật θ = θ - α·∇L(θ), trong đó α là learning rate và ∇L là gradient của loss.',
+    correct: 1, // B = 3x4
+    explanation: 'Phép nhân ma trận kích thước (m×n) và (n×p) sẽ cho kết quả có kích thước (m×p). Ở đây (3×2) và (2×4) cho kết quả (3×4).',
   },
   {
     id: 7,
-    text: 'Trong Python, thư viện nào được sử dụng phổ biến nhất cho Machine Learning?',
+    text: 'Nếu xác suất để một email là spam là 20%, và bộ lọc AI nhận diện chính xác 90% số email spam đó, xác suất một email vừa là spam vừa bị lọc trúng là bao nhiêu?',
     options: [
-      { label: 'A', text: 'Flask' },
-      { label: 'B', text: 'Django' },
-      { label: 'C', text: 'scikit-learn' },
-      { label: 'D', text: 'FastAPI' },
+      { label: 'A', text: '11%' },
+      { label: 'B', text: '18%' },
+      { label: 'C', text: '70%' },
+      { label: 'D', text: '2%' },
     ],
-    correct: 2, // C = index 2
-    explanation: 'scikit-learn (sklearn) là thư viện ML chuẩn mực cho Python, bao gồm hàng chục thuật toán sẵn dùng.',
+    correct: 1, // B = 18%
+    explanation: 'Xác suất giao nhau P(Spam ∩ Lọc) = P(Spam) × P(Lọc|Spam) = 20% × 90% = 18%.',
   },
   {
     id: 8,
-    text: 'Neural Network có nhiều hidden layers (lớp ẩn) được gọi là gì?',
+    text: 'Trong các mô hình ngôn ngữ lớn (LLM) như GPT-4, cơ chế kiến trúc cốt lõi nào giúp mô hình hiểu được mối liên hệ giữa các từ trong câu cách xa nhau?',
     options: [
-      { label: 'A', text: 'Shallow Neural Network' },
-      { label: 'B', text: 'Deep Neural Network' },
-      { label: 'C', text: 'Wide Neural Network' },
-      { label: 'D', text: 'Dense Neural Network' },
+      { label: 'A', text: 'RNN (Recurrent Neural Network)' },
+      { label: 'B', text: 'CNN (Convolutional Neural Network)' },
+      { label: 'C', text: 'Attention / Transformer' },
+      { label: 'D', text: 'K-Means Clustering' },
     ],
-    correct: 1,
-    explanation: '"Deep" trong Deep Learning ám chỉ nhiều lớp ẩn (hidden layers). Deep Neural Network ≥ 2 hidden layers.',
+    correct: 2, // C = Attention / Transformer
+    explanation: 'Cơ chế Attention trong kiến trúc Transformer giúp các LLM theo dõi mối liên hệ giữa tất cả các từ trong ngữ cảnh mà không bị giới hạn khoảng cách.',
   },
   {
     id: 9,
-    text: 'Cross-entropy loss (binary/categorical) thường được sử dụng cho loại bài toán nào?',
+    text: 'Hiện tượng một mô hình ngôn ngữ lớn (LLM) tự tin sinh ra thông tin sai lệch, không có trong dữ liệu huấn luyện hoặc thực tế được gọi là gì?',
     options: [
-      { label: 'A', text: 'Regression (dự đoán giá trị liên tục)' },
-      { label: 'B', text: 'Classification (phân loại)' },
-      { label: 'C', text: 'Clustering (phân cụm)' },
-      { label: 'D', text: 'Dimensionality Reduction (giảm chiều dữ liệu)' },
+      { label: 'A', text: 'Overfitting' },
+      { label: 'B', text: 'Hallucination (Ảo giác)' },
+      { label: 'C', text: 'Underfitting' },
+      { label: 'D', text: 'Tokenization' },
     ],
-    correct: 1,
-    explanation: 'Cross-entropy đo độ khác biệt giữa phân phối xác suất dự đoán và nhãn thực — lý tưởng cho bài toán phân loại.',
+    correct: 1, // B = Hallucination
+    explanation: 'Hallucination (Ảo giác) là hiện tượng mô hình sinh ra câu từ trôi chảy, tự tin nhưng thông tin hoàn toàn sai lệch hoặc không có thực.',
   },
   {
     id: 10,
-    text: 'Transfer Learning (học chuyển giao) có nghĩa là gì?',
+    text: 'Kỹ thuật nào giúp điều chỉnh hoặc hướng dẫn hành vi của một mô hình ngôn ngữ lớn (LLM) mà không cần cập nhật lại trọng số (weights) của mô hình?',
     options: [
-      { label: 'A', text: 'Chuyển dữ liệu từ máy tính này sang máy tính khác để huấn luyện' },
-      { label: 'B', text: 'Sử dụng lại model đã được huấn luyện sẵn (pre-trained) cho một bài toán mới, thường bằng fine-tuning' },
-      { label: 'C', text: 'Chuyển kiến thức từ một lập trình viên sang người khác' },
-      { label: 'D', text: 'Huấn luyện model từ đầu với dữ liệu của bài toán đích' },
+      { label: 'A', text: 'Fine-tuning' },
+      { label: 'B', text: 'Prompt Engineering (Kỹ thuật đặt câu lệnh)' },
+      { label: 'C', text: 'Pre-training' },
+      { label: 'D', text: 'Backpropagation' },
     ],
-    correct: 1,
-    explanation: 'Transfer Learning: tận dụng weights từ model đã train (VD: ResNet, BERT) và fine-tune cho task mới, tiết kiệm data và compute.',
+    correct: 1, // B = Prompt Engineering
+    explanation: 'Prompt Engineering là việc thiết kế các chỉ dẫn đầu vào tối ưu để kiểm soát đầu ra của LLM mà không cần huấn luyện lại hay cập nhật tham số.',
   },
 ];
 
@@ -522,7 +524,7 @@ const StepForm = {
     });
 
     // Also mark selects as has-value for floating label
-    ['goal-why', 'goal-time', 'goal-bg'].forEach(id => {
+    ['goal-why', 'goal-time', 'goal-style', 'goal-job'].forEach(id => {
       const el = $(id);
       if (!el) return;
       el.addEventListener('change', () => {
@@ -533,15 +535,26 @@ const StepForm = {
 
   _validateStep1() {
     let valid = true;
-    const why  = $('goal-why').value;
-    const time = $('goal-time').value;
-    const bg   = $('goal-bg').value;
+    const why   = $('goal-why').value;
+    const time  = $('goal-time').value;
+    const style = $('goal-style').value;
+    const job   = $('goal-job').value;
 
-    $('err-why').textContent  = why  ? '' : 'Vui lòng chọn lý do học AI.';
-    $('err-time').textContent = time ? '' : 'Vui lòng chọn thời gian học.';
-    $('err-bg').textContent   = bg   ? '' : 'Vui lòng chọn trình độ lập trình.';
+    $('err-why').textContent   = why   ? '' : 'Vui lòng chọn mục đích học AI.';
+    $('err-time').textContent  = time  ? '' : 'Vui lòng điền số tiếng học mỗi tuần.';
+    $('err-style').textContent = style ? '' : 'Vui lòng chọn hình thức học ưa thích.';
+    $('err-job').textContent   = job   ? '' : 'Vui lòng nhập công việc hiện tại.';
 
-    if (!why || !time || !bg) valid = false;
+    // Kiểm tra số tiếng 1-40
+    if (time) {
+      const hours = parseInt(time, 10);
+      if (isNaN(hours) || hours < 1 || hours > 40) {
+        $('err-time').textContent = 'Thời gian học phải từ 1 đến 40 tiếng/tuần.';
+        valid = false;
+      }
+    }
+
+    if (!why || !time || !style || !job) valid = false;
     return valid;
   },
 
@@ -549,10 +562,10 @@ const StepForm = {
     if (!this._validateStep1()) return;
 
     // Save to state
-    AppState.userData.goal_why  = sanitizeInput($('goal-why').value);
-    AppState.userData.goal_time = sanitizeInput($('goal-time').value);
-    AppState.userData.goal_job  = sanitizeInput($('goal-job').value);
-    AppState.userData.goal_bg   = sanitizeInput($('goal-bg').value);
+    AppState.userData.goal_why   = sanitizeInput($('goal-why').value);
+    AppState.userData.goal_time  = sanitizeInput($('goal-time').value);
+    AppState.userData.goal_style = sanitizeInput($('goal-style').value);
+    AppState.userData.goal_job   = sanitizeInput($('goal-job').value);
 
     this.goToStep(2);
   },
@@ -863,13 +876,83 @@ const ResultsUI = {
 
   async _callAnalyzeAPI() {
     const payload = {
-      user_data: AppState.userData,
-      quiz_answers: AppState.quiz.answers,
-      quiz_score:   AppState.results.score,
-      confidence:   AppState.results.confidence,
-      level:        AppState.results.level,
-      time_taken_s: AppState.quiz.endTime
-        ? Math.round((AppState.quiz.endTime - AppState.quiz.startTime) / 1000) : 0,
+      user_id:          AppState.ui.userId || 'guest_user',
+      session_id:       AppState.results.sessionId || 'session_' + Date.now(),
+      goal_description: `Mục đích học AI: ${AppState.userData.goal_why}. Hình thức học ưa thích: ${AppState.userData.goal_style}.`,
+      quiz_answers:     AppState.quiz.answers,
+      time_per_week:    `${AppState.userData.goal_time} tiếng/tuần`,
+      current_job:      AppState.userData.goal_job || 'none',
+      background:       AppState.userData.goal_style || 'none',
+      quiz_score:       AppState.results.score,
+    };
+
+    // Helper to convert backend milestones to frontend phases
+    const convertMilestonesToPhases = (milestones) => {
+      if (!milestones || milestones.length === 0) return [];
+      
+      let phases = [];
+      const beginnerMs = milestones.filter(m => m.difficulty === 'beginner');
+      const intermediateMs = milestones.filter(m => m.difficulty === 'intermediate');
+      const advancedMs = milestones.filter(m => m.difficulty === 'advanced');
+      
+      let phaseNum = 1;
+      if (beginnerMs.length > 0) {
+        phases.push({
+          id: 'phase-beginner',
+          number: phaseNum++,
+          title: 'Giai đoạn khởi đầu (Beginner)',
+          duration: '2-4 tuần',
+          milestones: beginnerMs.map((m, idx) => ({
+            id: `m-beg-${idx}`,
+            icon: m.milestone_title.match(/[\p{Emoji_Presentation}\p{Emoji}\u2700-\u27BF]/u)?.[0] || '🌱',
+            status: idx === 0 ? 'active' : 'locked',
+            title: m.milestone_title.replace(/[\p{Emoji_Presentation}\p{Emoji}\u2700-\u27BF]/gu, '').trim() || m.milestone_title,
+            desc: m.description,
+            tags: ['Cơ bản', m.difficulty],
+            time: m.duration,
+            links: m.resource_links || []
+          }))
+        });
+      }
+      
+      if (intermediateMs.length > 0) {
+        phases.push({
+          id: 'phase-intermediate',
+          number: phaseNum++,
+          title: 'Giai đoạn phát triển (Intermediate)',
+          duration: '3-5 tuần',
+          milestones: intermediateMs.map((m, idx) => ({
+            id: `m-int-${idx}`,
+            icon: m.milestone_title.match(/[\p{Emoji_Presentation}\p{Emoji}\u2700-\u27BF]/u)?.[0] || '⚡',
+            status: 'locked',
+            title: m.milestone_title.replace(/[\p{Emoji_Presentation}\p{Emoji}\u2700-\u27BF]/gu, '').trim() || m.milestone_title,
+            desc: m.description,
+            tags: ['Trung cấp', m.difficulty],
+            time: m.duration,
+            links: m.resource_links || []
+          }))
+        });
+      }
+      
+      if (advancedMs.length > 0) {
+        phases.push({
+          id: 'phase-advanced',
+          number: phaseNum++,
+          title: 'Giai đoạn nâng cao (Advanced)',
+          duration: '4-8 tuần',
+          milestones: advancedMs.map((m, idx) => ({
+            id: `m-adv-${idx}`,
+            icon: m.milestone_title.match(/[\p{Emoji_Presentation}\p{Emoji}\u2700-\u27BF]/u)?.[0] || '🚀',
+            status: 'locked',
+            title: m.milestone_title.replace(/[\p{Emoji_Presentation}\p{Emoji}\u2700-\u27BF]/gu, '').trim() || m.milestone_title,
+            desc: m.description,
+            tags: ['Nâng cao', m.difficulty],
+            time: m.duration,
+            links: m.resource_links || []
+          }))
+        });
+      }
+      return phases;
     };
 
     try {
@@ -883,48 +966,79 @@ const ResultsUI = {
 
       const data = await response.json();
 
-      // Update state with API response
-      AppState.results.roadmap    = data.roadmap || DEFAULT_ROADMAP;
-      AppState.results.sessionId  = data.session_id || null;
-      AppState.results.isFallback = data.is_fallback || AppState.results.isFallback;
-
-      // Update cost
-      if (data.usage) {
-        CostDisplay.update(data.usage.total_tokens || 0, data.usage.cost_usd || 0);
-      }
-
-      // Update confidence from API if provided
-      if (typeof data.confidence === 'number') {
-        AppState.results.confidence = data.confidence;
+      // Extract confidence
+      if (typeof data.confidence_score === 'number') {
+        AppState.results.confidence = Math.round(data.confidence_score * 100);
         this._animateConfidence();
       }
 
-      // Render roadmap
-      Roadmap.render(AppState.results.roadmap);
-
-      // Show fallback alert if API confirms it
-      if (data.is_fallback) {
-        $('fallback-alert').classList.remove('hidden');
-      } else {
-        $('fallback-alert').classList.add('hidden');
+      // Update cost info
+      if (data.cost_info) {
+        const totalTokens = (data.cost_info.input_tokens || 0) + (data.cost_info.output_tokens || 0);
+        const costUsd = data.cost_info.calculated_cost || 0.0;
+        CostDisplay.update(totalTokens, costUsd);
       }
 
-      Toast.success('Lộ trình đã sẵn sàng!', 'AI đã phân tích xong và tạo lộ trình phù hợp cho bạn.');
+      // Handle paths based on path_type
+      const pathType = data.path_type || 'happy';
+      
+      if (pathType === 'happy') {
+        // Happy Path: full personalized roadmap
+        const phases = convertMilestonesToPhases(data.milestones || []);
+        AppState.results.roadmap = {
+          title: 'Lộ trình học AI cá nhân hóa',
+          subtitle: data.personalization_notes || 'Được thiết kế riêng cho mục tiêu của bạn.',
+          phases: phases
+        };
+        AppState.results.isFallback = false;
+        AppState.results.isFailure = false;
+        
+        $('fallback-alert').classList.add('hidden');
+        $('failure-alert').classList.add('hidden');
+        
+        // Render
+        Roadmap.render(AppState.results.roadmap);
+        Toast.success('Lộ trình đã sẵn sàng!', 'AI đã phân tích xong và tạo lộ trình phù hợp cho bạn.');
+        
+      } else if (pathType === 'low_conf') {
+        // Low Confidence: lock custom edits, load baseline roadmap
+        AppState.results.isFallback = true;
+        AppState.results.isFailure = false;
+        AppState.results.roadmap = DEFAULT_ROADMAP;
+        
+        $('fallback-alert').classList.remove('hidden');
+        $('failure-alert').classList.add('hidden');
+        
+        // Render baseline VinUni roadmap
+        Roadmap.render(DEFAULT_ROADMAP);
+        
+        // Proactive Chatbot suggestion
+        setTimeout(() => {
+          ChatUI._appendMessage('ai', 'Mình nhận thấy nền tảng Toán của bạn cần được củng cố thêm trước khi học Deep Learning, bạn có muốn mình bổ sung 1 tuần học bổ trợ Toán không?');
+        }, 1500);
+        
+        Toast.warning('Lộ trình cơ bản kích hoạt', 'Độ tự tin AI trung bình. Lộ trình nền tảng đã được tải.');
+        
+      } else {
+        // Failure path / Fallback if score < 50%
+        throw new Error('AI Confidence too low or Failure mode triggered');
+      }
 
     } catch (err) {
-      console.warn('[Analyze API] Error (using fallback):', err.message);
+      console.warn('[Analyze API] Error / Failure Path triggered:', err.message);
 
       // Failure mode — use default roadmap
       AppState.results.isFailure = true;
       AppState.results.roadmap   = DEFAULT_ROADMAP;
       AppState.results.isFallback = true;
 
+      // Show friendly warning alerts
       $('failure-alert').classList.remove('hidden');
       $('fallback-alert').classList.remove('hidden');
 
       Roadmap.render(DEFAULT_ROADMAP);
 
-      Toast.warning('Dùng lộ trình mặc định', 'Không kết nối được API. Đang hiển thị lộ trình cơ bản.');
+      Toast.warning('Dùng lộ trình mặc định', 'Hệ thống đang bận tối ưu cấu trúc, vui lòng đợi trong giây lát.');
     }
   },
 };
@@ -1011,12 +1125,32 @@ const Roadmap = {
     el.dataset.id = ms.id;
     el.style.animationDelay = `${msIdx * 0.08}s`;
 
+    const linksHtml = (ms.links && ms.links.length > 0) ? `
+      <div class="milestone-links">
+        ${ms.links.map(link => {
+          let label = 'Tài liệu học';
+          if (link.includes('coursera.org')) label = 'Coursera';
+          else if (link.includes('kaggle.com')) label = 'Kaggle';
+          else if (link.includes('elementsofai.com')) label = 'Elements of AI';
+          else if (link.includes('promptingguide.ai')) label = 'Prompting Guide';
+          else if (link.includes('deeplearning.ai')) label = 'DeepLearning.AI';
+          else if (link.includes('youtube.com') || link.includes('youtu.be')) label = 'Video';
+          
+          return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="milestone-link-btn" title="${link}">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            ${label}
+          </a>`;
+        }).join('')}
+      </div>
+    ` : '';
+
     el.innerHTML = `
       <div class="milestone-node"></div>
       <div class="milestone-icon">${ms.icon || '📌'}</div>
       <div class="milestone-body">
         <div class="milestone-title">${ms.title || 'Milestone'}</div>
         <div class="milestone-desc">${ms.desc || ''}</div>
+        ${linksHtml}
         <div class="milestone-meta">
           ${(ms.tags || []).map(tag => `<span class="milestone-tag">${tag}</span>`).join('')}
           ${ms.time ? `<span class="milestone-time">⏱ ${ms.time}</span>` : ''}
@@ -1036,7 +1170,8 @@ const Roadmap = {
       });
 
       // Click on card to expand / mark active
-      el.addEventListener('click', () => {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
         if (!el.classList.contains('locked')) {
           el.classList.toggle('active');
         }
@@ -1495,14 +1630,21 @@ const FeedbackModal = {
       return;
     }
 
+    // Map chat history to backend role naming: 'user' / 'assistant'
+    const chatHistoryMapped = (AppState.chat.history || []).map(msg => ({
+      role: msg.role === 'ai' ? 'assistant' : 'user',
+      content: msg.content
+    }));
+
     const payload = {
-      session_id:  AppState.results.sessionId,
-      rating,
-      comment,
-      quiz_score:  AppState.results.score,
-      confidence:  AppState.results.confidence,
-      user_data:   AppState.userData,
-      roadmap_title: AppState.results.roadmap?.title || 'Default',
+      user_id:          AppState.ui.userId || 'guest_user',
+      session_id:       AppState.results.sessionId || 'session_' + Date.now(),
+      rating:           rating,
+      comment:          comment || '',
+      roadmap_data:     AppState.results.roadmap,
+      chat_history:     chatHistoryMapped,
+      confidence_score: (AppState.results.confidence || 0) / 100.0,
+      report:           rating <= 2,
     };
 
     try {

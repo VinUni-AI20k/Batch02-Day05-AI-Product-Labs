@@ -92,16 +92,5 @@ API docs sẽ khả dụng tại địa chỉ: [http://127.0.0.1:8000/docs](http
 ### 4. Chạy Frontend
 Bạn chỉ cần mở trực tiếp file `project/frontend/index.html` bằng trình duyệt web của mình hoặc sử dụng tiện ích Live Server trong VS Code để chạy.
 
----
 
-## 👥 Bảng Phân Chia Nhiệm Vụ Thành Viên (Owner Plan - Team 6 Thành Viên)
-
-| Thành Viên | Vai Trò | Đầu Ra Cụ Thể (Deliverables) |
-| --- | --- | --- |
-| **VanSangNguyen21** (sangthon2003@gmail.com) | **Product Manager / Team Lead** | Chịu trách nhiệm quản lý Spec, định nghĩa Pain & Opportunity và tổng hợp tài liệu tại `/02-group-spec/thin-spec.md` và `/02-group-spec/evidence-pack.md`. |
-| **phammaianh11102005@gmail.com** | **Prompt & AI Engineer** | Thiết kế, kiểm thử System Prompt `/prompts/system_prompt.txt` cùng bộ luật bảo vệ chống prompt injection và jailbreak `/prompts/guardrail_rules.json`. |
-| **Shiner-2** | **Backend Core Developer** | Viết API phân tích hồ sơ (`/backend/app/api/analyze.py`), chat hội thoại (`/backend/app/api/chat.py`) và tích hợp định tuyến `/backend/app/main.py`. |
-| **letho1608** | **Backend Data & Operations** | Phát triển SQLite databases `/backend/models/database.py`, Middleware tính toán chi phí `/backend/middleware/cost_logger.py`, rate limits, và API feedback `/backend/app/api/feedback.py`. |
-| **DoTrungDuc1908** | **Frontend UI/UX Developer** | Phát triển giao diện web HTML/CSS/JS chia Tab, form khảo sát thông tin, quiz trắc nghiệm và kết xuất cây lộ trình học trực quan dưới `/frontend/`. |
-| **nguyetbinh** | **QA/Test & Pitching Engineer** | Xây dựng bộ testcase `/evals/test_dataset.json`, báo cáo đánh giá `/evals/evaluation_report.md`, viết kịch bản demo `/docs/demo_script.md` và tài liệu kiến trúc `/docs/architecture.md`. |
 

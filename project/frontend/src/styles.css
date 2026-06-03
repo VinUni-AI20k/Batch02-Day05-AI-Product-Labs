@@ -1847,6 +1847,35 @@ img { max-width: 100%; display: block; }
 .badge-yellow { background: hsla(43,96%,56%,0.15);  color: var(--color-warning); border: 1px solid hsla(43,96%,56%,0.3); }
 .badge-red    { background: hsla(0,84%,60%,0.15);   color: var(--color-error);   border: 1px solid hsla(0,84%,60%,0.3);  }
 
+/* Milestone Resource Links Styling */
+.milestone-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  width: 100%;
+}
+.milestone-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1-5);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: var(--t-base);
+  pointer-events: auto; /* ensure click works inside milestone card */
+}
+.milestone-link-btn:hover {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: var(--accent-violet);
+  color: var(--text-light);
+  transform: translateY(-1px);
+}
+
 /* ─── MEDIA QUERIES (Mobile Responsive) ─────────────────────── */
 @media (max-width: 768px) {
   :root { --sp-8: 1.5rem; --sp-12: 2rem; }

@@ -41,7 +41,7 @@ PRICE_TABLE = {
 # Ngưỡng chi phí tối đa mỗi ngày ($1 USD)
 MAX_DAILY_COST_USD = float(os.getenv("MAX_DAILY_COST_USD", "1.0"))
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "cost_logs.db")
+DB_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "cost_logs.db")
 
 
 def get_db_connection():
@@ -143,10 +143,12 @@ def log_cost(
     model_name: str = "gpt-4o-mini",
     session_id: Optional[str] = None,
     confidence_score: Optional[float] = None,
-    endpoint: Optional[str] = None
+    endpoint: Optional[str] = None,
+    quiz_score: str = "0/10",
+    intent_detected: str = "none"
 ) -> dict:
     """
-    Ghi log chi phí API call vào database.
+    Ghi log chi phí API call vào database và file JSON.
     
     Args:
         user_id:          ID người dùng
@@ -156,6 +158,8 @@ def log_cost(
         session_id:       ID phiên làm việc
         confidence_score: Điểm tự tin của AI (0-1)
         endpoint:         Endpoint API được gọi
+        quiz_score:       Điểm quiz của học viên
+        intent_detected:  Mục tiêu học / Intent của học viên
     
     Returns:
         dict với thông tin cost và rate_limited flag
@@ -193,7 +197,39 @@ def log_cost(
         
         logger.info(f"💰 Cost logged | user={user_id} | tokens={input_tokens}+{output_tokens} | cost=${cost:.6f} | daily=${daily_cost:.4f}")
     except Exception as e:
-        logger.error(f"❌ Lỗi khi ghi cost log: {e}")
+        logger.error(f"❌ Lỗi khi ghi cost log vào SQLite: {e}")
+
+    # Ghi log JSON cấu trúc vào file cost_logs.jsonl
+    import json
+    import uuid
+    log_id = f"log_req_{datetime.utcnow().strftime('%Y%m%d')}_{uuid.uuid4().hex[:6]}"
+    
+    json_log = {
+        "log_id": log_id,
+        "user_id": user_id,
+        "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "session_metrics": {
+            "quiz_score": quiz_score,
+            "intent_detected": intent_detected
+        },
+        "llm_usage": {
+            "model_name": model_name,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "confidence_score": confidence_score if confidence_score is not None else 0.0,
+            "calculated_cost_usd": cost
+        }
+    }
+    
+    try:
+        log_dir = os.path.dirname(DB_PATH)
+        os.makedirs(log_dir, exist_ok=True)
+        jsonl_path = os.path.join(log_dir, "cost_logs.jsonl")
+        with open(jsonl_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(json_log, ensure_ascii=False) + "\n")
+        logger.info(f"📝 JSON Cost log saved to file: {jsonl_path}")
+    except Exception as e:
+        logger.error(f"❌ Lỗi khi ghi cost log vào file JSONL: {e}")
     
     return {
         "input_tokens": input_tokens,

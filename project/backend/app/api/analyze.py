@@ -15,6 +15,7 @@ from typing import List, Optional
 import httpx
 
 from middleware.cost_logger import log_cost
+from middleware.data_masking import mask_sensitive_data
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -31,6 +32,21 @@ def load_system_prompt() -> str:
     except FileNotFoundError:
         logger.warning("⚠️ System prompt file không tìm thấy, dùng prompt mặc định")
         return "You are an AI learning path advisor. Return JSON with milestones."
+
+
+def save_to_sandbox_storage(data: dict):
+    """
+    Đẩy dữ liệu của các phiên có độ tự tin AI thấp (< 50%) vào Kho dữ liệu Hộp cát (Sandbox Storage).
+    """
+    try:
+        sandbox_dir = os.path.join(os.path.dirname(SYSTEM_PROMPT_PATH), "..", "backend", "data")
+        os.makedirs(sandbox_dir, exist_ok=True)
+        sandbox_file = os.path.join(sandbox_dir, "sandbox_storage.jsonl")
+        with open(sandbox_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(data, ensure_ascii=False) + "\n")
+        logger.info(f"📥 Saved low confidence case to Sandbox Storage: {sandbox_file}")
+    except Exception as e:
+        logger.error(f"❌ Failed to save to Sandbox Storage: {e}")
 
 
 # ==================== REQUEST/RESPONSE MODELS ====================
@@ -81,6 +97,12 @@ async def analyze_profile(req: AnalyzeRequest):
     7. Return kết quả
     """
     
+    # Mask PII data
+    req.goal_description = mask_sensitive_data(req.goal_description)
+    req.current_job = mask_sensitive_data(req.current_job)
+    if req.background:
+        req.background = mask_sensitive_data(req.background)
+        
     logger.info(f"📊 Analyze request | user={req.user_id} | job={req.current_job} | score={req.quiz_score}/10")
     
     # Build user context prompt
@@ -88,9 +110,16 @@ async def analyze_profile(req: AnalyzeRequest):
     if req.quiz_answers:
         correct_topics = []
         quiz_topics = [
-            "Toán học", "Xác suất", "Đại số tuyến tính", "ML cơ bản",
-            "Overfitting", "Gradient Descent", "Python", "Deep Learning",
-            "Loss Function", "Transfer Learning"
+            "Python (Cấu trúc dữ liệu & Immutability)",
+            "Python (List comprehension)",
+            "Python (Xử lý ngoại lệ try/except)",
+            "Lập trình Pandas (Tabular Data)",
+            "Thống kê (Mean)",
+            "Đại số tuyến tính (Nhân ma trận)",
+            "Xác suất có điều kiện (Bayes)",
+            "Kiến trúc LLM (Attention/Transformer)",
+            "Lý thuyết LLM (Hallucination)",
+            "Prompt Engineering"
         ]
         for i, ans in enumerate(req.quiz_answers):
             if ans is not None and i < len(quiz_topics):
@@ -118,44 +147,47 @@ Trả về JSON theo đúng schema đã định nghĩa. KHÔNG thêm text ngoài
     input_tokens = 0
     output_tokens = 0
     
-    if "gpt" in model_lower:
+    if "gpt" in model_lower or "deepseek" in model_lower or "nvidia" in model_lower or "nemotron" in model_lower or "llama" in model_lower:
         api_key = os.getenv("OPENAI_API_KEY")
+        base_url = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
+        if "nvidia" in model_lower or "nemotron" in model_lower or "nvidia" in base_url.lower():
+            api_key = "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"
         if api_key:
             try:
-                async with httpx.AsyncClient(timeout=30.0) as client:
-                    response = await client.post(
-                        "https://api.openai.com/v1/chat/completions",
-                        headers={"Authorization": f"Bearer {api_key}"},
-                        json={
-                            "model": model,
-                            "messages": [
-                                {"role": "system", "content": load_system_prompt()},
-                                {"role": "user", "content": user_prompt}
-                            ],
-                            "temperature": 0.2,          # Cố định để đảm bảo nhất quán
-                            "response_format": {"type": "json_object"},  # JSON mode
-                            "max_tokens": 2000
-                        }
-                    )
-                    response.raise_for_status()
-                    data = response.json()
-                    
-                    raw_content = data["choices"][0]["message"]["content"]
-                    roadmap_data = json.loads(raw_content)
-                    
-                    # Lấy token usage
-                    usage = data.get("usage", {})
-                    input_tokens = usage.get("prompt_tokens", 0)
-                    output_tokens = usage.get("completion_tokens", 0)
-                    
+                from openai import AsyncOpenAI
+                openai_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+                
+                kwargs = {
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": load_system_prompt()},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    "temperature": 0.1,          # Cố định để đảm bảo nhất quán
+                    "max_tokens": 2000
+                }
+                
+                # Check for deepseek/thinking parameters vs standard JSON response format
+                if "deepseek" in model_lower:
+                    kwargs["extra_body"] = {"chat_template_kwargs": {"thinking": True, "reasoning_effort": "high"}}
+                else:
+                    kwargs["response_format"] = {"type": "json_object"}
+                
+                logger.info(f"🤖 Calling OpenAI compatible API at {base_url} with model {model}")
+                response = await openai_client.chat.completions.create(**kwargs)
+                raw_content = response.choices[0].message.content
+                roadmap_data = json.loads(raw_content)
+                
+                # Get token usage
+                if response.usage:
+                    input_tokens = response.usage.prompt_tokens or 0
+                    output_tokens = response.usage.completion_tokens or 0
+                
             except json.JSONDecodeError as e:
-                logger.error(f"❌ JSON parse error: {e}")
-                roadmap_data = None
-            except httpx.HTTPStatusError as e:
-                logger.error(f"❌ OpenAI API error: {e.response.status_code}")
+                logger.error(f"❌ JSON parse error: {e}. Raw content: {raw_content if 'raw_content' in locals() else 'None'}")
                 roadmap_data = None
             except Exception as e:
-                logger.error(f"❌ Unexpected error calling OpenAI: {e}")
+                logger.error(f"❌ Unexpected error calling OpenAI compatible API: {e}")
                 roadmap_data = None
                 
     elif "gemini" in model_lower:
@@ -170,7 +202,7 @@ Trả về JSON theo đúng schema đã định nghĩa. KHÔNG thêm text ngoài
                     model_name=model,
                     system_instruction=load_system_prompt(),
                     generation_config=genai.GenerationConfig(
-                        temperature=0.2,
+                        temperature=0.1,
                         response_mime_type="application/json",
                         max_output_tokens=2048,
                     )
@@ -203,21 +235,46 @@ Trả về JSON theo đúng schema đã định nghĩa. KHÔNG thêm text ngoài
         output_tokens = 0
     
     # Ghi log chi phí
+    confidence_score = float(roadmap_data.get("confidence_score", 0.5))
     cost_info = log_cost(
         user_id=req.user_id,
         input_tokens=input_tokens,
         output_tokens=output_tokens,
         model_name=model,
         session_id=req.session_id,
-        confidence_score=roadmap_data.get("confidence_score", 0.5),
-        endpoint="/api/analyze"
+        confidence_score=confidence_score,
+        endpoint="/api/analyze",
+        quiz_score=f"{req.quiz_score}/10" if req.quiz_score is not None else "0/10",
+        intent_detected=req.current_job or "none"
     )
     
+    # Nếu confidence_score < 50%, lưu vào Sandbox Storage
+    if confidence_score < 0.5:
+        from datetime import datetime
+        try:
+            sandbox_data = {
+                "user_id": req.user_id,
+                "session_id": req.session_id,
+                "goal_description": req.goal_description,
+                "quiz_answers": req.quiz_answers,
+                "quiz_score": req.quiz_score,
+                "time_per_week": req.time_per_week,
+                "current_job": req.current_job,
+                "background": req.background,
+                "confidence_score": confidence_score,
+                "generated_roadmap": roadmap_data,
+                "model_name": model,
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            save_to_sandbox_storage(sandbox_data)
+        except Exception as ex:
+            logger.error(f"❌ Failed to process sandbox storage save: {ex}")
+
     # Validate và trả về kết quả
     try:
         return AnalyzeResponse(
             milestones=[Milestone(**m) for m in roadmap_data.get("milestones", [])],
-            confidence_score=float(roadmap_data.get("confidence_score", 0.5)),
+            confidence_score=confidence_score,
             path_type=roadmap_data.get("path_type", "low_conf"),
             reasoning=roadmap_data.get("reasoning", "Phân tích tự động"),
             personalization_notes=roadmap_data.get("personalization_notes", ""),

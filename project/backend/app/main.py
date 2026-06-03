@@ -6,12 +6,17 @@
 ====================================================
 """
 
+from dotenv import load_dotenv
+import os
+# Load environment variables from .env file
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+load_dotenv(dotenv_path)
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import logging
-import os
 
 from app.api import analyze, chat, feedback, admin
 from models.database import init_db

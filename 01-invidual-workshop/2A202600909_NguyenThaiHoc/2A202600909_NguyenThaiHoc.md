@@ -53,7 +53,7 @@ Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu
 ## 5. Sketch as-is / to-be
 
 ### 💥 AS-IS FLOW (Hiện trạng - Điểm gãy)
-```mermaid
+```
 👤 User: "Mở báo cáo... à quên, tìm lịch họp ngày mai trước đi"
    │
    ▼
@@ -78,7 +78,7 @@ Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu
 ```
 
 ### 💡 TO-BE FLOW (Đề xuất giải pháp)
-```mermaid
+```
 👤 User: "Mở báo cáo... à quên, tìm lịch họp ngày mai trước đi"
    │
    ▼

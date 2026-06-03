@@ -1,5 +1,9 @@
 # OS / editor
 .DS_Store
 Thumbs.db
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
 .idea/
 .vscode/

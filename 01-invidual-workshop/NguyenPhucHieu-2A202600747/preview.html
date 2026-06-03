@@ -1,0 +1,1461 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MoMo Moni App Teardown | UX Workshop</title>
+  <style>
+    :root {
+      --momo: #a50064;
+      --rose: #df287f;
+      --ink: #17141d;
+      --muted: #686170;
+      --soft: #f8f3f7;
+      --paper: #ffffff;
+      --line: #e7dfe6;
+      --line-strong: #d9cbd6;
+      --green: #11835f;
+      --green-soft: #eaf7f1;
+      --amber: #b86b00;
+      --amber-soft: #fff5e3;
+      --red: #c93655;
+      --red-soft: #fff0f3;
+      --blue: #295d9f;
+      --blue-soft: #edf5ff;
+      --shadow: 0 18px 42px rgba(48, 33, 45, 0.10);
+      --radius: 8px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background:
+        linear-gradient(90deg, rgba(165, 0, 100, 0.05) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(165, 0, 100, 0.04) 1px, transparent 1px),
+        linear-gradient(180deg, #fff 0%, #f9f5f8 42%, #f4f7f8 100%);
+      background-size: 72px 72px, 72px 72px, auto;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: var(--momo);
+      transform: scaleX(0);
+      transform-origin: left;
+      z-index: 30;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(231, 223, 230, 0.85);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner,
+    .section,
+    .hero-inner {
+      width: min(var(--max), calc(100% - 36px));
+      margin-inline: auto;
+    }
+
+    .topbar-inner {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 220px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      background: var(--momo);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .brand-title {
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav a {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      padding: 7px 10px;
+      text-decoration: none;
+      transition: 160ms ease;
+    }
+
+    .nav a:hover,
+    .nav a.is-active {
+      color: var(--momo);
+      border-color: var(--line);
+      background: #fff;
+    }
+
+    .hero {
+      padding: 52px 0 34px;
+      border-bottom: 1px solid rgba(231, 223, 230, 0.82);
+      background:
+        linear-gradient(135deg, rgba(165, 0, 100, 0.09), transparent 48%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0));
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+      align-items: center;
+      gap: 34px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--momo);
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 790px;
+      margin: 16px 0 18px;
+      font-size: clamp(42px, 6vw, 72px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 20px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 18px;
+      margin-bottom: 22px;
+    }
+
+    .hero-actions,
+    .button-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag,
+    .button,
+    .small-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 7px 12px;
+      text-decoration: none;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    .tag.primary,
+    .button.primary {
+      border-color: var(--momo);
+      background: var(--momo);
+      color: #fff;
+    }
+
+    .tag.warn {
+      border-color: rgba(201, 54, 85, 0.25);
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .tag.good {
+      border-color: rgba(17, 131, 95, 0.25);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .device {
+      position: relative;
+      width: 100%;
+      min-height: 650px;
+      border: 1px solid #241923;
+      border-radius: 24px;
+      background: #251924;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .screen {
+      height: 626px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #fbf8fb;
+    }
+
+    .screen-head {
+      padding: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--momo), var(--rose));
+    }
+
+    .screen-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.18);
+      font-weight: 900;
+    }
+
+    .screen-title {
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .screen-subtitle {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    .screen-stat {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mini-stat {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .mini-stat span {
+      display: block;
+      opacity: 0.82;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .mini-stat b {
+      display: block;
+      margin-top: 2px;
+      font-size: 21px;
+      line-height: 1.15;
+    }
+
+    .chat {
+      padding: 16px;
+    }
+
+    .bubble {
+      max-width: 90%;
+      margin: 10px 0;
+      border-radius: 14px;
+      padding: 11px 13px;
+      font-size: 14px;
+      line-height: 1.45;
+      box-shadow: 0 8px 18px rgba(53, 40, 52, 0.08);
+    }
+
+    .bubble.user {
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+      background: var(--momo);
+      color: #fff;
+    }
+
+    .bubble.bot {
+      border: 1px solid var(--line);
+      border-bottom-left-radius: 4px;
+      background: #fff;
+    }
+
+    .bubble.good {
+      border-color: rgba(17, 131, 95, 0.22);
+      background: var(--green-soft);
+    }
+
+    .break-label {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: var(--red-soft);
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 850;
+      padding: 5px 9px;
+    }
+
+    .section {
+      padding: 44px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .section-note {
+      max-width: 540px;
+      color: var(--muted);
+      margin: 8px 0 0;
+    }
+
+    .section-label {
+      margin-bottom: 8px;
+      color: var(--momo);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 8px 24px rgba(48, 33, 45, 0.06);
+      padding: 20px;
+    }
+
+    .stat .label,
+    .eyebrow {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .stat .value {
+      display: block;
+      margin-top: 7px;
+      color: var(--momo);
+      font-size: clamp(26px, 3.8vw, 38px);
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .stat .desc {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .insight-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .chart {
+      display: grid;
+      gap: 13px;
+      margin-top: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 112px 1fr 78px;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .track {
+      height: 14px;
+      border-radius: 999px;
+      background: #eee7ed;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: var(--w);
+      border-radius: 999px;
+      background: var(--c, var(--momo));
+      transform-origin: left;
+      animation: grow 950ms ease both;
+    }
+
+    @keyframes grow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    .finding {
+      border-left: 5px solid var(--red);
+      background: #fff;
+    }
+
+    .finding strong {
+      color: var(--red);
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .arrow-block {
+      display: grid;
+      place-items: center;
+      min-width: 44px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .mini-title {
+      margin: 0 0 8px;
+      color: var(--momo);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .query-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .query {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 12px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .query b {
+      color: var(--momo);
+    }
+
+    .quote {
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+
+    .quote::before,
+    .quote::after {
+      color: var(--momo);
+      font-family: Georgia, serif;
+    }
+
+    .quote::before {
+      content: "“";
+    }
+
+    .quote::after {
+      content: "”";
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    figure {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(48, 33, 45, 0.06);
+    }
+
+    figure img {
+      width: 100%;
+      height: 440px;
+      display: block;
+      object-fit: contain;
+      object-position: top center;
+      background: #f1edf0;
+    }
+
+    figcaption {
+      min-height: 78px;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .path-card {
+      position: relative;
+      min-height: 258px;
+      overflow: hidden;
+    }
+
+    .path-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 4px;
+      background: var(--accent, var(--momo));
+    }
+
+    .path-label {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--accent-soft, var(--soft));
+      color: var(--accent, var(--momo));
+      font-size: 12px;
+      font-weight: 900;
+      padding: 5px 9px;
+      text-transform: uppercase;
+    }
+
+    .path-card p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .flow-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 12px;
+    }
+
+    .step-index {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      background: var(--soft);
+      color: var(--momo);
+      font-weight: 900;
+    }
+
+    .step.is-broken {
+      border-color: rgba(201, 54, 85, 0.35);
+      background: var(--red-soft);
+    }
+
+    .step.is-fixed {
+      border-color: rgba(17, 131, 95, 0.25);
+      background: var(--green-soft);
+    }
+
+    .step span {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    .response-demo {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 18px;
+    }
+
+    .answer strong {
+      color: var(--momo);
+    }
+
+    .ranking {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .rank-item {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: #fff;
+    }
+
+    .rank-num {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--momo);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .rank-item small {
+      display: block;
+      color: var(--muted);
+    }
+
+    .requirements {
+      display: grid;
+      gap: 10px;
+    }
+
+    .requirement {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 12px;
+    }
+
+    .check {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .decision {
+      color: #fff;
+      border-color: transparent;
+      background:
+        linear-gradient(135deg, rgba(0, 0, 0, 0.13), rgba(0, 0, 0, 0)),
+        var(--momo);
+    }
+
+    .decision .section-label,
+    .decision .muted {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .decision h2 {
+      color: #fff;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .decision-item {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.12);
+      padding: 14px;
+      font-weight: 800;
+    }
+
+    .submission {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: 16px;
+    }
+
+    .footer {
+      width: min(var(--max), calc(100% - 36px));
+      margin-inline: auto;
+      padding: 26px 0 52px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 520ms ease, transform 520ms ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .hero-inner,
+      .insight-board,
+      .compare,
+      .flow-grid,
+      .response-demo,
+      .submission {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow-block {
+        min-height: 32px;
+      }
+
+      .cols-4,
+      .cols-3,
+      .cols-2,
+      .gallery,
+      .decision-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .device {
+        max-width: 420px;
+        width: 100%;
+        margin-inline: auto;
+      }
+
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .nav {
+        display: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .topbar-inner,
+      .section,
+      .hero-inner,
+      .footer {
+        width: min(100% - 24px, var(--max));
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .hero-actions,
+      .button-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .tag,
+      .button,
+      .small-tag {
+        justify-content: flex-start;
+      }
+
+      h1 {
+        font-size: 38px;
+      }
+
+      .device {
+        min-height: auto;
+        max-width: min(100%, 360px);
+        margin-left: 0;
+        margin-right: auto;
+      }
+
+      .screen {
+        height: 590px;
+      }
+
+      .screen-stat,
+      .bar-row,
+      .rank-item,
+      .query {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        gap: 6px;
+      }
+
+      figure img {
+        height: auto;
+        max-height: 620px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media print {
+      .topbar,
+      .progress {
+        position: static;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .card,
+      figure,
+      .device {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="MoMo Moni teardown">
+        <span class="brand-mark">M</span>
+        <span>
+          <span class="brand-title">MoMo Moni Teardown</span>
+          <span class="brand-subtitle">Track D · Personal Finance</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Điều hướng nội dung">
+        <a href="#snapshot">Snapshot</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#paths">4 paths</a>
+        <a href="#flow">As-is / To-be</a>
+        <a href="#decision">Decision</a>
+        <a href="#spec">SPEC</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="reveal">
+          <span class="kicker">Workshop · Mổ App AI Thật</span>
+          <h1>Từ tổng chi tiêu đến insight đáng tin cậy</h1>
+          <p class="lead">
+            Bài teardown tập trung vào một flow rất cụ thể của MoMo Moni: khi user hỏi
+            <strong>“Tháng 5 tôi tiêu nhiều nhất vào khoản nào?”</strong>, AI lấy được dữ liệu
+            nhưng chưa xếp hạng category để trả lời đúng intent.
+          </p>
+          <div class="hero-actions">
+            <span class="tag primary">Product: MoMo — Moni</span>
+            <span class="tag">Flow: top spending category</span>
+            <span class="tag warn">Finding: category ranking failure</span>
+          </div>
+        </div>
+
+        <aside class="device reveal" aria-label="Minh họa hội thoại MoMo Moni">
+          <div class="screen">
+            <div class="screen-head">
+              <div class="screen-row">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div class="avatar">M</div>
+                  <div>
+                    <div class="screen-title">Trợ thủ AI · Moni</div>
+                    <div class="screen-subtitle">Phân tích chi tiêu cá nhân</div>
+                  </div>
+                </div>
+                <strong>05</strong>
+              </div>
+              <div class="screen-stat">
+                <div class="mini-stat">
+                  <span>Tổng chi tháng 5</span>
+                  <b>836.346đ</b>
+                </div>
+                <div class="mini-stat">
+                  <span>Giao dịch</span>
+                  <b>23</b>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat">
+              <div class="bubble user">Tháng 5 tôi tiêu nhiều nhất vào khoản nào?</div>
+              <div class="bubble bot">
+                Mình thấy bạn đã chi <strong>836.346đ</strong>, trung bình <strong>26.978đ/ngày</strong>.
+                Hiện chưa thấy chi tiết khoản nào là nhiều nhất.
+                <span class="break-label">Điểm gãy: không trả top category</span>
+              </div>
+              <div class="bubble user">ăn uống</div>
+              <div class="bubble bot">Nhóm <strong>Ăn uống</strong>: <strong>473.000đ</strong>, 16 giao dịch.</div>
+              <div class="bubble user">vậy số tiền còn lại ở đâu</div>
+              <div class="bubble bot good">
+                Còn <strong>363.346đ</strong> thuộc các nhóm khác hoặc chưa phân loại rõ.
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="snapshot" class="section">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-label">01 · Snapshot</p>
+          <h2>Một câu hỏi, năm lượt hội thoại</h2>
+          <p class="section-note">
+            Vấn đề không phải Moni không có dữ liệu. Vấn đề là Moni chưa chuyển dữ liệu rời rạc
+            thành ranking có thể hành động.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid cols-4">
+        <article class="card stat reveal">
+          <span class="label">Tổng chi tiêu</span>
+          <span class="value">836.346đ</span>
+          <p class="desc">Moni lấy được tổng chi tháng 5.</p>
+        </article>
+        <article class="card stat reveal">
+          <span class="label">Số giao dịch</span>
+          <span class="value">23</span>
+          <p class="desc">Có dữ liệu giao dịch để phân tích.</p>
+        </article>
+        <article class="card stat reveal">
+          <span class="label">Ăn uống</span>
+          <span class="value">473.000đ</span>
+          <p class="desc">Trả được khi user hỏi riêng category.</p>
+        </article>
+        <article class="card stat reveal">
+          <span class="label">Khác / chưa rõ</span>
+          <span class="value">363.346đ</span>
+          <p class="desc">Chỉ được giải thích sau khi user hỏi tiếp.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="insight-board">
+        <article class="card reveal">
+          <p class="section-label">Promise vs reality</p>
+          <h2>AI hứa insight, nhưng trả lại từng mảnh dữ liệu</h2>
+          <div class="compare" style="margin-top:18px;">
+            <div>
+              <p class="mini-title">Kỳ vọng</p>
+              <p>
+                Một trợ lý tài chính cá nhân nên đọc giao dịch, gom theo danh mục,
+                tính tổng từng nhóm, xếp hạng từ cao xuống thấp và trả lời trực tiếp
+                khoản chi lớn nhất.
+              </p>
+            </div>
+            <div class="arrow-block">→</div>
+            <div>
+              <p class="mini-title">Thực tế</p>
+              <p>
+                Moni trả tổng chi tiêu, số giao dịch và trung bình/ngày, sau đó hỏi user
+                muốn xem nhóm nào trước. User phải tự điều tra từng nhóm.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="card finding reveal">
+          <p class="section-label">Core finding</p>
+          <p class="quote">
+            Moni nói chưa thấy thông tin chi tiết về khoản nào là nhiều nhất, dù sau đó
+            có thể trả dữ liệu nhóm Ăn uống là 473.000đ và Mua sắm là 0đ.
+          </p>
+          <p class="muted" style="margin-bottom:0;">
+            Lỗi nằm ở layer <strong>Intent + Data-tool + UX Recovery</strong>: nhận diện đúng câu hỏi
+            “top chi tiêu”, gom dữ liệu theo nhóm, nêu uncertainty và đưa action sửa.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-label">Dữ liệu cần được xếp hạng</p>
+          <h2>To-be answer phải có top category</h2>
+          <p class="section-note">
+            Chỉ cần thêm ranking layer, câu trả lời đã chuyển từ “báo cáo tổng” sang “insight tài chính”.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid cols-2">
+        <article class="card reveal">
+          <p class="mini-title">Ranking dự kiến</p>
+          <div class="chart" aria-label="Biểu đồ nhóm chi tiêu">
+            <div class="bar-row">
+              <strong>Ăn uống</strong>
+              <div class="track"><div class="fill" style="--w:56.5%; --c:var(--momo);"></div></div>
+              <b>56,5%</b>
+            </div>
+            <div class="bar-row">
+              <strong>Khác</strong>
+              <div class="track"><div class="fill" style="--w:43.5%; --c:var(--amber);"></div></div>
+              <b>43,5%</b>
+            </div>
+            <div class="bar-row">
+              <strong>Mua sắm</strong>
+              <div class="track"><div class="fill" style="--w:0%; --c:var(--blue);"></div></div>
+              <b>0%</b>
+            </div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <p class="mini-title">Prompt/input đã thử</p>
+          <div class="query-list">
+            <div class="query">
+              <b>Query 1</b>
+              <span>“Tháng 5 tôi tiêu nhiều nhất vào khoản nào?” → trả tổng chi nhưng chưa trả top category.</span>
+            </div>
+            <div class="query">
+              <b>Query 3</b>
+              <span>“ăn uống” → trả Ăn uống: 473.000đ, 16 giao dịch.</span>
+            </div>
+            <div class="query">
+              <b>Query 5</b>
+              <span>“vậy số tiền tiêu còn lại ở đâu” → giải thích phần còn lại 363.346đ.</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="evidence" class="section">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-label">02 · Evidence</p>
+          <h2>Screenshot test thực tế</h2>
+          <p class="section-note">
+            Ba ảnh này cho thấy Moni có dữ liệu, nhưng câu trả lời đầu tiên chưa đóng được task “khoản nào nhiều nhất”.
+          </p>
+        </div>
+      </div>
+
+      <div class="gallery">
+        <figure class="reveal">
+          <img src="evidence/momo-moni-1.jpg" alt="Screenshot Moni trả tổng chi tiêu tháng 5 nhưng chưa nêu nhóm cao nhất">
+          <figcaption>Evidence 1 · Moni trả tổng 836.346đ, 23 giao dịch, 26.978đ/ngày nhưng chưa chỉ ra nhóm cao nhất.</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="evidence/momo-moni-2.jpg" alt="Screenshot Moni trả dữ liệu nhóm ăn uống khi user hỏi riêng">
+          <figcaption>Evidence 2 · Khi user hỏi “ăn uống”, Moni trả được 473.000đ và 16 giao dịch.</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="evidence/momo-moni-3.jpg" alt="Screenshot Moni giải thích phần tiền còn lại thuộc các nhóm khác">
+          <figcaption>Evidence 3 · User phải hỏi tiếp “số tiền còn lại ở đâu” thì Moni mới giải thích 363.346đ.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="paths" class="section">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-label">03 · Vẽ 4 paths</p>
+          <h2>Happy, low-confidence, failure, correction</h2>
+          <p class="section-note">
+            Path yếu nhất là failure: Moni không xếp hạng category dù đã có một phần dữ liệu.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid cols-4">
+        <article class="card path-card reveal" style="--accent:var(--green); --accent-soft:var(--green-soft);">
+          <span class="path-label">Happy</span>
+          <h3>AI đúng và tự tin</h3>
+          <p>Hỏi riêng “ăn uống”, Moni trả được 473.000đ, 16 giao dịch, trung bình 15.258đ/ngày.</p>
+        </article>
+        <article class="card path-card reveal" style="--accent:var(--amber); --accent-soft:var(--amber-soft);">
+          <span class="path-label">Low-confidence</span>
+          <h3>AI hỏi lại chưa đúng</h3>
+          <p>Moni hỏi user muốn xem nhóm nào trước, trong khi user đang hỏi nhóm nào cao nhất.</p>
+        </article>
+        <article class="card path-card reveal" style="--accent:var(--red); --accent-soft:var(--red-soft);">
+          <span class="path-label">Failure</span>
+          <h3>Category ranking failure</h3>
+          <p>Moni không trả lời trực tiếp nhóm chi tiêu cao nhất. User phải hỏi từng nhóm và tự suy luận.</p>
+        </article>
+        <article class="card path-card reveal" style="--accent:var(--blue); --accent-soft:var(--blue-soft);">
+          <span class="path-label">Correction</span>
+          <h3>Recovery path còn thiếu</h3>
+          <p>Chưa thấy cơ chế sửa phân loại giao dịch hoặc lưu correction để cập nhật ranking.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="flow" class="section">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-label">05 · Sketch as-is / to-be</p>
+          <h2>Giữ flow nhỏ, sửa đúng điểm gãy</h2>
+          <p class="section-note">
+            Không cần làm lại toàn bộ Moni. Slice cần sửa là category ranking → confidence → action.
+          </p>
+        </div>
+      </div>
+
+      <div class="flow-grid">
+        <article class="card reveal">
+          <p class="mini-title">As-is · Flow hiện tại</p>
+          <h3>User phải tự điều tra dữ liệu</h3>
+          <div class="flow-list">
+            <div class="step">
+              <div class="step-index">1</div>
+              <div><strong>User hỏi top chi tiêu</strong><span>“Tháng 5 tôi tiêu nhiều nhất vào khoản nào?”</span></div>
+            </div>
+            <div class="step">
+              <div class="step-index">2</div>
+              <div><strong>Moni trả tổng chi</strong><span>836.346đ, 23 giao dịch, 26.978đ/ngày.</span></div>
+            </div>
+            <div class="step is-broken">
+              <div class="step-index">!</div>
+              <div><strong>Điểm gãy</strong><span>Moni không chỉ ra nhóm chi tiêu cao nhất.</span></div>
+            </div>
+            <div class="step">
+              <div class="step-index">3</div>
+              <div><strong>Moni bắt user chọn nhóm</strong><span>Ăn uống, Giải trí, Mua sắm...</span></div>
+            </div>
+            <div class="step">
+              <div class="step-index">4</div>
+              <div><strong>User hỏi từng nhóm</strong><span>Ranking phải được tự suy luận từ nhiều mảnh dữ liệu.</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <p class="mini-title">To-be · Flow đề xuất</p>
+          <h3>Moni trả insight và hành động tiếp theo</h3>
+          <div class="flow-list">
+            <div class="step is-fixed">
+              <div class="step-index">1</div>
+              <div><strong>Nhận diện intent</strong><span>Category ranking / top spending.</span></div>
+            </div>
+            <div class="step is-fixed">
+              <div class="step-index">2</div>
+              <div><strong>Gom giao dịch theo category</strong><span>Tính tổng từng nhóm trong tháng 5.</span></div>
+            </div>
+            <div class="step is-fixed">
+              <div class="step-index">3</div>
+              <div><strong>Xếp hạng từ cao xuống thấp</strong><span>Ăn uống, Khác / chưa phân loại, Mua sắm.</span></div>
+            </div>
+            <div class="step is-fixed">
+              <div class="step-index">4</div>
+              <div><strong>Hiển thị uncertainty</strong><span>Nêu rõ phần Khác có thể làm ranking thay đổi.</span></div>
+            </div>
+            <div class="step is-fixed">
+              <div class="step-index">5</div>
+              <div><strong>Đưa action</strong><span>Xem giao dịch, sửa phân loại, so sánh tháng trước, tạo ngân sách.</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="response-demo">
+        <article class="card reveal">
+          <p class="section-label">Câu trả lời to-be mong muốn</p>
+          <div class="answer">
+            <p>
+              Trong tháng 5, khoản bạn tiêu nhiều nhất là <strong>Ăn uống: 473.000đ</strong>,
+              chiếm khoảng <strong>56,5%</strong> tổng chi tiêu tháng.
+            </p>
+            <div class="ranking">
+              <div class="rank-item">
+                <span class="rank-num">1</span>
+                <span><strong>Ăn uống</strong><small>16 giao dịch</small></span>
+                <strong>473.000đ</strong>
+              </div>
+              <div class="rank-item">
+                <span class="rank-num">2</span>
+                <span><strong>Khác / chưa phân loại</strong><small>Cần kiểm tra thêm</small></span>
+                <strong>363.346đ</strong>
+              </div>
+              <div class="rank-item">
+                <span class="rank-num">3</span>
+                <span><strong>Mua sắm</strong><small>0 giao dịch</small></span>
+                <strong>0đ</strong>
+              </div>
+            </div>
+            <p class="muted" style="margin-bottom:0;">
+              Mình thấy còn 363.346đ trong nhóm Khác hoặc chưa phân loại rõ.
+              Bạn muốn xem các giao dịch này, sửa phân loại, hay tạo ngân sách cho nhóm Ăn uống?
+            </p>
+          </div>
+          <div class="button-row" style="margin-top:12px;">
+            <span class="button primary">Xem giao dịch</span>
+            <span class="button">Sửa phân loại</span>
+            <span class="button">Tạo ngân sách</span>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <p class="section-label">Lúc AI sai user recover thế nào?</p>
+          <h2>Thêm correction path</h2>
+          <div class="flow-list">
+            <div class="step">
+              <div class="step-index">1</div>
+              <div><strong>User chọn “Sửa phân loại giao dịch”</strong><span>Moni mở các giao dịch trong nhóm Khác / chưa phân loại.</span></div>
+            </div>
+            <div class="step">
+              <div class="step-index">2</div>
+              <div><strong>User đổi category</strong><span>Ví dụ: Highlands Coffee từ Khác sang Ăn uống.</span></div>
+            </div>
+            <div class="step is-fixed">
+              <div class="step-index">3</div>
+              <div><strong>Moni cập nhật ranking</strong><span>Ăn uống tăng lên 528.000đ, phần Khác giảm còn 308.346đ.</span></div>
+            </div>
+            <div class="step is-fixed">
+              <div class="step-index">4</div>
+              <div><strong>Ghi correction log</strong><span>Lần sau Moni gợi ý phân loại tốt hơn cho giao dịch tương tự.</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="decision" class="section">
+      <article class="card decision reveal">
+        <p class="section-label">04 · Viết finding thành quyết định</p>
+        <h2>Product decision</h2>
+        <p style="max-width:930px; font-size:19px;">
+          Moni cần ưu tiên sửa flow <strong>category ranking</strong> cho các câu hỏi dạng
+          “tiêu nhiều nhất vào khoản nào” trước khi mở rộng thêm tính năng mới.
+          Câu trả lời không nên dừng ở tổng chi tiêu và số giao dịch; Moni phải chuyển dữ liệu
+          giao dịch thành insight có thể hành động.
+        </p>
+        <div class="decision-grid">
+          <div class="decision-item">Kích hoạt intent top spending/category ranking.</div>
+          <div class="decision-item">Trả top category kèm số tiền và tỷ lệ phần trăm.</div>
+          <div class="decision-item">Tách rõ phần Khác / chưa phân loại để tăng trust.</div>
+          <div class="decision-item">Đưa action: xem, so sánh, tạo ngân sách, sửa phân loại.</div>
+        </div>
+      </article>
+    </section>
+
+    <section id="spec" class="section">
+      <div class="submission">
+        <article class="card reveal">
+          <p class="section-label">06 · Tự kiểm trước khi nộp</p>
+          <h2>Checklist submission</h2>
+          <div class="requirements" style="margin-top:16px;">
+            <div class="requirement"><span class="check">✓</span><span>Có screenshot hoặc observation cụ thể.</span></div>
+            <div class="requirement"><span class="check">✓</span><span>Có đủ 4 paths và nêu rõ path còn thiếu.</span></div>
+            <div class="requirement"><span class="check">✓</span><span>Finding được viết thành product decision.</span></div>
+            <div class="requirement"><span class="check">✓</span><span>Sketch có as-is và to-be.</span></div>
+            <div class="requirement"><span class="check">✓</span><span>Có câu nói rõ finding này đổi gì trong SPEC.</span></div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <p class="section-label">SPEC change</p>
+          <h2>Thêm requirement category ranking flow</h2>
+          <p>
+            Mọi câu hỏi dạng “tiêu nhiều nhất”, “top chi tiêu”, “khoản nào cao nhất” phải kích hoạt
+            category ranking flow. Moni phải trả top category kèm số tiền, tỷ lệ phần trăm,
+            top 3 nhóm, phần Khác / chưa phân loại và action để user xem hoặc sửa giao dịch.
+          </p>
+          <div class="button-row">
+            <span class="small-tag good">Intent</span>
+            <span class="small-tag good">Data-tool</span>
+            <span class="small-tag good">UX Recovery</span>
+            <span class="small-tag good">Correction log</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <strong>MoMo Moni UX Workshop</strong> · Research → Product decision → SPEC requirement
+  </footer>
+
+  <script>
+    const progress = document.querySelector(".progress");
+    const sections = [...document.querySelectorAll("section[id]")];
+    const navLinks = [...document.querySelectorAll(".nav a")];
+
+    function updateProgress() {
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const max = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const ratio = max > 0 ? scrollTop / max : 0;
+      progress.style.transform = `scaleX(${ratio})`;
+    }
+
+    function updateActiveNav() {
+      const current = sections
+        .filter(section => section.getBoundingClientRect().top <= 120)
+        .pop();
+
+      navLinks.forEach(link => {
+        link.classList.toggle("is-active", current && link.getAttribute("href") === `#${current.id}`);
+      });
+    }
+
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach(node => revealObserver.observe(node));
+    window.addEventListener("scroll", () => {
+      updateProgress();
+      updateActiveNav();
+    }, { passive: true });
+
+    updateProgress();
+    updateActiveNav();
+  </script>
+</body>
+</html>

@@ -94,11 +94,14 @@ Bạn chỉ cần mở trực tiếp file `project/frontend/index.html` bằng t
 
 ---
 
-## 👥 Bảng Phân Chia Nhiệm Vụ Thành Viên (Owner Plan)
+## 👥 Bảng Phân Chia Nhiệm Vụ Thành Viên (Owner Plan - Team 6 Thành Viên)
 
 | Thành Viên | Vai Trò | Đầu Ra Cụ Thể (Deliverables) |
 | --- | --- | --- |
-| **Thành viên A** | **AI & Prompt Engineer** | Xây dựng và kiểm thử `/prompts/system_prompt.txt` cùng bộ luật bảo vệ `/prompts/guardrail_rules.json`. |
-| **Thành viên B** | **Data & Logic Engineer** | Xây dựng backend FastAPI `/backend/app/api/`, viết middleware lưu log chi phí `/backend/middleware/cost_logger.py`, và thiết kế cơ sở dữ liệu SQLite `/backend/models/database.py`. |
-| **Thành viên C** | **UX/UI Developer** | Phát triển giao diện người dùng web 2 Tab đẹp mắt, form khảo sát, quiz 10 câu, và vẽ cây lộ trình tại `/frontend/`. |
-| **Thành viên D** | **QA/Test & Pitching** | Tạo tập dữ liệu đánh giá `/evals/test_dataset.json`, thực hiện báo cáo chất lượng `/evals/evaluation_report.md`, chuẩn bị kịch bản demo `/docs/demo_script.md` và trình bày. |
+| **Thành viên A** | **Product Manager / Team Lead** | Chịu trách nhiệm quản lý Spec, định nghĩa Pain & Opportunity và tổng hợp tài liệu tại `/02-group-spec/thin-spec.md` và `/02-group-spec/evidence-pack.md`. |
+| **Thành viên B** | **Prompt & AI Engineer** | Thiết kế, kiểm thử System Prompt `/prompts/system_prompt.txt` cùng bộ luật bảo vệ chống prompt injection và jailbreak `/prompts/guardrail_rules.json`. |
+| **Thành viên C** | **Backend Core Developer** | Viết API phân tích hồ sơ (`/backend/app/api/analyze.py`), chat hội thoại (`/backend/app/api/chat.py`) và tích hợp định tuyến `/backend/app/main.py`. |
+| **Thành viên D** | **Backend Data & Operations** | Phát triển SQLite databases `/backend/models/database.py`, Middleware tính toán chi phí `/backend/middleware/cost_logger.py`, rate limits, và API feedback `/backend/app/api/feedback.py`. |
+| **Thành viên E** | **Frontend UI/UX Developer** | Phát triển giao diện web HTML/CSS/JS chia Tab, form khảo sát thông tin, quiz trắc nghiệm và kết xuất cây lộ trình học trực quan dưới `/frontend/`. |
+| **Thành viên F** | **QA/Test & Pitching Engineer** | Xây dựng bộ testcase `/evals/test_dataset.json`, báo cáo đánh giá `/evals/evaluation_report.md`, viết kịch bản demo `/docs/demo_script.md` và tài liệu kiến trúc `/docs/architecture.md`. |
+

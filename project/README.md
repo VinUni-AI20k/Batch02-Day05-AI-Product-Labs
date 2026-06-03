@@ -98,10 +98,10 @@ Bạn chỉ cần mở trực tiếp file `project/frontend/index.html` bằng t
 
 | Thành Viên | Vai Trò | Đầu Ra Cụ Thể (Deliverables) |
 | --- | --- | --- |
-| **Thành viên A** | **Product Manager / Team Lead** | Chịu trách nhiệm quản lý Spec, định nghĩa Pain & Opportunity và tổng hợp tài liệu tại `/02-group-spec/thin-spec.md` và `/02-group-spec/evidence-pack.md`. |
-| **Thành viên B** | **Prompt & AI Engineer** | Thiết kế, kiểm thử System Prompt `/prompts/system_prompt.txt` cùng bộ luật bảo vệ chống prompt injection và jailbreak `/prompts/guardrail_rules.json`. |
-| **Thành viên C** | **Backend Core Developer** | Viết API phân tích hồ sơ (`/backend/app/api/analyze.py`), chat hội thoại (`/backend/app/api/chat.py`) và tích hợp định tuyến `/backend/app/main.py`. |
-| **Thành viên D** | **Backend Data & Operations** | Phát triển SQLite databases `/backend/models/database.py`, Middleware tính toán chi phí `/backend/middleware/cost_logger.py`, rate limits, và API feedback `/backend/app/api/feedback.py`. |
-| **Thành viên E** | **Frontend UI/UX Developer** | Phát triển giao diện web HTML/CSS/JS chia Tab, form khảo sát thông tin, quiz trắc nghiệm và kết xuất cây lộ trình học trực quan dưới `/frontend/`. |
-| **Thành viên F** | **QA/Test & Pitching Engineer** | Xây dựng bộ testcase `/evals/test_dataset.json`, báo cáo đánh giá `/evals/evaluation_report.md`, viết kịch bản demo `/docs/demo_script.md` và tài liệu kiến trúc `/docs/architecture.md`. |
+| **VanSangNguyen21** (sangthon2003@gmail.com) | **Product Manager / Team Lead** | Chịu trách nhiệm quản lý Spec, định nghĩa Pain & Opportunity và tổng hợp tài liệu tại `/02-group-spec/thin-spec.md` và `/02-group-spec/evidence-pack.md`. |
+| **phammaianh11102005@gmail.com** | **Prompt & AI Engineer** | Thiết kế, kiểm thử System Prompt `/prompts/system_prompt.txt` cùng bộ luật bảo vệ chống prompt injection và jailbreak `/prompts/guardrail_rules.json`. |
+| **Shiner-2** | **Backend Core Developer** | Viết API phân tích hồ sơ (`/backend/app/api/analyze.py`), chat hội thoại (`/backend/app/api/chat.py`) và tích hợp định tuyến `/backend/app/main.py`. |
+| **letho1608** | **Backend Data & Operations** | Phát triển SQLite databases `/backend/models/database.py`, Middleware tính toán chi phí `/backend/middleware/cost_logger.py`, rate limits, và API feedback `/backend/app/api/feedback.py`. |
+| **DoTrungDuc1908** | **Frontend UI/UX Developer** | Phát triển giao diện web HTML/CSS/JS chia Tab, form khảo sát thông tin, quiz trắc nghiệm và kết xuất cây lộ trình học trực quan dưới `/frontend/`. |
+| **nguyetbinh** | **QA/Test & Pitching Engineer** | Xây dựng bộ testcase `/evals/test_dataset.json`, báo cáo đánh giá `/evals/evaluation_report.md`, viết kịch bản demo `/docs/demo_script.md` và tài liệu kiến trúc `/docs/architecture.md`. |
 

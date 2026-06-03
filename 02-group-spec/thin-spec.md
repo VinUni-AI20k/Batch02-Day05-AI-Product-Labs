@@ -62,10 +62,10 @@ Owner kiểm thử path này là Thành viên D (QA/Test).
 
 | Thành viên | Vai trò | Việc phụ trách | Bằng chứng cần có trong repo |
 |---|---|---|---|
-| **Thành viên A** | **Product Manager / Lead** | Quản lý Spec, định nghĩa Pain & Opportunity, tổng hợp tài liệu nhóm | `/02-group-spec/thin-spec.md`, `/02-group-spec/evidence-pack.md` |
-| **Thành viên B** | **Prompt / AI Engineer** | Thiết kế System Prompt, JSON Output, Few-shot Prompting và Guardrail chống Injection | `/prompts/system_prompt.txt`, `/prompts/guardrail_rules.json` |
-| **Thành viên C** | **Backend Core Developer** | Phát triển API Endpoint phân tích (`/api/analyze`), chat (`/api/chat`) và cấu hình định tuyến chính | `/backend/app/api/analyze.py`, `/backend/app/api/chat.py`, `/backend/app/main.py` |
-| **Thành viên D** | **Backend Data & Ops** | Thiết kế SQLite database, Cost Logger middleware đo lường token, xử lý Rate limits và lưu Feedback log | `/backend/models/database.py`, `/backend/middleware/cost_logger.py`, `/backend/app/api/feedback.py` |
-| **Thành viên E** | **Frontend UI/UX Developer** | Phát triển giao diện Web HTML/CSS/JS chia Tab, Form khảo sát, Quiz 10 câu và kết xuất sơ đồ cây | `/frontend/index.html`, `/frontend/src/app.js`, `/frontend/src/styles.css` |
-| **Thành viên F** | **QA / Test & Pitching** | Xây dựng bộ dataset test 10 người dùng, viết báo cáo đánh giá chất lượng prompt, soạn kịch bản Demo | `/evals/test_dataset.json`, `/evals/evaluation_report.md`, `/docs/demo_script.md`, `/docs/architecture.md` |
+| **VanSangNguyen21** (sangthon2003@gmail.com) | **Product Manager / Lead** | Quản lý Spec, định nghĩa Pain & Opportunity, tổng hợp tài liệu nhóm | `/02-group-spec/thin-spec.md`, `/02-group-spec/evidence-pack.md` |
+| **phammaianh11102005@gmail.com** | **Prompt / AI Engineer** | Thiết kế System Prompt, JSON Output, Few-shot Prompting và Guardrail chống Injection | `/prompts/system_prompt.txt`, `/prompts/guardrail_rules.json` |
+| **Shiner-2** | **Backend Core Developer** | Phát triển API Endpoint phân tích (`/api/analyze`), chat (`/api/chat`) và cấu hình định tuyến chính | `/backend/app/api/analyze.py`, `/backend/app/api/chat.py`, `/backend/app/main.py` |
+| **letho1608** | **Backend Data & Ops** | Thiết kế SQLite database, Cost Logger middleware đo lường token, xử lý Rate limits và lưu Feedback log | `/backend/models/database.py`, `/backend/middleware/cost_logger.py`, `/backend/app/api/feedback.py` |
+| **DoTrungDuc1908** | **Frontend UI/UX Developer** | Phát triển giao diện Web HTML/CSS/JS chia Tab, Form khảo sát, Quiz 10 câu và kết xuất sơ đồ cây | `/frontend/index.html`, `/frontend/src/app.js`, `/frontend/src/styles.css` |
+| **nguyetbinh** | **QA / Test & Pitching** | Xây dựng bộ dataset test 10 người dùng, viết báo cáo đánh giá chất lượng prompt, soạn kịch bản Demo | `/evals/test_dataset.json`, `/evals/evaluation_report.md`, `/docs/demo_script.md`, `/docs/architecture.md` |
 

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop — Mổ App AI Thật | Vietnam Airlines — NEO</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f8f9fb;
+    --card: #ffffff;
+    --accent: #1a56db;
+    --accent-light: #e8effd;
+    --danger: #e02424;
+    --danger-light: #fde8e8;
+    --warning: #c27803;
+    --warning-light: #fdf6e8;
+    --success: #057a55;
+    --success-light: #e8fdf3;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6b 40%, #1a56db 100%);
+    color: white;
+    padding: 64px 32px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L55 50 L5 50 Z' fill='none' stroke='rgba(255,255,255,.04)' stroke-width='1'/%3E%3C/svg%3E");
+    opacity: .5;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    position: relative;
+    z-index: 1;
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    opacity: .85;
+    margin-top: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero .meta-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero .badge {
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.18);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 500;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 64px;
+  }
+
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    transition: box-shadow .2s;
+  }
+  .section:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2 .num {
+    background: var(--accent);
+    color: white;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    font-size: .9rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    color: #2d3748;
+  }
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 16px 0 8px;
+    color: #4a5568;
+  }
+
+  p { margin-bottom: 12px; color: #374151; }
+
+  ul, ol { margin: 8px 0 16px 20px; color: #374151; }
+  li { margin-bottom: 6px; }
+
+  strong { color: #1a1a2e; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: .9rem;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: #475569;
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .finding-card {
+    border-left: 4px solid var(--danger);
+    background: var(--danger-light);
+    padding: 20px 24px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 20px 0;
+  }
+  .finding-card.f2 { border-left-color: #c27803; background: var(--warning-light); }
+  .finding-card.f3 { border-left-color: #6d28d9; background: #f5f3ff; }
+  .finding-card.f4 { border-left-color: #059669; background: var(--success-light); }
+  .finding-card.f5 { border-left-color: #db2777; background: #fdf2f8; }
+
+  .finding-card .tag {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .finding-card .tag { background: #fecaca; color: #991b1b; }
+  .finding-card.f2 .tag { background: #fde68a; color: #92400e; }
+  .finding-card.f3 .tag { background: #ddd6fe; color: #5b21b6; }
+  .finding-card.f4 .tag { background: #a7f3d0; color: #065f46; }
+  .finding-card.f5 .tag { background: #fbcfe8; color: #9d174d; }
+
+  .finding-card h4 { margin-top: 0; color: inherit; }
+  .finding-card .desc { color: #374151; font-size: .9rem; line-height: 1.65; }
+  .finding-card .product-decision {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(0,0,0,.15);
+    font-weight: 600;
+    font-size: .88rem;
+    color: #1a1a2e;
+  }
+
+  pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    line-height: 1.6;
+    margin: 12px 0;
+  }
+  code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85em;
+    color: #d63384;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .mermaid {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    background: #fafbfc;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .path-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .path-item {
+    padding: 20px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .path-item .icon {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+  .path-item.happy { background: #ecfdf5; border-color: #a7f3d0; }
+  .path-item.low { background: #fffbeb; border-color: #fde68a; }
+  .path-item.fail { background: #fef2f2; border-color: #fecaca; }
+  .path-item.fix { background: #eff6ff; border-color: #bfdbfe; }
+  .path-item h4 { margin: 4px 0; font-size: .9rem; }
+
+  .checklist {
+    list-style: none;
+    margin: 12px 0;
+  }
+  .checklist li {
+    padding: 4px 0;
+    font-size: .9rem;
+  }
+  .checklist li::before {
+    content: '✓';
+    color: var(--success);
+    font-weight: 700;
+    margin-right: 8px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  .breakpoint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-weight: 600;
+    font-size: .82rem;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin: 4px 4px 4px 0;
+  }
+  .breakpoint::before { content: '⚠'; font-size: .85rem; }
+
+  footer {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    font-size: .82rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.5rem; }
+    .section { padding: 20px 16px; }
+    .path-grid { grid-template-columns: 1fr 1fr; }
+    table { font-size: .78rem; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <h1>Workshop — Mổ App AI Thật</h1>
+  <p class="subtitle">Needfinding &amp; Product Decision cho trợ lý ảo NEO</p>
+  <div class="meta-grid">
+    <span class="badge">Vietnam Airlines — NEO</span>
+    <span class="badge">Chatbot vé, hành lý, khiếu nại</span>
+    <span class="badge">35-45 phút</span>
+    <span class="badge">Website / Zalo VNA</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== 1. CHỌN SẢN PHẨM ====== -->
+<div class="section">
+<h2><span class="num">1</span> Chọn sản phẩm để dùng thử</h2>
+
+<table>
+  <tr><th>Sản phẩm</th><th>AI feature</th><th>Cách truy cập</th></tr>
+  <tr><td>MoMo — Moni</td><td>Trợ thủ tài chính, phân tích chi tiêu, chatbot</td><td>App MoMo</td></tr>
+  <tr style="background:#e8effd;font-weight:600"><td>Vietnam Airlines — NEO</td><td>Chatbot hỗ trợ vé, hành lý, khiếu nại</td><td>Website / Zalo VNA</td></tr>
+  <tr><td>V-App — V-AI</td><td>Trợ lý voice/text, gợi ý theo ngữ cảnh</td><td>App V-App</td></tr>
+</table>
+
+<p><strong>Sản phẩm được chọn:</strong> Vietnam Airlines — NEO.</p>
+<p><strong>Lý do chọn:</strong> NEO được định vị là trợ lý ảo chính thức của Vietnam Airlines, hỗ trợ khách hàng tra cứu vé, hành lý và khiếu nại. Kỳ vọng NEO hiểu tiếng Việt tự nhiên, xử lý tác vụ đặt vé phức tạp, gợi ý điểm đến, và có khả năng phục hồi khi không tìm thấy kết quả.</p>
+</div>
+
+<!-- ====== 2. PROMISE vs REALITY ====== -->
+<div class="section">
+<h2><span class="num">2</span> Dùng thử: Promise vs Reality</h2>
+
+<h3>2.1 Product hứa gì?</h3>
+<ul>
+  <li>Hỗ trợ tra cứu chuyến bay nội địa và quốc tế</li>
+  <li>Thu thập thông tin từng bước (điểm đi, điểm đến, ngày, số khách, hạng vé)</li>
+  <li>Gợi ý điểm đến khi người dùng chưa xác định rõ</li>
+  <li>Tìm chuyến bay theo tiêu chí người dùng yêu cầu</li>
+  <li>Cung cấp thông tin liên hệ khi cần hỗ trợ thêm</li>
+</ul>
+
+<h3>2.2 User mục tiêu</h3>
+<ul>
+  <li>Hành khách Vietnam Airlines muốn tra cứu chuyến bay</li>
+  <li>Người dùng Zalo / Website Vietnam Airlines</li>
+  <li>Khách hàng cần hỗ trợ về vé, hành lý, khiếu nại</li>
+  <li>Người dùng phổ thông, chưa có kinh nghiệm đặt vé máy bay</li>
+</ul>
+
+<h3>2.3 Kỳ vọng AI làm được</h3>
+<ol>
+  <li><strong>Tìm kiếm chuyến bay quốc tế</strong> — hiểu điểm đến từ tên quốc gia, gợi ý sân bay cụ thể, duy trì thông tin đã thu thập</li>
+  <li><strong>Duy trì ngữ cảnh hội thoại</strong> — ghi nhớ lựa chọn của user, không tự ý thay đổi, trả lời trong phạm vi ngữ cảnh hiện tại</li>
+  <li><strong>Xử lý khi không tìm thấy chuyến bay</strong> — gợi ý ngày khác, sân bay lân cận, hạng vé khác thay vì chỉ báo lỗi</li>
+</ol>
+
+<hr class="divider">
+
+<h3>2.4 Prompt đã thử</h3>
+
+<h4>Query 1 — Đến Bồ Đào Nha, chưa xác định thành phố</h4>
+<pre><code>tôi muốn đến bồ đào nha</code></pre>
+
+<h4>Query 2 — Follow-up trong ngữ cảnh Bồ Đào Nha</h4>
+<pre><code>còn điểm nào khác không?
+điểm đến ở bồ đào nha cơ mà
+tôi muốn đến điểm khác ở bồ đào nha
+tôi ko biết bồ đào nha có những điểm đến nào, gợi ý nhiều điểm đến giúp tôi đi</code></pre>
+
+<h4>Query 3 — Tìm chuyến bay cụ thể</h4>
+<pre><code>đi từ hà nội, đến porto, đi ngày nào có giá vé rẻ nhất, đi 1 người lớn
+2 hôm nữa</code></pre>
+
+<h4>Query 4 — Khi không tìm thấy chuyến bay</h4>
+<pre><code>thế tìm cho tôi chuyến bay nào khởi hành ngày gần nhất đi</code></pre>
+
+<h4>Query 5 — Chuyển sang chuyến bay nội địa</h4>
+<pre><code>tôi muốn đến sài gòn
+ngày gần nhất</code></pre>
+
+<hr class="divider">
+
+<h3>2.5 Hành vi quan sát được</h3>
+
+<h4>Observation 1 — NEO mất ngữ cảnh hội thoại</h4>
+<p>Khi user đang trong ngữ cảnh tìm điểm đến tại Bồ Đào Nha và hỏi "còn điểm nào khác không?", NEO trả lời bằng danh sách <strong>tất cả</strong> điểm đến nội địa và quốc tế (Hà Nội, Đà Nẵng, Singapore, London, Paris...), hoàn toàn không liên quan đến Bồ Đào Nha. User phải nhắc lại "điểm đến ở bồ đào nha cơ mà".</p>
+<p><span class="breakpoint">Điểm gãy: Chatbot không duy trì context window</span></p>
+
+<h4>Observation 2 — NEO tự mâu thuẫn về điểm đến được hỗ trợ</h4>
+<p>Khi user yêu cầu gợi ý điểm đến tại Bồ Đào Nha, NEO liệt kê: Lisbon, Porto, Faro, Madeira, Azores. User chọn Porto. Sau khi thu thập đủ thông tin, NEO <strong>từ chối Porto</strong> với lý do "Porto không nằm trong danh sách sân bay được hỗ trợ", rồi <strong>âm thầm đổi sang Lisbon</strong> mà không thông báo.</p>
+<p><span class="breakpoint">Điểm gãy: Hệ thống gợi ý và backend tìm chuyến bay dùng hai bộ dữ liệu khác nhau</span></p>
+
+<h4>Observation 3 — Không có cơ chế phục hồi khi không tìm thấy chuyến bay</h4>
+<p>NEO trả về "NEO không tìm thấy chuyến bay phù hợp". Khi user thử lại "tìm chuyến bay khởi hành ngày gần nhất", NEO tiếp tục trả lỗi giống hệt kèm số tổng đài. <strong>Không có gợi ý</strong> về ngày khác, sân bay lân cận, hay hạng vé khác.</p>
+<p><span class="breakpoint">Điểm gãy: Failure path là dead end — không có nhánh phục hồi</span></p>
+
+<h4>Observation 4 — Chất lượng không đồng đều nội địa / quốc tế</h4>
+<p>Khi không tìm thấy chuyến bay quốc tế, NEO chỉ trả lỗi chung chung. Nhưng khi user hỏi "tôi muốn đến sài gòn", NEO <strong>lập tức trả về danh sách chi tiết</strong> gồm điểm khởi hành, ngày bay, giá vé cho cả hạng Thương gia và Phổ thông — rất ấn tượng. Tuy nhiên, khi hỏi tiếp "ngày gần nhất", NEO lại không lọc được.</p>
+<p><span class="breakpoint">Điểm gãy: Trải nghiệm không nhất quán giữa hai phân khúc</span></p>
+
+<h4>Observation 5 — Thu thập thông tin tốt nhưng thiếu xác nhận giả định</h4>
+<p>NEO chủ động thu thập từng trường (điểm khởi hành, ngày, loại vé, số khách, hạng vé) — điểm tốt. Nhưng khi user chỉ nói "tôi muốn đến bồ đào nha", NEO <strong>lập tức giả định Lisbon</strong> mà không hỏi thành phố cụ thể.</p>
+<p><span class="breakpoint">Điểm gãy: AI tự điền giả định thay vì hỏi lại</span></p>
+</div>
+
+<!-- ====== 3. 4 PATHS ====== -->
+<div class="section">
+<h2><span class="num">3</span> Vẽ 4 Paths</h2>
+
+<div class="path-grid">
+  <div class="path-item happy">
+    <div class="icon">✅</div>
+    <h4>Happy Path</h4>
+    <p style="font-size:.8rem;color:#374151">Chuyến bay nội địa: trả danh sách chi tiết giá vé, ngày bay, hạng vé</p>
+  </div>
+  <div class="path-item low">
+    <div class="icon">🤔</div>
+    <h4>Low-confidence</h4>
+    <p style="font-size:.8rem;color:#374151">Có hỏi các trường thiếu, nhưng tự giả định điểm đến khi thiếu thành phố</p>
+  </div>
+  <div class="path-item fail">
+    <div class="icon">❌</div>
+    <h4>Failure</h4>
+    <p style="font-size:.8rem;color:#374151">Dead end: chỉ báo lỗi + tổng đài, không gợi ý thay thế</p>
+  </div>
+  <div class="path-item fix">
+    <div class="icon">🔧</div>
+    <h4>Correction</h4>
+    <p style="font-size:.8rem;color:#374151">Xóa được giá trị cũ nhưng không có bộ nhớ dài hạn</p>
+  </div>
+</div>
+
+<table>
+  <tr><th>Path</th><th>Câu hỏi</th><th>Quan sát trên NEO</th></tr>
+  <tr>
+    <td><strong>Happy</strong></td>
+    <td>Khi AI đúng và tự tin, user thấy gì?</td>
+    <td>NEO trả danh sách chuyến bay nội địa chi tiết. Trải nghiệm mượt khi đủ dữ liệu và chuyến bay tồn tại.</td>
+  </tr>
+  <tr>
+    <td><strong>Low-confidence</strong></td>
+    <td>Khi AI không chắc, có hỏi lại không?</td>
+    <td>NEO hỏi lại các trường còn thiếu, nhưng khi thiếu điểm đến cụ thể (quốc gia), NEO tự giả định thay vì hỏi.</td>
+  </tr>
+  <tr>
+    <td><strong>Failure</strong></td>
+    <td>Khi AI sai, user biết và sửa thế nào?</td>
+    <td>Thông báo lỗi + số tổng đài. Không có gợi ý thay thế. User bị kẹt hoàn toàn.</td>
+  </tr>
+  <tr>
+    <td><strong>Correction</strong></td>
+    <td>Correction có được lưu/log/học lại không?</td>
+    <td>Xóa Lisbon khỏi phiên hiện tại nhưng không ghi nhớ dài hạn. Phiên sau gợi ý lại như cũ.</td>
+  </tr>
+</table>
+</div>
+
+<!-- ====== 4. FINDINGS ====== -->
+<div class="section">
+<h2><span class="num">4</span> Finding — Thành quyết định Product</h2>
+
+<div class="finding-card">
+  <div class="tag">Finding 1 — Context Management</div>
+  <p class="desc">Khi user đang trong ngữ cảnh tìm điểm đến tại Bồ Đào Nha và hỏi follow-up, NEO phản hồi như thể mỗi câu là một phiên mới, mất hoàn toàn ngữ cảnh trước đó. User phải nhắc lại thông tin nhiều lần.</p>
+  <p style="font-size:.8rem;color:#6b7280;margin-top:4px">Layer: Intent + Context Management</p>
+  <p class="product-decision">Product Decision: NEO cần <strong>conversation context management</strong> — mọi câu follow-up phải được đánh giá trong bối cảnh của toàn bộ phiên hội thoại, không xử lý độc lập. Context window tối thiểu 5-7 lượt.</p>
+</div>
+
+<div class="finding-card f2">
+  <div class="tag">Finding 2 — Silent Data Override</div>
+  <p class="desc">NEO gợi ý Porto là điểm đến, user chọn Porto, nhưng backend không hỗ trợ Porto. NEO <strong>âm thầm đổi sang Lisbon</strong> mà không thông báo hay xin xác nhận. Hệ thống gợi ý và backend tìm chuyến bay dùng hai bộ dữ liệu không đồng bộ.</p>
+  <p style="font-size:.8rem;color:#6b7280;margin-top:4px">Layer: Data-tool + UX Recovery</p>
+  <p class="product-decision">Product Decision: Khi một điểm đến không khả dụng, NEO phải <strong>minh bạch</strong>: giải thích lý do và yêu cầu chọn lại. Danh sách gợi ý phải đồng bộ với danh sách sân bay backend thực sự hỗ trợ.</p>
+</div>
+
+<div class="finding-card f3">
+  <div class="tag">Finding 3 — Dead-end Failure Path</div>
+  <p class="desc">Khi không tìm thấy chuyến bay, NEO chỉ trả về thông báo lỗi chung chung và số tổng đài. Không có bất kỳ gợi ý phục hồi nào: ngày lân cận, sân bay lân cận, hạng vé khác. User bị kẹt hoàn toàn.</p>
+  <p style="font-size:.8rem;color:#6b7280;margin-top:4px">Layer: UX Recovery</p>
+  <p class="product-decision">Product Decision: Failure path phải là <strong>guided recovery flow</strong>: "Không có chuyến 05/06. Ngày gần nhất là 08/06 — bạn muốn thử?" hoặc "Lisbon không có, nhưng Madrid có chuyến 05/06".</p>
+</div>
+
+<div class="finding-card f4">
+  <div class="tag">Finding 4 — Ẩn Giả Định</div>
+  <p class="desc">Khi user nói "tôi muốn đến bồ đào nha", NEO lập tức giả định Lisbon mà không hỏi thành phố cụ thể. Hội thoại đi sai hướng ngay từ đầu, user phải tốn nhiều lượt để sửa.</p>
+  <p style="font-size:.8rem;color:#6b7280;margin-top:4px">Layer: Intent + Data-tool</p>
+  <p class="product-decision">Product Decision: Khi input mơ hồ (quốc gia thay vì thành phố), NEO phải phản hồi bằng <strong>danh sách sân bay được hỗ trợ</strong> trong quốc gia đó và yêu cầu user chọn, thay vì tự gán mặc định.</p>
+</div>
+
+<div class="finding-card f5">
+  <div class="tag">Finding 5 — Trải Nghiệm Không Nhất Quán</div>
+  <p class="desc">Nội địa: danh sách chi tiết giá vé, ngày bay, hạng vé. Quốc tế: chỉ trả lỗi. User không biết khi nào NEO hoạt động tốt và khi nào thất bại.</p>
+  <p style="font-size:.8rem;color:#6b7280;margin-top:4px">Layer: Promise + Data-tool</p>
+  <p class="product-decision">Product Decision: NEO phải <strong>minh bạch về phạm vi hỗ trợ</strong>: "Hiện NEO hỗ trợ tốt nhất cho chuyến bay nội địa. Với quốc tế, vui lòng truy cập website hoặc gọi tổng đài."</p>
+</div>
+</div>
+
+<!-- ====== 5. SKETCH AS-IS / TO-BE ====== -->
+<div class="section">
+<h2><span class="num">5</span> Sketch As-is / To-be</h2>
+
+<h3>5.1 Flow — Tìm chuyến bay quốc tế khi chưa xác định thành phố</h3>
+
+<h4>As-is</h4>
+<pre class="mermaid">
+flowchart TD
+    A["User: tôi muốn đến bồ đào nha"] --> B["NEO nhận diện: điểm đến quốc tế"]
+    B --> C["NEO tự giả định điểm đến = Lisbon ❌"]
+    C --> D["NEO yêu cầu bổ sung thông tin"]
+    D --> E["User: còn điểm nào khác không?"]
+    E --> F["NEO mất ngữ cảnh ❌ liệt kê toàn cầu"]
+    F --> G["User phải nhắc: điểm đến ở bồ đào nha"]
+    G --> H["NEO quay lại Lisbon"]
+    H --> I["User: gợi ý điểm đến ở Bồ Đào Nha"]
+    I --> J["NEO gợi ý Lisbon, Porto, Faro..."]
+    J --> K["User chọn Porto"]
+    K --> L["NEO từ chối Porto ❌ không hỗ trợ"]
+    L --> M["NEO âm thầm đổi sang Lisbon ❌"]
+</pre>
+
+<h4>To-be</h4>
+<pre class="mermaid">
+flowchart TD
+    A["User: tôi muốn đến bồ đào nha"] --> B["NEO nhận diện: quốc tế - cấp quốc gia"]
+    B --> C{"Có bao nhiêu sân bay được hỗ trợ?"}
+    C -->|"Nhiều"| D["Hiển thị danh sách: Lisbon, Porto..."]
+    C -->|"1 sân bay"| E["Xác nhận: chỉ có Lisbon, đồng ý chứ?"]
+    C -->|"0 sân bay"| F["Thông báo: chưa có chuyến VNA, gợi ý nước lân cận"]
+    D --> G["User chọn"]
+    G --> H["Thu thập các trường còn thiếu"]
+    H --> I["Tìm chuyến bay"]
+    I --> J{"Có chuyến?"}
+    J -->|"Có"| K["Hiển thị danh sách"]
+    J -->|"Không"| L["Gợi ý phục hồi: ngày/sân bay khác"]
+    K --> M["User đặt vé hoặc tiếp tục"]
+    L --> M
+</pre>
+
+<h3>5.2 Flow — Xử lý khi không tìm thấy chuyến bay</h3>
+
+<h4>As-is</h4>
+<pre class="mermaid">
+flowchart TD
+    A["NEO không tìm thấy chuyến bay"] --> B["Trả thông báo lỗi chung"]
+    B --> C["Cung cấp số tổng đài + email"]
+    C --> D["User thử lại: ngày gần nhất"]
+    D --> E["Vẫn trả lỗi giống hệt ❌"]
+    E --> F["User bị kẹt, không lối thoát"]
+</pre>
+
+<h4>To-be</h4>
+<pre class="mermaid">
+flowchart TD
+    A["Không tìm thấy chuyến bay"] --> B["Phân tích nguyên nhân"]
+    B --> C["Kiểm tra các phương án thay thế"]
+    C --> D["PA 1: ngày lân cận ±3-7 ngày"]
+    C --> E["PA 2: sân bay lân cận"]
+    C --> F["PA 3: hạng vé khác"]
+    D --> G{"Phương án nào khả dụng?"}
+    E --> G
+    F --> G
+    G -->|"Có"| H["Đề xuất cụ thể cho user"]
+    G -->|"Không"| I["Thông báo rõ + chuyển kênh"]
+    H --> J["User chọn phương án mới"]
+    J --> K["Tiếp tục tìm kiếm"]
+</pre>
+</div>
+
+<!-- ====== 6. 4 PATHS CHI TIẾT ====== -->
+<div class="section">
+<h2><span class="num">6</span> Tổng hợp 4 Paths cho NEO</h2>
+
+<h3>6.1 Happy Path</h3>
+<pre class="mermaid">
+flowchart TD
+    A["User hỏi chuyến bay nội địa, đủ thông tin"] --> B["NEO nhận diện intent"]
+    B --> C["Thu thập đủ các trường"]
+    C --> D["Gọi backend tìm chuyến bay"]
+    D --> E["Trả danh sách: giá, ngày, hạng vé"]
+    E --> F["User hành động ngay"]
+</pre>
+<p><strong>Ví dụ thực tế:</strong> Khi user hỏi "tôi muốn đến sài gòn", NEO trả danh sách chi tiết từ Hải Phòng, Nha Trang, Hà Nội, Đà Nẵng, Huế → TP.HCM với giá vé và ngày bay cụ thể.</p>
+
+<h3>6.2 Low-confidence Path</h3>
+<pre class="mermaid">
+flowchart TD
+    A["User hỏi quốc tế, chỉ cung cấp tên quốc gia"] --> B["NEO nhận diện thiếu thành phố"]
+    B --> C{"Product có hỏi lại không?"}
+    C -->|"KHÔNG ❌"| D["Tự giả định Lisbon và tiếp tục"]
+    D --> E["User nhận kết quả dựa trên giả định sai"]
+    E --> F["Nguy cơ: toàn bộ luồng sai nhu cầu thật"]
+</pre>
+<p><strong>Vấn đề:</strong> Low-confidence path chưa tồn tại. Khi thiếu thông tin quan trọng, NEO tự điền giả định thay vì hỏi lại.</p>
+
+<h3>6.3 Failure Path</h3>
+<pre class="mermaid">
+flowchart TD
+    A["Không tìm thấy chuyến bay"] --> B["Trả lỗi + thông tin liên hệ"]
+    B --> C{"User có cách tiếp tục trong app?"}
+    C -->|"Không"| D["User bị kẹt"]
+    C -->|"Gọi tổng đài"| E["User phải rời kênh chat"]
+    D --> F["Mất user"]
+    E --> F
+</pre>
+<p><strong>Vấn đề:</strong> Dead end tuyệt đối. Không có cơ chế phục hồi trong-app. User buộc phải rời kênh chat.</p>
+
+<h3>6.4 Correction Path</h3>
+<pre class="mermaid">
+flowchart TD
+    A["User: tôi không muốn đến lisbon"] --> B["NEO xóa Lisbon"]
+    B --> C["Yêu cầu user cung cấp điểm đến mới"]
+    C --> D{"Correction có được ghi nhớ?"}
+    D -->|"Trong phiên"| E["Không gợi ý lại Lisbon phiên này"]
+    D -->|"Dài hạn"| F["Phiên sau gợi ý lại như cũ ❌"]
+    E --> G["Chỉ có giá trị trong 1 phiên"]
+</pre>
+<p><strong>Vấn đề:</strong> Correction chỉ tồn tại trong phiên. Khi NEO tự ý ghi đè (Porto → Lisbon), user không có cơ chế phát hiện và sửa.</p>
+</div>
+
+<!-- ====== 7. FINDING NOTE CUỐI CÙNG ====== -->
+<div class="section" style="border:2px solid var(--danger);background:#fff5f5">
+<h2 style="color:var(--danger);border-bottom-color:#fecaca"><span class="num" style="background:var(--danger)">!</span> Finding Note Cuối Cùng</h2>
+
+<div style="background:#1e293b;color:#e2e8f0;padding:20px 24px;border-radius:8px;font-size:.9rem;line-height:1.7;margin:16px 0">
+Khi người dùng dùng NEO để tìm chuyến bay quốc tế với thông tin chưa đầy đủ,<br>
+NEO <strong style="color:#f87171">tự giả định dữ liệu</strong> quan trọng, <strong style="color:#fbbf24">mất ngữ cảnh hội thoại</strong> khi follow-up,<br>
+<strong style="color:#f87171">từ chối điểm đến</strong> mà chính nó đã gợi ý, và <strong style="color:#f87171">không có cơ chế phục hồi</strong> khi không tìm thấy chuyến bay.<br><br>
+→ Người dùng trải qua <strong>15+ lượt hội thoại</strong> nhưng vẫn không đạt được mục tiêu.<br><br>
+<span style="color:#94a3b8">Lỗi trải đều: Context Management · Data-tool · UX Recovery</span>
+</div>
+
+<h3>Product Decision</h3>
+<div style="background:var(--danger-light);padding:20px 24px;border-radius:8px;font-size:.9rem">
+<ol style="margin:0;padding-left:20px">
+  <li style="margin-bottom:8px"><strong>Context-aware conversation</strong> — mọi follow-up phải xử lý trong ngữ cảnh toàn bộ phiên</li>
+  <li style="margin-bottom:8px"><strong>Data consistency</strong> — danh sách gợi ý phải đồng bộ với backend</li>
+  <li style="margin-bottom:8px"><strong>Guided failure recovery</strong> — mỗi failure response kèm ít nhất 2 phương án phục hồi</li>
+  <li style="margin-bottom:8px"><strong>Transparent override</strong> — khi thay đổi dữ liệu user, phải thông báo rõ lý do</li>
+  <li style="margin-bottom:8px"><strong>Explicit scope declaration</strong> — minh bạch phạm vi hỗ trợ ngay từ đầu</li>
+</ol>
+</div>
+</div>
+
+<!-- ====== 8. SPEC CHANGE ====== -->
+<div class="section">
+<h2><span class="num">8</span> SPEC Change Đề Xuất</h2>
+
+<h3>Requirement 1 — Context Window Management</h3>
+<pre><code>NEO must maintain a conversation context window of at least 5-7 turns.
+Every follow-up must be interpreted within the current session context.</code></pre>
+<table>
+  <tr><th>User nói</th><th>NEO phải hiểu trong ngữ cảnh</th></tr>
+  <tr><td>"còn điểm nào khác không?"</td><td>Điểm đến khác tại Bồ Đào Nha</td></tr>
+  <tr><td>"ngày gần nhất"</td><td>Ngày gần nhất cho chuyến bay đang tra cứu</td></tr>
+  <tr><td>"tôi không muốn đến lisbon"</td><td>Loại bỏ Lisbon, giữ nguyên các trường khác</td></tr>
+</table>
+
+<h3>Requirement 2 — Data Consistency</h3>
+<pre><code>NEO must only suggest destinations actually supported by the flight search backend.</code></pre>
+<table>
+  <tr><th>Tình huống</th><th>Hiện tại</th><th>Mong đợi</th></tr>
+  <tr><td>NEO gợi ý Porto, backend không hỗ trợ</td><td>Âm thầm đổi Lisbon</td><td>Không gợi ý Porto, hoặc thông báo rõ</td></tr>
+  <tr><td>User chọn điểm NEO vừa gợi ý</td><td>Có thể bị từ chối sau vài lượt</td><td>Điểm đã gợi ý phải tìm được chuyến bay</td></tr>
+</table>
+
+<h3>Requirement 3 — Guided Failure Recovery</h3>
+<pre><code>When no flights found, NEO must provide at least 2 personalized recovery options.</code></pre>
+<pre><code>Không tìm thấy chuyến bay Hà Nội - Lisbon ngày 05/06/2026.
+
+Gợi ý cho bạn:
+1. Ngày gần nhất có chuyến là 08/06/2026 — bạn muốn thử không?
+2. Sân bay gần Lisbon nhất có chuyến là Madrid (MAD) ngày 05/06/2026.
+3. Gọi tổng đài 1900 1100 để được tư vấn chi tiết.</code></pre>
+
+<h3>Requirement 4 — Transparent Data Override</h3>
+<pre><code>If NEO must change user-confirmed data, it must explicitly notify the reason and request re-confirmation.</code></pre>
+<pre><code>Porto (OPO) hiện không có chuyến bay của Vietnam Airlines.
+Các điểm đến tại Bồ Đào Nha được hỗ trợ:
+- Lisbon (LIS)
+- Faro (FAO)
+
+Bạn vui lòng chọn một điểm đến khác.</code></pre>
+
+<h3>Requirement 5 — Explicit Scope Declaration</h3>
+<pre><code>At session start, NEO should declare its scope clearly to set correct expectations.</code></pre>
+<pre><code>Chào bạn! NEO có thể hỗ trợ:
+- Tra cứu chuyến bay nội địa (đầy đủ giá vé, ngày bay, hạng vé)
+- Tra cứu chuyến bay quốc tế (vui lòng cung cấp mã sân bay cụ thể)
+- Thông tin hành lý, thủ tục check-in</code></pre>
+
+<h3>Requirement 6 — Frustration Detection &amp; Escalation</h3>
+<pre><code>NEO must detect user frustration and proactively offer escalation to a human agent.</code></pre>
+<p>Tín hiệu cần phát hiện:</p>
+<ul>
+  <li>User phải nhắc lại thông tin ≥ 2 lần</li>
+  <li>Ngôn ngữ tiêu cực ("m ngu vl", "không có điểm đến à?")</li>
+  <li>User gõ "gặp tư vấn viên"</li>
+</ul>
+<pre><code>Có vẻ NEO chưa hỗ trợ được như bạn mong muốn.
+Bạn có muốn NEO chuyển bạn đến tư vấn viên không?</code></pre>
+</div>
+
+<!-- ====== 9. KIỂM TRA ====== -->
+<div class="section">
+<h2><span class="num">9</span> Tự kiểm trước khi nộp</h2>
+<ul class="checklist">
+  <li>Có ít nhất 1 observation cụ thể từ hội thoại thật</li>
+  <li>Có đủ 4 paths (happy, low-confidence, failure, correction)</li>
+  <li>Finding được viết thành product decision, không chỉ là nhận xét</li>
+  <li>Sketch có as-is và to-be</li>
+  <li>Có một câu nói rõ finding này sẽ đổi gì trong SPEC</li>
+</ul>
+</div>
+
+</div>
+
+<footer>
+  Workshop — Mổ App AI Thật · Vietnam Airlines NEO · 06/2026
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+    securityLevel: 'loose'
+  });
+</script>
+</body>
+</html>

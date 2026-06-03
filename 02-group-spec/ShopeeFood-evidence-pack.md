@@ -2,7 +2,7 @@
 
 ## 1. Nhóm và track
 
-**Tên nhóm:** ShopeeFood Decision Support
+**Tên nhóm:** B6
 **Track:** Food delivery / ordering
 **Product/app đã chọn:** ShopeeFood
 **Build slice đang nghĩ:** Giúp sinh viên/người đi làm chọn bữa trưa phù hợp trong dưới 1 phút bằng gợi ý 3 lựa chọn dựa trên ngân sách, khẩu vị, thời gian giao và voucher.
@@ -27,8 +27,8 @@
 
 | App / mô hình tham khảo | Họ xử lý task này thế nào? | Pattern học được | Có áp dụng trong 1 ngày không? |
 |---|---|---|---|
-| Now / Grab | Gợi ý quán, hiển thị voucher & phí ship rõ ràng | Hiển thị tổng chi phí sau voucher/ship ngay | Có thể áp dụng giao diện gợi ý đơn giản |
-| Momo / Moni | Hỏi người dùng nhu cầu qua chat rồi trả lời | Hỏi lại khi thông tin chưa rõ | Có thể áp dụng phần hỏi bổ sung nếu user mơ hồ |
+| Now / GrabFood | Gợi ý quán, hiển thị voucher & phí ship rõ ràng | Hiển thị tổng chi phí sau voucher/ship ngay | Có thể áp dụng giao diện gợi ý đơn giản |
+| Beamin / GoFood | Cung cấp bộ lọc nhanh và đề xuất món phổ biến, có section “gợi ý hôm nay” | Dùng các bộ lọc thông minh và xếp hạng để giúp user chọn nhanh | Có thể áp dụng phần filter + đề xuất top 3 |
 
 ## 5. Evidence -> Insight
 

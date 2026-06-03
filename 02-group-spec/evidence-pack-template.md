@@ -18,15 +18,16 @@ Nhóm tự dùng app/workflow và ghi lại điểm gãy.
 | Nhập "hay mệt mỏi, đôi khi đau đầu" → AI liệt kê 7 nhóm nguyên nhân, không gợi ý được 1 khoa cụ thể, hỏi chung "tìm bác sĩ phù hợp không?" | [Tự chụp] bookingcare.vn/tro-ly-ai/dat-lich-i1 | Low-confidence | AI dump thông tin thay vì hỏi thêm để thu hẹp → user đọc xong vẫn không biết đi đâu |
 | Nhập "đau ngực, khó thở, tay trái tê" → AI cảnh báo "đến cấp cứu ngay" nhưng ngay sau vẫn hỏi "bạn có muốn đặt lịch Tim mạch không?" | [Tự chụp] bookingcare.vn/tro-ly-ai/dat-lich-i1 | Failure | Mâu thuẫn logic: cảnh báo cấp cứu + offer đặt lịch thường trong cùng 1 response — failure mode nguy hiểm nhất |
 
-## 3. User / review / social evidence
+## 3. User / review / social evidence (Vũ Duy Bảo - 2A202600565)
 
 Nguồn có thể là review App Store/Play, group, comment, phỏng vấn nhanh, hoặc nguồn public khác.
 
 | Quote / review / observation | Nguồn | User là ai? | Pain/failure mode |
 |---|---|---|---|
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| "Em đăng ký đóng tiền xong tới bệnh viện người ta bắt bốc số lại nè. Không xài được đâu mọi người đừng đăng ký phí tiền." | App Store Customer Reviews | Bệnh nhân đặt khám tại tuyến viện công lớn. | Lỗi đứt gãy kết nối On-to-Off: Hệ thống app và bệnh viện không đồng bộ diện rộng, mã đặt chỗ bị vô hiệu hóa tại quầy tiếp đón trực tiếp. |
+| "Có thím nào đặt hẹn khám bệnh qua web Bookingcare.vn chưa cho em chút kinh nghiệm với. Liệu có uy tín lắm không?" | Diễn đàn VOZ - Thread #87515 | Người dùng mới đang khảo sát mức độ uy tín của bên thứ ba. | Rào cản lòng tin kỹ thuật số (Digital Trust): Người bệnh lo ngại lịch hẹn không được cơ sở y tế xác nhận chính thức. |
+| "App lỗi, vô đăng kí không load nổi form chọn ngày tháng..." và các phàn nàn về hiệu năng thiết bị. | Google Play Store Reviews | Người dùng thiết bị Android (hệ điều hành cũ). | Lỗi tối ưu hóa ứng dụng (App Optimization): Tốc độ tải trang (UI/UX) chậm, gây treo máy hoặc gián đoạn luồng đặt lịch/thanh toán. |
+| "Phòng khám đổi lịch bác sĩ đột xuất nhưng tổng đài không báo trước, đến nơi mới ngã ngửa làm mất công xin nghỉ làm." | BookingCare Official Fanpage | Bệnh nhân đặt lịch đích danh chuyên gia/bác sĩ giỏi. | Thiếu hệ thống cập nhật thời gian thực (Real-time Sync): Lịch trực của bác sĩ tại viện thay đổi nhưng không được tự động đồng bộ sang nền tảng BookingCare. |
 
 Nếu chưa có nguồn ngoài nhóm, ghi rõ:
 
@@ -42,18 +43,17 @@ Nếu chưa có nguồn ngoài nhóm, ghi rõ:
 | August AI chatbot — AI triage quốc tế (arxiv.org/pdf/2412.12538) | Hỏi ít câu hơn (47% fewer questions), đạt 95.8% accuracy gợi ý chuyên khoa, có confidence score rõ ràng | Conversational triage: hỏi thêm 1–2 câu để thu hẹp thay vì dump thông tin | ✅ Reuse prompt approach, đơn giản hóa thành 1 LLM call |
 | Symptomate / Ada Health — symptom checker quốc tế | Hỏi triệu chứng tuần tự → gợi ý condition → gợi ý care level (tự theo dõi / đặt lịch / cấp cứu) | Tách rõ 3 care level output — không bao giờ offer đặt lịch khi output là cấp cứu | ✅ Pattern red flag handling áp dụng được ngay |
 
-## 5. Evidence -> Insight
+## 5. Evidence -> Insight (Vũ Duy Bảo - 2A202600565)
 
-```text
 Evidence nổi bật nhất:
+AI của BookingCare bị mâu thuẫn logic nghiêm trọng khi xử lý triệu chứng nguy hiểm ("đau ngực, khó thở, tay trái tê"): vừa cảnh báo người dùng đi cấp cứu ngay, vừa chào mời đặt lịch khám Tim mạch thường trong cùng một câu trả lời. Ngoài ra, AI đổ tràn lan thông tin (7 nhóm nguyên nhân) khi gặp triệu chứng mơ hồ thay vì hỏi thêm để thu hẹp chuyên khoa
 
 Insight:
-User không chỉ gặp [surface problem].
-Thật ra họ cần [deeper need / decision support / trust / recovery].
+User không chỉ gặp [lỗi mâu thuẫn logic và tràn dữ liệu của chatbot].
+Thật ra họ cần [sự định hướng y khoa an toàn, phân tầng nguy cơ chính xác để hỗ trợ ra quyết định mà không gây hoang mang hay nguy hiểm tính mạng].
 
 Opportunity:
-AI có thể giúp bằng cách [augment/automate hành động hẹp].
-```
+AI có thể giúp bằng cách [thiết lập rào chắn an toàn (Guardrails) để chặn đặt lịch thường khi có dấu hiệu cấp cứu, đồng thời tự động kích hoạt bộ câu hỏi trắc nghiệm lâm sàng để thu hẹp chuyên khoa khi triệu chứng mơ hồ].
 
 ## 6. Evidence đổi SPEC như thế nào?
 

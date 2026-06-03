@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Workshop: Mổ Xẻ Sản Phẩm AI Thật</title>
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --secondary-color: #078643;
+            --danger-color: #de350b;
+            --warning-color: #ffab00;
+            --text-dark: #172b4d;
+            --bg-light: #f4f5f7;
+            --border-color: #dfe1e6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #fafbfc;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(9, 30, 66, 0.08);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 28px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--text-dark);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 10px;
+            margin-top: 35px;
+            font-size: 20px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #253858;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .badge-danger { background-color: var(--danger-color); }
+        .badge-success { background-color: var(--secondary-color); }
+        .badge-warning { background-color: var(--warning-color); }
+        .badge-info { background-color: var(--primary-color); }
+
+        /* Giao diện hiển thị Bằng chứng (Evidence) */
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin: 20px 0;
+        }
+
+        .evidence-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .evidence-img-container {
+            width: 100%;
+            background: #f8f9fa;
+            border: 1px dashed #b3bac5;
+            border-radius: 6px;
+            margin-top: 15px;
+            text-align: center;
+            overflow: hidden;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .evidence-img-container img {
+            max-width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .img-placeholder-text {
+            color: #7a869a;
+            font-size: 13px;
+            padding: 20px;
+        }
+
+        .decision-blockquote {
+            background-color: #deebff;
+            border-left: 6px solid var(--primary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .sketch-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .flow-box {
+            border: 1px dashed #a5adba;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #fdfdfd;
+        }
+
+        .flow-box.as-is { border-left: 4px solid var(--danger-color); }
+        .flow-box.to-be { border-left: 4px solid var(--secondary-color); }
+
+        .flow-step {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            position: relative;
+            font-size: 13px;
+        }
+
+        .flow-step::after {
+            content: "↓";
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #a5adba;
+        }
+
+        .flow-step:last-child::after { content: ""; }
+
+        .flow-step.break {
+            border: 1px solid var(--danger-color);
+            background-color: #ffebe6;
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+        
+        .flow-step.fixed {
+            border: 1px solid var(--secondary-color);
+            background-color: #e6fcff;
+            font-weight: bold;
+        }
+
+        .checklist-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist-item input {
+            margin-right: 10px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Workshop — Mổ App AI Thật</h1>
+
+    <h2>1. Sản phẩm lựa chọn dùng thử</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>AI feature</th>
+                <th>Cách truy cập</th>
+                <th>Trạng thái khảo sát</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>V-App — V-AI</strong></td>
+                <td>Trợ lý voice/text, gợi ý theo ngữ cảnh</td>
+                <td>App V-App trên Mobile</td>
+                <td><span class="badge badge-info">Đã chọn phân tích</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>2. Dùng thử: Promise vs Reality</h2>
+    <ul>
+        <li><strong>Product hứa gì?</strong> Trợ lý ảo thông minh vượt trội, thấu hiểu ngữ cảnh (Contextual AI) nhằm hỗ trợ đắc lực và phản hồi cá nhân hóa chuẩn xác trên mọi hành trình di chuyển.</li>
+        <li><strong>User nào được hứa sẽ được giúp?</strong> Chủ sở hữu xe thông minh trong hệ sinh thái hoặc hành khách cần tìm kiếm dữ liệu/tiện ích rảnh tay.</li>
+        <li><strong>Bạn kỳ vọng AI làm được task nào?</strong> AI phải tự động nhận diện vùng địa lý thông minh, đồng bộ dữ liệu động thời gian thực (Real-time live data) và hỗ trợ đa ngôn ngữ không rào cản.</li>
+        <li><strong>Khi dùng thật, điểm gãy xuất hiện ở đâu?</strong> Hệ thống bị gãy nghiêm trọng tại các lớp dữ liệu và ngữ cảnh: Trả dữ liệu tĩnh lỗi thời (Outdated data), mặc định bừa bãi khu vực địa lý của user, và từ chối xử lý ngôn ngữ phổ thông khác.</li>
+    </ul>
+
+    <h3>Evidence thu thập từ thực tế kiểm thử (Điểm Gãy Trải Nghiệm):</h3>
+    <div class="evidence-grid">
+        <div class="evidence-card">
+            <div>
+                <span class="badge badge-danger">Evidence 1: Mất Ngữ Cảnh Vị Trí</span>
+                <p style="margin: 10px 0 5px 0;"><strong>Input đã thử:</strong></p>
+                <code style="background: #f4f5f7; padding: 4px; border-radius: 4px; display: block;">"Tôi muốn tìm quán cơm ngon gần đây"</code>
+                <p style="font-size: 13px; margin-top: 10px;"><strong>Hành vi quan sát:</strong> AI không chủ động đưa luồng hỏi lại (Clarification) vị trí của user mà tự động trả kết quả tại TP. Hồ Chí Minh (trong khi user đang ở miền khác). Giao diện hiển thị nút "Bật định vị" thủ công rất thô.</p>
+            </div>
+            <div class="evidence-img-container">
+                <img src="foodshop.jfif" alt="Evidence Tìm Quán Cơm Không Định Vị" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="img-placeholder-text" style="display:none;">
+                    ⚠️ Không tìm thấy file <code>image_f4afe1.png</code>.<br>Hãy đổi tên ảnh chụp quán cơm của bạn thành đúng tên này và lưu cùng thư mục với file HTML.
+                </div>
+            </div>
+        </div>
+
+        <div class="evidence-card">
+            <div>
+                <span class="badge badge-danger">Evidence 2: Dữ Liệu Cũ Sai Lệch</span>
+                <p style="margin: 10px 0 5px 0;"><strong>Input đã thử:</strong></p>
+                <code style="background: #f4f5f7; padding: 4px; border-radius: 4px; display: block;">"Xe buýt hà nội vé đắt k"</code>
+                <p style="font-size: 13px; margin-top: 10px;"><strong>Hành vi quan sát:</strong> AI truy xuất thông tin biểu giá cũ (7k - 8k - 9k). Trong khi thực tế giá vé xe buýt Hà Nội đã tăng đáng kể (nhiều tuyến đã vượt mức 10k). Ngoài ra, nội dung hoàn toàn thiếu nhãn thời gian: "Giá áp dụng từ thời điểm nào".</p>
+            </div>
+            <div class="evidence-img-container">
+                <img src="busticket.jfif" alt="Evidence Giá Vé Xe Buýt Bị Cũ" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="img-placeholder-text" style="display:none;">
+                    ⚠️ Không tìm thấy file <code>image_041ce1.png</code>.<br>Hãy đổi tên ảnh chụp giá vé xe buýt thành đúng tên này và lưu cùng thư mục với file HTML.
+                </div>
+            </div>
+        </div>
+
+        <div class="evidence-card">
+            <div>
+                <span class="badge badge-danger">Evidence 3: Rào Cản Ngôn Ngữ</span>
+                <p style="margin: 10px 0 5px 0;"><strong>Input đã thử:</strong></p>
+                <code style="background: #f4f5f7; padding: 4px; border-radius: 4px; display: block;">"Bonjour, tu est qui"</code>
+                <p style="font-size: 13px; margin-top: 10px;"><strong>Hành vi quan sát:</strong> Trợ lý ảo hoàn toàn không hỗ trợ đa ngôn ngữ mở rộng (ngoài Anh/Việt) và chặn đứng trải nghiệm bằng một câu phản hồi tĩnh cứng nhắc thay vì tích hợp mô-đun dịch thuật tự động.</p>
+            </div>
+            <div class="evidence-img-container">
+                <img src="france.jfif" alt="Evidence Không Hỗ Trợ Đa Ngôn Ngữ" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="img-placeholder-text" style="display:none;">
+                    ⚠️ Không tìm thấy file <code>image_f4af62.jpg</code>.<br>Hãy đổi tên ảnh chụp chặn ngôn ngữ thành đúng tên này và lưu cùng thư mục với file HTML.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>3. Phân tích 4 Luồng Trải Nghiệm (4 Paths)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Path</th>
+                <th>Câu hỏi cần trả lời</th>
+                <th>Trạng thái thực tế trên V-AI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-success">Happy Path</span></td>
+                <td>Khi AI đúng và tự tin, user thấy gì?</td>
+                <td>Trả về một danh sách/khối văn bản chữ thô (Raw text) rất dài, ép user phải dừng lại để tập trung đọc, gây mất an toàn nếu đang lái xe.</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-warning">Low-confidence</span></td>
+                <td>Khi AI không chắc, hệ thống có hỏi lại hoặc show options không?</td>
+                <td><strong>Chưa tối ưu.</strong> Thay vì đưa câu hỏi phân loại (Ví dụ: "Bạn muốn tìm quán ăn tại khu vực nào?"), hệ thống tự động gán dữ liệu mặc định của một thành phố khác mà không cần sự xác nhận của người dùng.</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-danger">Failure Path</span></td>
+                <td>Khi AI sai, user biết bằng cách nào và sửa thế nào?</td>
+                <td>User nhận diện thông tin sai lệch bằng kiến thức thực tế của mình (ví dụ biết giá vé xe buýt thật đã tăng). User buộc phải thoát ứng dụng vì trên giao diện không có nút báo lỗi hay sửa thông tin.</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-info">Correction Path</span></td>
+                <td>Khi user sửa, correction có được lưu/học lại không?</td>
+                <td>Biến mất hoàn toàn ngay sau phiên chat, hệ thống không hề có bộ nhớ lưu lại lịch sử chỉnh sửa để tái huấn luyện mô hình (Fine-tuning log).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4. Viết Finding thành Quyết Định Sản Phẩm (Product Decision)</h2>
+    <div class="decision-blockquote">
+        <strong>[PRODUCT DECISION]</strong><br>
+        Khi người dùng thực hiện các câu hỏi tra cứu dữ liệu biến động liên tục (Chi phí công cộng, điểm ăn uống cục bộ), V-AI đã gặp lỗi tại <strong>Data-tool Layer (Sử dụng dữ liệu tĩnh lỗi thời)</strong> và <strong>Intent Layer (Bỏ qua định vị địa lý của user)</strong>, hậu quả là cung cấp thông tin sai lệch thực tế, làm tổn hại niềm tin cốt lõi vào một trợ lý thông minh.<br><br>
+        <strong>Đổi mới trong tài liệu SPEC:</strong> V-AI bắt buộc phải triển khai cơ chế kiểm tra nhãn thời gian dữ liệu (Recency Validation) và tự động kích hoạt API Web-Search đối với các thực thể tra cứu giá cả. Đồng thời, đối với các intent tìm kiếm dịch vụ quanh đây, hệ thống phải bắt buộc ép luồng kiểm tra GPS nội bộ trước khi kết xuất thông tin.
+    </div>
+
+    <h2>5. Sơ đồ Luồng Trải Nghiệm (Sketch As-is / To-be)</h2>
+    <div class="sketch-section">
+        <div class="flow-box as-is">
+            <h3>Luồng hiện tại (As-is)</h3>
+            <div class="flow-step">User nhập câu hỏi biến động ("Giá vé xe buýt Hà Nội", "Tìm quán ăn gần đây")</div>
+            <div class="flow-step">AI bỏ qua bước check GPS tự động + Không kiểm tra hạn cập nhật của data</div>
+            <div class="flow-step">AI gọi dữ liệu tĩnh từ Vector Database cũ</div>
+            <div class="flow-step break">🔴 ĐIỂM GÃY: Trả thông tin sai thực tế (Giá vé cũ 7k-9k) HOẶC tự động hiển thị sai tỉnh thành địa phương.</div>
+        </div>
+        <div class="flow-box to-be">
+            <h3>Luồng cải tiến đề xuất (To-be)</h3>
+            <div class="flow-step">User nhập câu hỏi biến động ("Giá vé xe buýt Hà Nội", "Tìm quán ăn gần đây")</div>
+            <div class="flow-step fixed">AI chạy ngầm module check GPS nội bộ + RAG rà soát Recency Tag</div>
+            <div class="flow-step">Nếu data cũ vượt quá hạn, tự động kích hoạt Web-Search API để quét tin tức mới nhất</div>
+            <div class="flow-step fixed">🟢 PATH ĐÃ SỬA: Xuất câu trả lời chuẩn xác: "Giá vé xe buýt HN hiện tại đã tăng lên mức từ 8k-20k..." + Thẻ thông tin ghi rõ "Cập nhật mới nhất".</div>
+        </div>
+    </div>
+
+    <h2>6. Tự kiểm trước khi nộp (Self-Check)</h2>
+    <div class="checklist-item"><input type="checkbox" checked> Có ít nhất 1 screenshot hoặc observation cụ thể (Đã tích hợp 3 ảnh minh chứng trực tiếp dưới các thẻ).</div>
+    <div class="checklist-item"><input type="checkbox" checked> Có đủ 4 paths rõ ràng trong bảng phân tích hệ thống.</div>
+    <div class="checklist-item"><input type="checkbox" checked> Finding được cấu trúc hóa chặt chẽ thành Product Decision theo biểu mẫu chuẩn.</div>
+    <div class="checklist-item"><input type="checkbox" checked> Bản sketch As-is / To-be phân biệt rõ ràng lớp giải pháp xử lý dữ liệu động.</div>
+    <div class="checklist-item"><input type="checkbox" checked> Nêu rõ ràng hành động thay đổi cụ thể thuộc lớp SPEC tài liệu kỹ thuật.</div>
+</div>
+
+</body>
+</html>

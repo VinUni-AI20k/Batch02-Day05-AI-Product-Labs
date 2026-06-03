@@ -17,6 +17,9 @@ Nhóm tự dùng app/workflow và ghi lại điểm gãy.
 | Nhập "đau mắt đỏ, chảy nước mắt 2 ngày" → AI gợi ý đúng Chuyên khoa Mắt, offer đặt lịch ngay | [Tự chụp] bookingcare.vn/tro-ly-ai/dat-lich-i1 | Happy | Happy path hoạt động tốt khi triệu chứng rõ ràng, 1 khoa |
 | Nhập "hay mệt mỏi, đôi khi đau đầu" → AI liệt kê 7 nhóm nguyên nhân, không gợi ý được 1 khoa cụ thể, hỏi chung "tìm bác sĩ phù hợp không?" | [Tự chụp] bookingcare.vn/tro-ly-ai/dat-lich-i1 | Low-confidence | AI dump thông tin thay vì hỏi thêm để thu hẹp → user đọc xong vẫn không biết đi đâu |
 | Nhập "đau ngực, khó thở, tay trái tê" → AI cảnh báo "đến cấp cứu ngay" nhưng ngay sau vẫn hỏi "bạn có muốn đặt lịch Tim mạch không?" | [Tự chụp] bookingcare.vn/tro-ly-ai/dat-lich-i1 | Failure | Mâu thuẫn logic: cảnh báo cấp cứu + offer đặt lịch thường trong cùng 1 response — failure mode nguy hiểm nhất |
+| **[Vinmec]** Form yêu cầu user tự chọn Bệnh viện → Chuyên khoa → Bác sĩ trước khi thấy slot — không có gợi ý từ triệu chứng | asset/vinmec1.png | Low-confidence | Toàn bộ burden chẩn đoán sơ bộ đẩy về user: ai không biết mình cần khoa gì sẽ bị kẹt ngay bước đầu |
+| **[Vinmec]** Nhập "Lý do khám: Tôi đau đầu lắm sắp ngất rồi" (dấu hiệu cấp cứu tiềm năng) → hệ thống không có triage, không cảnh báo, xử lý như booking thường và hiển thị nút "Gửi thông tin" | asset/vinmec2.png | Failure | No safety guardrail tại điểm nhập lý do khám — triệu chứng nghiêm trọng bị bỏ qua hoàn toàn, nguy hiểm hơn cả BookingCare AI vì không có cảnh báo gì |
+| **[Vinmec]** Sau khi submit form đầy đủ, hệ thống hiện note: "Tổng đài viên Vinmec sẽ gọi lại để xác nhận thời gian" → lịch chưa được xác nhận ngay | asset/vinmec1.png | Low-confidence | On-to-Off gap: đặt lịch online ≠ xác nhận lịch, vẫn phụ thuộc human loop — tương đồng với review App Store ở Section 3 |
 
 ## 3. User / review / social evidence (Vũ Duy Bảo - 2A202600565)
 
@@ -42,6 +45,7 @@ Nếu chưa có nguồn ngoài nhóm, ghi rõ:
 | BookingCare AI — Trợ lý AI đặt lịch (bookingcare.vn/tro-ly-ai/dat-lich-i1) | Happy path: gợi ý đúng khoa khi triệu chứng rõ. Low-confidence: dump 7 nhóm nguyên nhân, không thu hẹp, không hỏi thêm. Red flag: cảnh báo cấp cứu nhưng vẫn offer đặt lịch thường trong cùng response | Gap rõ ở low-confidence (không dẫn đến quyết định) và red flag (logic mâu thuẫn). Happy path đã ổn — không cần làm lại | ✅ Fix 2 gap này đủ differentiation trong 1 ngày |
 | August AI chatbot — AI triage quốc tế (arxiv.org/pdf/2412.12538) | Hỏi ít câu hơn (47% fewer questions), đạt 95.8% accuracy gợi ý chuyên khoa, có confidence score rõ ràng | Conversational triage: hỏi thêm 1–2 câu để thu hẹp thay vì dump thông tin | ✅ Reuse prompt approach, đơn giản hóa thành 1 LLM call |
 | Symptomate / Ada Health — symptom checker quốc tế | Hỏi triệu chứng tuần tự → gợi ý condition → gợi ý care level (tự theo dõi / đặt lịch / cấp cứu) | Tách rõ 3 care level output — không bao giờ offer đặt lịch khi output là cấp cứu | ✅ Pattern red flag handling áp dụng được ngay |
+| Vinmec.com — form-based booking truyền thống (không có AI) | User tự chọn bệnh viện → chuyên khoa → bác sĩ → slot → điền form tự do. Field "Lý do khám" free text, không triage. Sau submit vẫn cần tổng đài gọi lại xác nhận. | Baseline không có AI: user burden cao nhất, zero symptom→specialty mapping, zero urgency detection, zero instant confirm — contrast rõ nhất để thấy AI có thể fill gap gì | ✅ Dùng làm baseline so sánh, không cần rebuild |
 
 ## 5. Evidence -> Insight (Vũ Duy Bảo - 2A202600565)
 

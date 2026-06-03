@@ -118,5 +118,7 @@ Nên sửa bằng low-confidence path: Khi query thiếu định danh sở hữu
 - [x] Có một câu nói rõ finding này sẽ đổi gì trong SPEC.
 
 **Product Decision:** 
-```Bổ sung logic routing (định tuyến) vào SPEC: Khi Intent (Ý định) của người dùng là 'Truy vấn lịch trình' nhưng thiếu Entity sở hữu rõ ràng (ví dụ: thiếu từ khóa 'của tôi', 'phòng ban'), hệ thống không được mặc định gọi Web Search API. Thay vào đó, bắt buộc kích hoạt Fallback UI: Hiển thị câu hỏi xác nhận kèm 2 Suggestion Chips (Lịch cá nhân / Sự kiện công cộng) để người dùng chủ động điều hướng luồng dữ liệu.
+
+```text
+Bổ sung logic routing (định tuyến) vào SPEC: Khi Intent (Ý định) của người dùng là 'Truy vấn lịch trình' nhưng thiếu Entity sở hữu rõ ràng (ví dụ: thiếu từ khóa 'của tôi', 'phòng ban'), hệ thống không được mặc định gọi Web Search API. Thay vào đó, bắt buộc kích hoạt Fallback UI: Hiển thị câu hỏi xác nhận kèm 2 Suggestion Chips (Lịch cá nhân / Sự kiện công cộng) để người dùng chủ động điều hướng luồng dữ liệu.
 ```

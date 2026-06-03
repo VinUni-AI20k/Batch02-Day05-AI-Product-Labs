@@ -111,50 +111,89 @@ Trả về JSON theo đúng schema đã định nghĩa. KHÔNG thêm text ngoài
 """
 
     # Gọi LLM API
-    api_key = os.getenv("OPENAI_API_KEY")
     model = os.getenv("MODEL_NAME", "gpt-4o-mini")
+    model_lower = model.lower()
     
     roadmap_data = None
     input_tokens = 0
     output_tokens = 0
     
-    if api_key:
-        try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(
-                    "https://api.openai.com/v1/chat/completions",
-                    headers={"Authorization": f"Bearer {api_key}"},
-                    json={
-                        "model": model,
-                        "messages": [
-                            {"role": "system", "content": load_system_prompt()},
-                            {"role": "user", "content": user_prompt}
-                        ],
-                        "temperature": 0.2,          # Cố định để đảm bảo nhất quán
-                        "response_format": {"type": "json_object"},  # JSON mode
-                        "max_tokens": 2000
-                    }
-                )
-                response.raise_for_status()
-                data = response.json()
+    if "gpt" in model_lower:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if api_key:
+            try:
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = await client.post(
+                        "https://api.openai.com/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {api_key}"},
+                        json={
+                            "model": model,
+                            "messages": [
+                                {"role": "system", "content": load_system_prompt()},
+                                {"role": "user", "content": user_prompt}
+                            ],
+                            "temperature": 0.2,          # Cố định để đảm bảo nhất quán
+                            "response_format": {"type": "json_object"},  # JSON mode
+                            "max_tokens": 2000
+                        }
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                    
+                    raw_content = data["choices"][0]["message"]["content"]
+                    roadmap_data = json.loads(raw_content)
+                    
+                    # Lấy token usage
+                    usage = data.get("usage", {})
+                    input_tokens = usage.get("prompt_tokens", 0)
+                    output_tokens = usage.get("completion_tokens", 0)
+                    
+            except json.JSONDecodeError as e:
+                logger.error(f"❌ JSON parse error: {e}")
+                roadmap_data = None
+            except httpx.HTTPStatusError as e:
+                logger.error(f"❌ OpenAI API error: {e.response.status_code}")
+                roadmap_data = None
+            except Exception as e:
+                logger.error(f"❌ Unexpected error calling OpenAI: {e}")
+                roadmap_data = None
                 
-                raw_content = data["choices"][0]["message"]["content"]
+    elif "gemini" in model_lower:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            try:
+                import google.generativeai as genai
+                import asyncio
+                
+                genai.configure(api_key=api_key)
+                gemini_model = genai.GenerativeModel(
+                    model_name=model,
+                    system_instruction=load_system_prompt(),
+                    generation_config=genai.GenerationConfig(
+                        temperature=0.2,
+                        response_mime_type="application/json",
+                        max_output_tokens=2048,
+                    )
+                )
+                
+                # Gọi đồng bộ thông qua to_thread để tránh block event loop
+                response = await asyncio.to_thread(gemini_model.generate_content, user_prompt)
+                raw_content = response.text
                 roadmap_data = json.loads(raw_content)
                 
                 # Lấy token usage
-                usage = data.get("usage", {})
-                input_tokens = usage.get("prompt_tokens", 0)
-                output_tokens = usage.get("completion_tokens", 0)
+                usage = response.usage_metadata
+                input_tokens = usage.prompt_token_count if usage else 200
+                output_tokens = usage.candidates_token_count if usage else 500
                 
-        except json.JSONDecodeError as e:
-            logger.error(f"❌ JSON parse error: {e}")
-            roadmap_data = None
-        except httpx.HTTPStatusError as e:
-            logger.error(f"❌ OpenAI API error: {e.response.status_code}")
-            roadmap_data = None
-        except Exception as e:
-            logger.error(f"❌ Unexpected error calling LLM: {e}")
-            roadmap_data = None
+            except json.JSONDecodeError as e:
+                logger.error(f"❌ JSON parse error from Gemini: {e}")
+                roadmap_data = None
+            except Exception as e:
+                logger.error(f"❌ Unexpected error calling Gemini: {e}")
+                roadmap_data = None
+    else:
+        logger.warning(f"⚠️ Không nhận dạng được model: {model}, dùng default fallback")
     
     # Fallback nếu API không hoạt động hoặc không có key
     if roadmap_data is None:

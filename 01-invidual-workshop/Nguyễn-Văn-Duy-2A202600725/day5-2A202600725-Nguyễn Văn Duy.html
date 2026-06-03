@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo cáo phân tích — Moni / MoMo</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #e03b8b;
+    --pink-light: #fce9f3;
+    --pink-mid: #f4b8d8;
+    --yellow: #f5c518;
+    --black: #111;
+    --gray-dark: #2a2a2a;
+    --gray-mid: #666;
+    --gray-light: #f0eff0;
+    --white: #fff;
+    --happy: #1a7a4a;
+    --happy-bg: #e6f7ee;
+    --happy-border: #6fcfa0;
+    --warn: #9a5800;
+    --warn-bg: #fff8e6;
+    --warn-border: #f5c518;
+    --fail: #b91c1c;
+    --fail-bg: #fef2f2;
+    --fail-border: #fca5a5;
+    --conf: #5b21b6;
+    --conf-bg: #f5f3ff;
+    --conf-border: #c4b5fd;
+    --border: 2.5px solid var(--black);
+    --shadow: 4px 4px 0 var(--black);
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: #f7f6f2;
+    color: var(--black);
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .report-header {
+    background: var(--black);
+    color: var(--white);
+    padding: 48px 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .report-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: var(--pink);
+    opacity: 0.15;
+  }
+  .report-header .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--pink);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .report-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    max-width: 640px;
+  }
+  .report-header h1 span { color: var(--yellow); }
+  .meta-grid {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .meta-item .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #888;
+    text-transform: uppercase;
+  }
+  .meta-item .value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 52px;
+  }
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 6px;
+  }
+  .section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-bottom: var(--border);
+    padding-bottom: 12px;
+  }
+
+  /* PROMISE BLOCK */
+  .promise-block {
+    background: var(--black);
+    color: var(--white);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .promise-block .quote {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--yellow);
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+  .promise-block ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .promise-block ul li {
+    font-size: 14px;
+    color: #ccc;
+    padding-left: 16px;
+    position: relative;
+  }
+  .promise-block ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--pink);
+  }
+
+  /* QUERY CARDS */
+  .query-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .query-card {
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    background: var(--white);
+    transition: transform 0.15s;
+  }
+  .query-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--black); }
+  .query-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 2px solid var(--black);
+    background: var(--gray-light);
+  }
+  .query-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-mid);
+    min-width: 28px;
+  }
+  .query-type {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-dark);
+    flex: 1;
+  }
+  .query-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--black);
+    background: var(--white);
+    border: 1.5px solid var(--black);
+    border-radius: 4px;
+    padding: 4px 10px;
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .status-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1.5px solid;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+  .badge-happy  { color: var(--happy); background: var(--happy-bg); border-color: var(--happy-border); }
+  .badge-warn   { color: var(--warn); background: var(--warn-bg); border-color: var(--warn-border); }
+  .badge-fail   { color: var(--fail); background: var(--fail-bg); border-color: var(--fail-border); }
+  .badge-conf   { color: var(--conf); background: var(--conf-bg); border-color: var(--conf-border); }
+
+  .query-body {
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .query-col label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    display: block;
+    margin-bottom: 5px;
+  }
+  .query-col p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--gray-dark);
+  }
+  .gap-note {
+    grid-column: 1 / -1;
+    background: var(--fail-bg);
+    border-left: 3px solid var(--fail-border);
+    border-radius: 0 4px 4px 0;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--fail);
+  }
+  .gap-note.warn-note {
+    background: var(--warn-bg);
+    border-left-color: var(--warn-border);
+    color: var(--warn);
+  }
+
+  /* SUMMARY TABLE */
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .summary-table th {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-right: 1.5px solid #333;
+  }
+  .summary-table th:last-child { border-right: none; }
+  .summary-table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1.5px solid #e5e5e5;
+    border-right: 1.5px solid #e5e5e5;
+    vertical-align: middle;
+  }
+  .summary-table td:last-child { border-right: none; }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table tr:nth-child(even) td { background: var(--gray-light); }
+
+  /* STAT ROW */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .stat-card {
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+    background: var(--white);
+    text-align: center;
+  }
+  .stat-card .num {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-card .lbl {
+    font-size: 12px;
+    color: var(--gray-mid);
+    font-weight: 500;
+  }
+  .stat-happy .num  { color: var(--happy); }
+  .stat-warn .num   { color: var(--warn); }
+  .stat-fail .num   { color: var(--fail); }
+  .stat-conf .num   { color: var(--conf); }
+
+  /* PATH WEAKNESS */
+  .weakness-block {
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    background: var(--white);
+  }
+  .weakness-header {
+    background: var(--fail);
+    color: var(--white);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .weakness-header .icon {
+    font-size: 22px;
+  }
+  .weakness-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .weakness-reasons {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .reason-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .reason-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fail);
+    background: var(--fail-bg);
+    border: 1.5px solid var(--fail-border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .reason-text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .reason-text strong { font-weight: 700; }
+
+  /* TO-BE FLOW */
+  .tobe-flow {
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    background: var(--black);
+    color: var(--white);
+    padding: 28px 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .tobe-flow .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .tobe-flow .step-label {
+    color: var(--yellow);
+    font-weight: 700;
+    min-width: 120px;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+  .tobe-flow .step-content {
+    color: #ccc;
+    flex: 1;
+  }
+  .tobe-flow .step-content em {
+    color: var(--pink);
+    font-style: normal;
+  }
+  .tobe-flow .arrow {
+    color: #555;
+    text-align: center;
+    margin: 4px 0 4px 136px;
+  }
+
+  /* FIX TABLE */
+  .fix-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-top: 24px;
+  }
+  .fix-table th {
+    background: var(--gray-dark);
+    color: var(--white);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+    text-align: left;
+  }
+  .fix-table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1.5px solid #e5e5e5;
+    vertical-align: top;
+  }
+  .fix-table tr:last-child td { border-bottom: none; }
+  .fix-table td:first-child { color: var(--gray-mid); font-weight: 500; width: 35%; border-right: 1.5px solid #e5e5e5; }
+
+  /* CONCLUSION */
+  .conclusion-box {
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    background: var(--white);
+  }
+  .conclusion-box p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--gray-dark);
+    margin-bottom: 12px;
+  }
+  .conclusion-box p:last-child { margin-bottom: 0; }
+  .priority-strip {
+    background: var(--black);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 14px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .priority-strip .lbl { color: var(--yellow); font-weight: 700; white-space: nowrap; }
+  .priority-strip .chain { color: #ccc; }
+
+  /* FOOTER */
+  .report-footer {
+    background: var(--black);
+    color: #555;
+    text-align: center;
+    padding: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  @media print {
+    body { background: white; }
+    .query-card:hover { transform: none; box-shadow: var(--shadow); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="report-header">
+  <div class="eyebrow">■ Workshop cá nhân · Mổ sản phẩm AI thật</div>
+  <h1>Báo cáo phân tích<br><span>Chatbot Moni</span> — MoMo</h1>
+  <div class="meta-grid">
+    <div class="meta-item">
+      <span class="label">Sản phẩm</span>
+      <span class="value">Trợ thủ AI Moni</span>
+    </div>
+    <div class="meta-item">
+      <span class="label">Người thực hiện</span>
+      <span class="value">Duy</span>
+    </div>
+    <div class="meta-item">
+      <span class="label">Thời gian test</span>
+      <span class="value">11:32 – 11:40, 03/06/2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="label">Số query</span>
+      <span class="value">6 queries</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SECTION 1: MỤC TIÊU -->
+  <div class="section">
+    <div class="section-title">01</div>
+    <h2>Mục tiêu</h2>
+    <p style="font-size:15px;color:var(--gray-dark);line-height:1.7">
+      Đánh giá chất lượng thực tế của chatbot Moni theo framework <strong>app → flow → path yếu → sửa</strong>: đọc promise, thử query thực, chụp điểm gãy (kỳ vọng vs thực tế), đề xuất to-be cho path yếu nhất.
+    </p>
+  </div>
+
+  <!-- SECTION 2: PROMISE -->
+  <div class="section">
+    <div class="section-title">02</div>
+    <h2>Promise của sản phẩm</h2>
+    <div class="promise-block">
+      <div class="quote">"Trợ thủ tài chính — phân tích chi tiêu, tư vấn tài chính cá nhân, chatbot trong app MoMo"</div>
+      <ul>
+        <li>Có khả năng đọc dữ liệu giao dịch của user</li>
+        <li>Tư vấn cá nhân hóa dựa trên lịch sử chi tiêu thực</li>
+        <li>Xử lý được các tình huống hỗ trợ giao dịch trong phạm vi MoMo</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 3: QUERY RESULTS -->
+  <div class="section">
+    <div class="section-title">03</div>
+    <h2>Kết quả test — As-is flow</h2>
+    <div class="query-list">
+
+      <!-- Q1 -->
+      <div class="query-card">
+        <div class="query-card-header">
+          <span class="query-num">Q1</span>
+          <span class="query-type">Out-of-scope</span>
+          <span class="query-text">"địa chỉ của Hà Nội ở đâu"</span>
+          <span class="status-badge badge-happy">✓ Happy path</span>
+        </div>
+        <div class="query-body">
+          <div class="query-col">
+            <label>Kỳ vọng</label>
+            <p>Từ chối và redirect về đúng scope MoMo</p>
+          </div>
+          <div class="query-col">
+            <label>Thực tế</label>
+            <p>Từ chối đúng — "Mình chỉ hỗ trợ trong phạm vi sản phẩm MoMo"</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="query-card">
+        <div class="query-card-header">
+          <span class="query-num">Q2</span>
+          <span class="query-type">Query data thật</span>
+          <span class="query-text">"bao nhiêu năm nữa tôi thành tỷ phú"</span>
+          <span class="status-badge badge-warn">⚠ Low-confidence</span>
+        </div>
+        <div class="query-body">
+          <div class="query-col">
+            <label>Kỳ vọng</label>
+            <p>Moni đọc lịch sử giao dịch, tính toán dựa trên data thật của user</p>
+          </div>
+          <div class="query-col">
+            <label>Thực tế</label>
+            <p>Không access được data — hỏi lại thủ công: "tổng chi tiêu trung bình mỗi năm là bao nhiêu?"</p>
+          </div>
+          <div class="gap-note warn-note">⚠ Gap lớn nhất: chatbot "phân tích chi tiêu" nhưng không đọc được data có sẵn trong hệ thống</div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="query-card">
+        <div class="query-card-header">
+          <span class="query-num">Q3</span>
+          <span class="query-type">Tư vấn tài chính</span>
+          <span class="query-text">"mình nên tiết kiệm bao nhiêu 1 tháng"</span>
+          <span class="status-badge badge-warn">⚠ Low-confidence</span>
+        </div>
+        <div class="query-body">
+          <div class="query-col">
+            <label>Kỳ vọng</label>
+            <p>Hỏi context (thu nhập, mục tiêu) rồi tư vấn cá nhân hóa</p>
+          </div>
+          <div class="query-col">
+            <label>Thực tế</label>
+            <p>Trả lời ngay bằng template: "nên tiết kiệm tối thiểu 20% thu nhập mỗi tháng"</p>
+          </div>
+          <div class="gap-note warn-note">⚠ Không hỏi context trước khi trả lời — generic, không khác gì Google Search</div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="query-card">
+        <div class="query-card-header">
+          <span class="query-num">Q4</span>
+          <span class="query-type">Câu hỏi mơ hồ</span>
+          <span class="query-text">"cách kiếm tiền nhanh nhất"</span>
+          <span class="status-badge badge-warn">⚠ Low-confidence</span>
+        </div>
+        <div class="query-body">
+          <div class="query-col">
+            <label>Kỳ vọng</label>
+            <p>Làm rõ intent hoặc tie-back về sản phẩm MoMo (gửi tiết kiệm, đầu tư quỹ...)</p>
+          </div>
+          <div class="query-col">
+            <label>Thực tế</label>
+            <p>Trả lời chung chung: freelance, bán hàng online, học kỹ năng mới — không liên quan MoMo</p>
+          </div>
+          <div class="gap-note warn-note">⚠ Drift ra ngoài scope, mất cơ hội giới thiệu sản phẩm tài chính của MoMo</div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="query-card">
+        <div class="query-card-header">
+          <span class="query-num">Q5</span>
+          <span class="query-type">Lỗi giao dịch</span>
+          <span class="query-text">"chuyển tiền bị trừ 2 lần"</span>
+          <span class="status-badge badge-fail">✕ Hard failure</span>
+        </div>
+        <div class="query-body">
+          <div class="query-col">
+            <label>Kỳ vọng</label>
+            <p>Nhận diện tình huống nghiêm trọng, escalate ngay về CSKH, cung cấp hotline/link</p>
+          </div>
+          <div class="query-col">
+            <label>Thực tế</label>
+            <p><strong>System timeout</strong> — "Moni chưa thể phản hồi lúc này. Bạn thử gửi lại tin nhắn nhé"</p>
+          </div>
+          <div class="gap-note">✕ Path quan trọng nhất (user mất tiền) fail hoàn toàn — không có fallback, không có handoff CSKH</div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="query-card">
+        <div class="query-card-header">
+          <span class="query-num">Q6</span>
+          <span class="query-type">Query kỹ thuật</span>
+          <span class="query-text">"viết prompt tính loop"</span>
+          <span class="status-badge badge-conf">? Confusion</span>
+        </div>
+        <div class="query-body">
+          <div class="query-col">
+            <label>Kỳ vọng</label>
+            <p>Từ chối nhẹ hoặc redirect — rõ ràng ngoài scope</p>
+          </div>
+          <div class="query-col">
+            <label>Thực tế</label>
+            <p>Trigger search pipeline không cần thiết — chậm, dễ timeout</p>
+          </div>
+          <div class="gap-note warn-note">⚠ Intent classification yếu — không detect out-of-scope trước khi gọi search</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECTION 4: TỔNG KẾT -->
+  <div class="section">
+    <div class="section-title">04</div>
+    <h2>Tổng kết as-is</h2>
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Path</th>
+          <th>Trạng thái</th>
+          <th>Mức độ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Out-of-scope rõ ràng</td>
+          <td>Từ chối đúng</td>
+          <td><span class="status-badge badge-happy">✓ Happy</span></td>
+        </tr>
+        <tr>
+          <td>Query cần data thật</td>
+          <td>Không access được</td>
+          <td><span class="status-badge badge-warn">⚠ Low-confidence</span></td>
+        </tr>
+        <tr>
+          <td>Tư vấn tài chính</td>
+          <td>Template chung chung</td>
+          <td><span class="status-badge badge-warn">⚠ Low-confidence</span></td>
+        </tr>
+        <tr>
+          <td>Câu hỏi mơ hồ</td>
+          <td>Drift scope</td>
+          <td><span class="status-badge badge-warn">⚠ Low-confidence</span></td>
+        </tr>
+        <tr>
+          <td>Lỗi giao dịch</td>
+          <td>System timeout, không handoff</td>
+          <td><span class="status-badge badge-fail">✕ Failure</span></td>
+        </tr>
+        <tr>
+          <td>Query kỹ thuật</td>
+          <td>Trigger search sai</td>
+          <td><span class="status-badge badge-conf">? Confusion</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="stat-row">
+      <div class="stat-card stat-happy">
+        <div class="num">1</div>
+        <div class="lbl">Happy path</div>
+      </div>
+      <div class="stat-card stat-warn">
+        <div class="num">3</div>
+        <div class="lbl">Low-confidence</div>
+      </div>
+      <div class="stat-card stat-fail">
+        <div class="num">1</div>
+        <div class="lbl">Hard failure</div>
+      </div>
+      <div class="stat-card stat-conf">
+        <div class="num">1</div>
+        <div class="lbl">Confusion</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: PATH YẾU NHẤT -->
+  <div class="section">
+    <div class="section-title">05</div>
+    <h2>Path yếu nhất: Lỗi giao dịch</h2>
+    <div class="weakness-block">
+      <div class="weakness-header">
+        <span class="icon">✕</span>
+        <h3>Query 5 — "chuyển tiền bị trừ 2 lần" → System timeout</h3>
+      </div>
+      <div class="weakness-reasons">
+        <div class="reason-item">
+          <span class="reason-num">01</span>
+          <p class="reason-text"><strong>User context nguy hiểm</strong> — người dùng đang bị mất tiền thật, cần giải quyết ngay lập tức</p>
+        </div>
+        <div class="reason-item">
+          <span class="reason-num">02</span>
+          <p class="reason-text"><strong>Failure mode tệ nhất</strong> — system crash hoàn toàn, không có bất kỳ fallback nào</p>
+        </div>
+        <div class="reason-item">
+          <span class="reason-num">03</span>
+          <p class="reason-text"><strong>Tác động brand cao</strong> — trải nghiệm tệ nhất xảy ra đúng lúc user cần tin tưởng MoMo nhất</p>
+        </div>
+        <div class="reason-item">
+          <span class="reason-num">04</span>
+          <p class="reason-text"><strong>Fix đơn giản</strong> — không cần AI phức tạp, chỉ cần intent detection + hardcode redirect CSKH</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: TO-BE -->
+  <div class="section">
+    <div class="section-title">06</div>
+    <h2>Đề xuất to-be</h2>
+    <div class="tobe-flow">
+      <div class="step">
+        <span class="step-label">USER INPUT</span>
+        <span class="step-content"><em>"chuyển tiền bị trừ 2 lần"</em></span>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <span class="step-label">INTENT DETECT</span>
+        <span class="step-content">Keywords: <em>trừ tiền · bị trừ 2 lần · không nhận được · lỗi giao dịch · mất tiền · hoàn tiền</em> → bypass search pipeline</span>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <span class="step-label">MONI REPLY</span>
+        <span class="step-content">"Mình hiểu đây là tình huống cần xử lý gấp.<br>· Gọi hotline: <em>1900 54 54 41</em><br>· Chat CSKH: [link trực tiếp]<br>· Mình có thể giúp bạn tìm lại lịch sử giao dịch không?"</span>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="step">
+        <span class="step-label">HANDOFF</span>
+        <span class="step-content">Correction log + link CSKH + nút <em>Gọi ngay</em></span>
+      </div>
+    </div>
+
+    <table class="fix-table">
+      <thead>
+        <tr>
+          <th>Vấn đề</th>
+          <th>Fix đề xuất</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Không đọc data thật</td>
+          <td>API bridge giữa Moni và transaction data — fix dài hạn, cần phối hợp backend</td>
+        </tr>
+        <tr>
+          <td>Template tư vấn chung</td>
+          <td>Thêm bước clarification trước khi trả lời: hỏi thu nhập và mục tiêu tài chính</td>
+        </tr>
+        <tr>
+          <td>Drift scope</td>
+          <td>Tie-back về sản phẩm MoMo: "Kiếm tiền nhanh hơn với Tiết kiệm MoMo lãi X%/năm"</td>
+        </tr>
+        <tr>
+          <td>Query kỹ thuật kích search</td>
+          <td>Bổ sung intent filter: detect non-financial query trước khi gọi pipeline search</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 7: KẾT LUẬN -->
+  <div class="section">
+    <div class="section-title">07</div>
+    <h2>Kết luận</h2>
+    <div class="conclusion-box">
+      <p>Moni có nền tốt — scope guard hoạt động, UI/UX nhắn tin mượt, loading state rõ ràng. Vấn đề cốt lõi không phải ở model mà ở <strong>data access</strong> và <strong>intent routing</strong>.</p>
+      <p>Promise "phân tích chi tiêu" chưa được fulfill vì thiếu bridge với transaction data. Path lỗi giao dịch cần ưu tiên fix ngay — đây là zero-tolerance failure. 3 low-confidence paths có thể cải thiện bằng clarification flow và scope tie-back, không cần thay model.</p>
+      <div class="priority-strip">
+        <span class="lbl">Ưu tiên fix:</span>
+        <span class="chain">Transaction error path → Clarification trước tư vấn → Data access bridge</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="report-footer">
+  Workshop cá nhân · Mổ sản phẩm AI thật · 03/06/2026
+</div>
+
+</body>
+</html>

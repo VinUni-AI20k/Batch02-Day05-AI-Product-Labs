@@ -1,5 +1,8 @@
 # Workshop — Mổ App AI Thật: MoMo — Moni
 
+Họ và tên: Lương Thị Hồng Nhung Mã HV: 2A202600811
+
+
 ## 0. Mục tiêu
 
 Mục tiêu không phải chấm UI đẹp hay xấu. Mục tiêu là dùng sản phẩm AI thật như một bài needfinding: tìm chỗ product gãy trong workflow thật, rồi viết finding đó thành quyết định product.

@@ -1141,3 +1141,17 @@ body.chat-open .chat-fab { opacity: 0; pointer-events: none; transform: scale(0.
   .lc-price-row { align-items: flex-start; flex-direction: column; }
   .composer { align-items: stretch; flex-direction: column; }
 }
+
+.lc-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    
+}
+
+.lc-logo__image {
+    height: 48px; /* chỉnh theo ý muốn */
+    width: auto;
+    display: block;
+    object-fit: contain;
+}

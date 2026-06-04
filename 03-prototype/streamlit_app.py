@@ -108,28 +108,8 @@ def main():
     url = EMBED_URL if _port_open("127.0.0.1", NODE_PORT) else ensure_web_server()
 
     if not url:
-        st.error("Không kết nối được web Long Châu.")
-        st.markdown(
-            f"""
-**Cách 1 — chạy server Node trước (khuyên dùng):**
-
-```bash
-cd 03-prototype
-npm install
-npm run dev
-```
-
-Sau đó mở lại Streamlit hoặc truy cập trực tiếp: [http://localhost:{NODE_PORT}](http://localhost:{NODE_PORT})
-
-**Cách 2 — chỉ chat (không có giao diện web):**
-
-Thêm `?mode=chat` vào URL Streamlit hoặc chạy chat-only.
-            """
-        )
-        if st.button("Thử khởi động lại server Node"):
-            st.session_state.node_start_attempted = False
-            st.rerun()
-        st.page_link("?mode=chat", label="Mở chat-only (không có giao diện web)")
+        # Streamlit Cloud không chạy Node — tự chuyển chat demo
+        render_chat_fallback()
         return
 
     components.html(

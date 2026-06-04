@@ -15,10 +15,8 @@ Nhóm tự dùng app/workflow và ghi lại điểm gãy.
 
 | Observation | Screenshot/link | Path liên quan | Điều học được |
 |---|---|---|---|
-| Danh sách "Gợi ý cho bạn" hiện tại không khớp với ý định mơ hồ của người dùng (ví dụ: muốn ăn món gì nóng, rẻ, gần đây). | <img width="725" height="367" alt="image" src="https://github.com/user-attachments/assets/b9d61623-d40d-4c67-b76a-063894ec2cdc" />
- | Happy / Low-confidence | Đề xuất mặc định quá chung chung hoặc giống quảng cáo, làm người dùng mất lòng tin và mất thời gian lướt vô định. |
-| Tính năng Search chỉ tìm theo keyword cứng, không hiểu ý định phức tạp/mơ hồ như "dưới 50k, không cay, ăn nhẹ". | <img width="712" height="315" alt="image" src="https://github.com/user-attachments/assets/ecce1fde-f721-448c-a03e-4f12169708c8" />
- | Happy / Low-confidence | Cần cơ chế xử lý ngôn ngữ tự nhiên để hiểu ý định phi cấu trúc và kết hợp ngữ cảnh thực tế (vị trí, thời gian). |
+| Danh sách "Gợi ý cho bạn" hiện tại không khớp với ý định mơ hồ của người dùng (ví dụ: muốn ăn món gì nóng, rẻ, gần đây). | <img width="725" height="367" alt="image" src="https://github.com/user-attachments/assets/b9d61623-d40d-4c67-b76a-063894ec2cdc" /> | Happy / Low-confidence | Đề xuất mặc định quá chung chung hoặc giống quảng cáo, làm người dùng mất lòng tin và mất thời gian lướt vô định. |
+| Tính năng Search chỉ tìm theo keyword cứng, không hiểu ý định phức tạp/mơ hồ như "dưới 50k, không cay, ăn nhẹ". | <img width="712" height="315" alt="image" src="https://github.com/user-attachments/assets/ecce1fde-f721-448c-a03e-4f12169708c8" /> | Happy / Low-confidence | Cần cơ chế xử lý ngôn ngữ tự nhiên để hiểu ý định phi cấu trúc và kết hợp ngữ cảnh thực tế (vị trí, thời gian). |
 
 ## 3. User / review / social evidence
 

@@ -4,10 +4,10 @@ Nộp kèm thin SPEC cuối Day 05.
 
 ## 1. Nhóm và track
 
-**Tên nhóm:** [Cần điền thủ công]  
-**Track:** [Cần điền thủ công]  
+**Tên nhóm:** Naughty girls
+**Track:** Food & Local Delivery
 **Product/app đã chọn:** ShopeeFood  
-**Build slice đang nghĩ:** Chatbot gợi ý món ăn dựa trên ý định mơ hồ bằng ngôn ngữ tự nhiên (MVP trả về 3 gợi ý kèm lý do và nút 1-chạm mở quán).
+**Build slice đang nghĩ:** Chatbot gợi ý món ăn / quán gần đây từ ý định mô tả bằng ngôn ngữ tự nhiên (vd: "đói, muốn món nóng dưới 50k gần đây"). AI trả về tối đa 3 gợi ý có thật kèm lý do ngắn; người dùng tự bấm 1-chạm để mở quán và đặt — AI gợi ý, người quyết (Augment).
 
 ## 2. Self-use evidence
 
@@ -15,8 +15,10 @@ Nhóm tự dùng app/workflow và ghi lại điểm gãy.
 
 | Observation | Screenshot/link | Path liên quan | Điều học được |
 |---|---|---|---|
-| Danh sách "Gợi ý cho bạn" hiện tại không khớp với ý định mơ hồ của người dùng (ví dụ: muốn ăn món gì nóng, rẻ, gần đây). | [Cần điền thủ công] | Happy / Low-confidence | Đề xuất mặc định quá chung chung hoặc giống quảng cáo, làm người dùng mất lòng tin và mất thời gian lướt vô định. |
-| Tính năng Search chỉ tìm theo keyword cứng, không hiểu ý định phức tạp/mơ hồ như "dưới 50k, không cay, ăn nhẹ". | [Cần điền thủ công] | Happy / Low-confidence | Cần cơ chế xử lý ngôn ngữ tự nhiên để hiểu ý định phi cấu trúc và kết hợp ngữ cảnh thực tế (vị trí, thời gian). |
+| Danh sách "Gợi ý cho bạn" hiện tại không khớp với ý định mơ hồ của người dùng (ví dụ: muốn ăn món gì nóng, rẻ, gần đây). | <img width="725" height="367" alt="image" src="https://github.com/user-attachments/assets/b9d61623-d40d-4c67-b76a-063894ec2cdc" />
+ | Happy / Low-confidence | Đề xuất mặc định quá chung chung hoặc giống quảng cáo, làm người dùng mất lòng tin và mất thời gian lướt vô định. |
+| Tính năng Search chỉ tìm theo keyword cứng, không hiểu ý định phức tạp/mơ hồ như "dưới 50k, không cay, ăn nhẹ". | <img width="712" height="315" alt="image" src="https://github.com/user-attachments/assets/ecce1fde-f721-448c-a03e-4f12169708c8" />
+ | Happy / Low-confidence | Cần cơ chế xử lý ngôn ngữ tự nhiên để hiểu ý định phi cấu trúc và kết hợp ngữ cảnh thực tế (vị trí, thời gian). |
 
 ## 3. User / review / social evidence
 

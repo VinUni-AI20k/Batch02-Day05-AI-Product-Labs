@@ -5,14 +5,19 @@ import {
   formatGender,
   findDrugCandidates,
   normalizeText,
+  extractPatientFromMessage,
+  isExactDrugInDb,
+  resolveExactDrug,
 } from './drug-engine.js';
 import { fetchHealth, lookupDrug, ocrDrugImage, chatMessage } from './api-client.js';
-import { resolveDrug, lookupLocalClient, suggestLocal } from './local-lookup.js';
+import { lookupLocalClient } from './local-lookup.js';
 import {
   classifyTextIntent,
   checkEmergency,
   extractDrugName,
+  extractExplicitDrugQuery,
   extractSymptomText,
+  isFollowUpAboutSuggestedDrug,
   extractRecommendationTopic,
   looksLikeSymptom,
 } from './intent-engine.js';
@@ -20,8 +25,37 @@ import {
   suggestDrugsForCondition,
   parseIntakeAnswers,
 } from './symptom-flow.js';
+import {
+  detectLookupObjectives,
+  getMissingLookupFields,
+  buildStructuredLookup,
+  objectivesSummary,
+} from './lookup-flow.js';
+import {
+  parseExtendedIntake,
+  intakeBasicComplete,
+  getTriageQuestions,
+  parseTriageAnswers,
+  triageComplete,
+  triageHasDanger,
+  needSymptomContext,
+  needDrugContext,
+  intentToMainNeed,
+  MAIN_NEEDS,
+} from './bot-flow.js';
+import {
+  buildWelcomeHtml,
+  buildNeedSelectHtml,
+  buildIntakePromptHtml,
+  buildTriageHtml,
+  buildUrgentTriageHtml,
+  buildFullSafetyCardHtml,
+  bindNeedButtons,
+  bindNextActions,
+} from './flow-ui.js';
 
 /** @typedef {'idle'|'collect_profile'|'ocr_confirm'|'drug_need_context'} FlowMode */
+/** @typedef {'welcome'|'need_select'|'intake'|'triage'|'ocr_wait'} BotStep */
 
 const state = {
   db: null,
@@ -40,6 +74,18 @@ const state = {
   pendingOcr: /** @type {object|null} */ (null),
   pendingAction: /** @type {object|null} */ (null),
   history: /** @type {{ role: string, content: string }[]} */ ([]),
+  pharmacistHandoffUsed: false,
+  lastUserText: '',
+  lookupObjectives: /** @type {object[]} */ ([]),
+  botStep: /** @type {BotStep} */ ('welcome'),
+  mainNeed: /** @type {string|null} */ (null),
+  patientProfile: /** @type {Record<string, unknown>} */ ({}),
+  triage: /** @type {{ questions: object[], answers: Record<string, boolean> }} */ ({
+    questions: [],
+    answers: {},
+  }),
+  lastDrug: /** @type {object|null} */ (null),
+  lastStructured: /** @type {object|null} */ (null),
 };
 
 const els = {
@@ -158,12 +204,23 @@ function needsProfile() {
   return state.age == null || !state.gender;
 }
 
-function askProfile(contextLabel) {
+function askMissingLookupInfo(missing, drugLabel = '') {
   state.flow = 'collect_profile';
+  const list = missing.map((m) => `<li>${escapeHtml(m)}</li>`).join('');
   addMessage(
     'bot',
-    `<p>Để tư vấn${contextLabel ? ` về <strong>${escapeHtml(contextLabel)}</strong>` : ''} chính xác hơn, bạn cho mình biết <strong>tuổi</strong> và <strong>giới tính</strong> nhé (vd: 25 tuổi, nữ).</p>`
+    `<div class="card card--yellow">
+      <h3>Chưa đủ thông tin tra cứu</h3>
+      ${drugLabel ? `<p>Thuốc: <strong>${escapeHtml(drugLabel)}</strong></p>` : ''}
+      <p>Theo quy trình tra cứu, mình cần thêm:</p>
+      <ul>${list}</ul>
+      <p class="fine">Bạn trả lời gọn một tin nhắn (vd: 30 tuổi, nữ, sốt nhẹ).</p>
+    </div>`
   );
+}
+
+function askProfile(contextLabel) {
+  askMissingLookupInfo(['tuổi', 'giới tính'], contextLabel);
 }
 
 function formatNaturalSummary(card) {
@@ -223,14 +280,33 @@ function endLoading() {
   clearLoading(state.lookupLoader);
 }
 
+function syncProfileFromCtx() {
+  if (state.patientProfile.age != null) state.age = /** @type {number} */ (state.patientProfile.age);
+  if (state.patientProfile.gender) state.gender = /** @type {'male'|'female'} */ (state.patientProfile.gender);
+}
+
+function profileSnapshot() {
+  return {
+    ...state.patientProfile,
+    age: state.age,
+    gender: state.gender,
+    condition: state.condition,
+    drugQuery: state.drugQuery,
+  };
+}
+
 function applyPatientFromText(text) {
-  const ageMatch = text.match(/(\d{1,3})\s*(tuổi|t\b)/i);
-  if (ageMatch) {
-    const age = parseAge(ageMatch[1]);
-    if (age != null) state.age = age;
+  const { age, gender } = extractPatientFromMessage(text);
+  if (age != null) {
+    state.age = age;
+    state.patientProfile.age = age;
   }
-  if (/\bnữ\b/i.test(text)) state.gender = 'female';
-  if (/\bnam\b/i.test(text) && !/\bnam\s*định/i.test(text)) state.gender = 'male';
+  if (gender) {
+    state.gender = gender;
+    state.patientProfile.gender = gender;
+  }
+  state.patientProfile = parseExtendedIntake(text, state.patientProfile);
+  syncProfileFromCtx();
 
   for (const part of text.split(/[,;·]/)) {
     const p = part.trim();
@@ -275,41 +351,68 @@ function renderSuggestions(message, suggestions, onPick) {
   });
 }
 
-async function runLookup(drugId = null, drugQueryOverride = null) {
+async function runLookup(drugId = null, drugQueryOverride = null, options = {}) {
+  const skipSummary = options.skipSummary === true;
   const drugQuery = (drugQueryOverride ?? state.drugQuery).trim();
-  if (!state.condition || !drugQuery || state.age == null || !state.gender) {
-    state.flow = 'drug_need_context';
-    addMessage('bot', `<p>Để tra <strong>${escapeHtml(drugQuery)}</strong>, cho mình biết thêm: tuổi, giới tính và triệu chứng/tình trạng hiện tại.</p>`);
+
+  state.lookupObjectives = detectLookupObjectives(state.lastUserText || drugQuery);
+  const missing = getMissingLookupFields({
+    drugQuery,
+    condition: state.condition,
+    age: state.age,
+    gender: state.gender,
+  });
+
+  if (missing.length) {
+    state.drugQuery = drugQuery || state.drugQuery;
+    askMissingLookupInfo(missing, drugQuery);
+    return;
+  }
+
+  if (checkEmergency(state.db, state.condition)) {
+    showUrgentCard();
     return;
   }
 
   state.drugQuery = drugQuery;
   const patient = { age: state.age, gender: state.gender };
-  const localDrug = resolveDrug(state.db, drugQuery, drugId);
-  beginLoading(localDrug ? `Tra cứu ${drugQuery} từ DB...` : `Tra cứu ${drugQuery}...`);
+  const localDrug = resolveExactDrug(state.db, drugQuery, drugId);
+  const useLocalOnly = Boolean(localDrug);
 
-  if (localDrug) {
+  beginLoading(
+    useLocalOnly
+      ? `Chuẩn hóa → Tra CSDL nội bộ (${drugQuery})`
+      : `Chuẩn hóa tên thuốc → Tra CSDL / AI (${drugQuery})`
+  );
+
+  if (useLocalOnly && localDrug) {
     const result = lookupLocalClient(state.db, localDrug, state.condition, patient);
+    result.structured = buildStructuredLookup(result.card, localDrug, 'database');
+    result.normalizedQuery = localDrug.name;
+    result.drug = localDrug;
     endLoading();
-    handleLookupResult(result);
+    handleLookupResult(result, { skipSummary });
     return;
   }
 
-  const candidates = findDrugCandidates(state.db, drugQuery);
-  if (candidates.length > 1 && !drugId) {
-    endLoading();
-    handleLookupResult({
-      status: 'disambiguate',
-      candidates: candidates.map((d) => ({ id: d.id, name: d.name, activeIngredient: d.activeIngredient })),
-    });
-    return;
-  }
-
-  const localSuggestions = suggestLocal(state.db, drugQuery);
-  if (localSuggestions.length > 0 && !drugId) {
-    endLoading();
-    handleLookupResult({ status: 'suggest', message: `Không tìm thấy "${drugQuery}" — có thể:`, suggestions: localSuggestions });
-    return;
+  if (isExactDrugInDb(state.db, drugQuery) && !drugId) {
+    const exactMatches = findDrugCandidates(state.db, drugQuery).filter(
+      (d) =>
+        normalizeText(d.name) === normalizeText(drugQuery) ||
+        (d.aliases || []).some((a) => normalizeText(a) === normalizeText(drugQuery))
+    );
+    if (exactMatches.length > 1) {
+      endLoading();
+      handleLookupResult({
+        status: 'disambiguate',
+        candidates: exactMatches.map((d) => ({
+          id: d.id,
+          name: d.name,
+          activeIngredient: d.activeIngredient,
+        })),
+      }, { skipSummary });
+      return;
+    }
   }
 
   try {
@@ -321,14 +424,15 @@ async function runLookup(drugId = null, drugQueryOverride = null) {
       drugId,
     });
     endLoading();
-    handleLookupResult(result);
+    handleLookupResult(result, { skipSummary });
   } catch (err) {
     endLoading();
     addMessage('bot', `<p class="error">${escapeHtml(err.message)}</p>`);
   }
 }
 
-function handleLookupResult(result) {
+function handleLookupResult(result, options = {}) {
+  const skipSummary = options.skipSummary === true;
   if (result.status === 'urgent') {
     showUrgentCard();
     return;
@@ -338,54 +442,147 @@ function handleLookupResult(result) {
       name: c.name, activeIngredient: c.activeIngredient, drugId: c.id, reason: '',
     })), (pick) => {
       addMessage('user', `<p>${escapeHtml(pick.name)}</p>`);
+      pushHistory('user', pick.name);
+      state.drugQuery = pick.name;
+      if (state.lastCard && normalizeText(state.lastCard.drugName) === normalizeText(pick.name)) {
+        addMessage('bot', `<p>Mình đã có Thẻ an toàn <strong>${escapeHtml(pick.name)}</strong> ở trên — bạn xem lại nhé.</p>`);
+        return;
+      }
       runLookup(pick.drugId, pick.name);
     });
     return;
   }
   if (result.status === 'suggest') {
-    renderSuggestions(result.message, result.suggestions, (pick) => {
+    const msg =
+      result.message ||
+      `Không tìm thấy chính xác — gợi ý tên thuốc (${result.correctedQuery ? `AI gợi ý: ${result.correctedQuery}` : 'CSDL + AI'}):`;
+    addMessage(
+      'bot',
+      `<p class="fine">Không có kết quả khớp — bạn <strong>chọn thuốc gần đúng</strong> hoặc <strong>nhập lại</strong> tên thuốc.</p>`
+    );
+    renderSuggestions(msg, result.suggestions, (pick) => {
       addMessage('user', `<p>${escapeHtml(pick.name)}</p>`);
-      runLookup(pick.drugId, pick.name);
+      state.drugQuery = pick.name;
+      runLookup(pick.drugId || null, pick.name);
     });
     return;
   }
+  if (result.status === 'not_found') {
+    addMessage(
+      'bot',
+      `<div class="card card--yellow">
+        <h3>Không tìm thấy thuốc</h3>
+        <p>${escapeHtml(result.message || 'Không có kết quả phù hợp.')}</p>
+        <p class="fine">Vui lòng <strong>nhập lại</strong> tên thuốc / hoạt chất hoặc mô tả rõ hơn.</p>
+      </div>`
+    );
+    return;
+  }
+  if (result.status === 'error') {
+    addMessage('bot', `<p class="error">${escapeHtml(result.error || 'Tra cứu thất bại')}</p>`);
+    return;
+  }
   if (result.status === 'ok' && result.card) {
-    addMessage('bot', `<p>${formatNaturalSummary(result.card)}</p>`);
-    renderSafetyCard(result.card, result.mode);
+    state.drugQuery = result.normalizedQuery || result.card.drugName;
+    const structured =
+      result.structured || buildStructuredLookup(result.card, null, result.mode || 'api');
+    const drugObj = result.drug || resolveExactDrug(state.db, structured.drugName, null);
+    if (!skipSummary) {
+      const src = result.mode === 'database' ? 'CSDL nội bộ' : result.mode || 'AI';
+      addMessage(
+        'bot',
+        `<p class="fine">${escapeHtml(objectivesSummary(state.lookupObjectives))} · Đã tra cứu: <strong>${escapeHtml(structured.drugName)}</strong> · Nguồn: ${escapeHtml(src)}</p>`
+      );
+    }
+    renderStructuredLookup(structured, result.mode, drugObj);
   }
 }
 
-function renderSafetyCard(card, mode) {
-  state.lastCard = card;
+function renderStructuredLookup(structured, mode, drugObj = null) {
   state.flow = 'idle';
-  const suitability =
-    card.safetyLevel === 'green' ? 'caution' : card.safetyLevel === 'red' ? 'not_recommended' : 'caution';
+  state.botStep = 'welcome';
+  const level = structured.safetyLevel || 'yellow';
+  const drug =
+    drugObj ||
+    state.lastDrug ||
+    resolveExactDrug(state.db, structured.drugName, null) ||
+    state.db.drugs.find((d) => normalizeText(d.name) === normalizeText(structured.drugName));
+  state.lastDrug = drug || null;
+  state.lastStructured = structured;
 
+  state.lastCard = {
+    drugName: structured.drugName,
+    activeIngredient: structured.activeIngredient,
+    condition: structured.condition,
+    safetyLevel: level,
+    safetySummary: structured.safetySummary,
+    indications: structured.sections?.[1]?.body || '',
+    warnings: structured.sections?.[3]?.body ? [structured.sections[3].body] : [],
+    contraindications: structured.sections?.[4]?.body ? [structured.sections[4].body] : [],
+    matchedRules: structured.matchedRules || [],
+    source: structured.sources?.[0]?.title || mode,
+  };
+
+  const html = buildFullSafetyCardHtml(
+    structured,
+    drug,
+    profileSnapshot(),
+    state.db.meta.disclaimer
+  );
+  const wrap = addMessage('bot', html);
+  bindNextActions(wrap, {
+    pharmacist: showPharmacistHandoff,
+    similar: handleSimilarDrugs,
+    comorbidity: handleComorbidityCheck,
+    upload: () => els.imageInput?.click(),
+    save: handleSaveConsultation,
+  });
+  addMessage('bot', '<p class="fine">💬 Hỏi tiếp hoặc bấm <strong>Làm mới</strong> để bắt đầu luồng mới.</p>');
+}
+
+function handleSimilarDrugs() {
+  if (!state.condition) {
+    addMessage('bot', '<p class="fine">Cho mình biết triệu chứng để gợi ý thuốc tương tự nhé.</p>');
+    return;
+  }
+  proceedSymptomAdvice();
+}
+
+function handleComorbidityCheck() {
+  state.botStep = 'intake';
+  state.mainNeed = 'compatibility';
+  state.flow = 'collect_profile';
   addMessage(
     'bot',
-    `<div class="card ${levelClass(card.safetyLevel)} safety-card">
-      <div class="card__header"><span class="badge">${levelBadge(card.safetyLevel)}</span><h3>Thẻ an toàn thuốc — ${escapeHtml(card.drugName)}</h3></div>
-      <dl class="kv">
-        <dt>Hoạt chất</dt><dd>${escapeHtml(card.activeIngredient)}</dd>
-        <dt>Công dụng</dt><dd>${escapeHtml(card.indications)}</dd>
-        <dt>Tình trạng bạn hỏi</dt><dd>${escapeHtml(card.condition)}</dd>
-        <dt>Có nên dùng không</dt><dd><strong>${escapeHtml(card.safetySummary)}</strong> (${suitability})</dd>
-        <dt>Lý do / đối chiếu</dt><dd>${(card.matchedRules || []).map((r) => escapeHtml(r.note)).join('; ') || '—'}</dd>
-        <dt>Cảnh báo</dt><dd>${(card.warnings || []).map(escapeHtml).join('; ') || '—'}</dd>
-        <dt>Không nên dùng nếu</dt><dd>${(card.contraindications || []).map(escapeHtml).join('; ') || '—'}</dd>
-        <dt>Cách dùng</dt><dd>Theo nhãn thuốc hoặc chỉ định dược sĩ/bác sĩ</dd>
-        <dt>Khi nào hỏi dược sĩ</dt><dd>Vàng/Đỏ, thiếu thông tin, triệu chứng nặng hoặc kéo dài</dd>
-        <dt>Nguồn</dt><dd>${escapeHtml(mode === 'database' ? 'Database nội bộ' : mode || card.source || 'AI')}</dd>
-      </dl>
-      <p class="disclaimer">${escapeHtml(state.db.meta.disclaimer)}</p>
-      <button type="button" class="btn btn--primary" id="pharmacist-card">Hỏi dược sĩ Long Châu</button>
-    </div>`
+    `<div class="flow-card"><h3>Kiểm tra với bệnh nền</h3>
+    <p>Bạn bổ sung: <strong>bệnh nền, dị ứng, thuốc đang dùng</strong> (vd: tiểu đường, dị ứng aspirin, đang uống thuốc huyết áp).</p></div>`
   );
-  document.getElementById('pharmacist-card')?.addEventListener('click', showPharmacistHandoff);
-  addMessage('bot', '<p class="fine">💬 Gửi <strong>text</strong> (triệu chứng/thuốc) hoặc <strong>📷 ảnh nhãn thuốc</strong> để tra tiếp.</p>');
+  if (state.drugQuery && state.age != null && state.gender) {
+    state.pendingAction = { type: 'lookup', drugQuery: state.drugQuery, condition: state.condition };
+  }
+}
+
+function handleSaveConsultation() {
+  const payload = {
+    savedAt: new Date().toISOString(),
+    profile: profileSnapshot(),
+    card: state.lastCard,
+    structured: state.lastStructured,
+  };
+  const text = JSON.stringify(payload, null, 2);
+  navigator.clipboard?.writeText(text).then(
+    () => addMessage('bot', '<p class="fine">✓ Đã sao chép kết quả tư vấn vào clipboard (JSON).</p>'),
+    () => addMessage('bot', `<pre class="prefill">${escapeHtml(text.slice(0, 800))}…</pre>`)
+  );
+}
+
+function renderSafetyCard(card, mode) {
+  renderStructuredLookup(buildStructuredLookup(card, null, mode), mode);
 }
 
 function showPharmacistHandoff() {
+  if (state.pharmacistHandoffUsed) return;
+  state.pharmacistHandoffUsed = true;
   addMessage(
     'bot',
     `<div class="card card--blue">
@@ -426,6 +623,7 @@ function proceedSymptomAdvice() {
 function handleSymptomAdvice(text) {
   const symptom = extractSymptomText(text);
   state.condition = symptom;
+  state.mainNeed = state.mainNeed || 'symptom';
   applyPatientFromText(text);
   updateProfileBar();
 
@@ -440,7 +638,7 @@ function handleSymptomAdvice(text) {
     return;
   }
 
-  proceedSymptomAdvice();
+  startTriage();
 }
 
 async function executeDrugRecommendation(topic, skipIntro = false) {
@@ -527,8 +725,32 @@ async function handleConversationalChat(text, alreadyAdded = false) {
     pushHistory('assistant', reply);
 
     const lookupDrug = data.lookupDrug && String(data.lookupDrug).trim();
+    if (lookupDrug) state.drugQuery = lookupDrug;
+    const explicit = extractExplicitDrugQuery(text);
     const lookupCondition = (data.condition && String(data.condition).trim()) || state.condition || 'tư vấn chung';
-    if (lookupDrug) {
+
+    if (explicit) {
+      state.drugQuery = explicit;
+      if (!state.condition || state.condition === 'tư vấn chung') {
+        state.condition = lookupCondition;
+      }
+      updateProfileBar();
+      if (needsProfile()) {
+        state.pendingAction = { type: 'lookup', drugQuery: explicit, condition: state.condition };
+        askProfile(explicit);
+        return;
+      }
+      if (
+        state.lastCard &&
+        normalizeText(state.lastCard.drugName) === normalizeText(explicit)
+      ) {
+        return;
+      }
+      await runLookup(null, explicit, { skipSummary: true });
+      return;
+    }
+
+    if (lookupDrug && isExactDrugInDb(state.db, lookupDrug)) {
       state.condition = lookupCondition;
       state.drugQuery = lookupDrug;
       updateProfileBar();
@@ -537,7 +759,21 @@ async function handleConversationalChat(text, alreadyAdded = false) {
         askProfile(lookupDrug);
         return;
       }
-      await runLookup(null, lookupDrug);
+      if (
+        state.lastCard &&
+        normalizeText(state.lastCard.drugName) === normalizeText(lookupDrug)
+      ) {
+        return;
+      }
+      await runLookup(null, lookupDrug, { skipSummary: true });
+    } else if (lookupDrug && state.drugQuery && normalizeText(lookupDrug) === normalizeText(state.drugQuery)) {
+      state.drugQuery = lookupDrug;
+      if (state.lastCard && normalizeText(state.lastCard.drugName) === normalizeText(lookupDrug)) {
+        return;
+      }
+      if (!needsProfile() && state.condition) {
+        await runLookup(null, lookupDrug, { skipSummary: true });
+      }
     }
   } catch (err) {
     endLoading();
@@ -547,7 +783,7 @@ async function handleConversationalChat(text, alreadyAdded = false) {
 
 function handleCollectProfile(text) {
   applyPatientFromText(text);
-  state.ctx = parseIntakeAnswers(text, state.ctx);
+  state.ctx = parseExtendedIntake(text, state.ctx);
   if (state.ctx.age != null) state.age = /** @type {number} */ (state.ctx.age);
   if (state.ctx.gender) state.gender = /** @type {'male'|'female'} */ (state.ctx.gender);
   if (!state.condition && looksLikeSymptom(text)) state.condition = extractSymptomText(text);
@@ -563,7 +799,7 @@ function handleCollectProfile(text) {
   state.pendingAction = null;
 
   if (action?.type === 'symptom_advice') {
-    proceedSymptomAdvice();
+    startTriage();
     return;
   }
   if (action?.type === 'drug_recommendation') {
@@ -582,20 +818,43 @@ function handleCollectProfile(text) {
   addMessage('bot', '<p>Cảm ơn bạn! Bạn cần tư vấn triệu chứng hay tên thuốc cụ thể?</p>');
 }
 
-function startDrugLookup(text) {
-  applyPatientFromText(text);
-  const drug = extractDrugName(state.db, text);
+function intentContext() {
+  return {
+    condition: state.condition,
+    drugQuery: state.drugQuery,
+    lastCardDrug: state.lastCard?.drugName || null,
+  };
+}
+
+function handleFollowUpDrugQuestion(text) {
+  const drug = state.drugQuery || state.lastCard?.drugName;
   if (!drug) {
-    addMessage('bot', '<p>Mình chưa nhận diện được tên thuốc. Bạn gõ lại tên/hoạt chất hoặc gửi 📷 ảnh nhãn thuốc.</p>');
+    handleConversationalChat(text, true);
     return;
   }
+
   state.drugQuery = drug;
-  if (!state.condition && looksLikeSymptom(text)) {
-    state.condition = extractSymptomText(text);
+
+  if (
+    state.lastCard &&
+    normalizeText(state.lastCard.drugName) === normalizeText(drug)
+  ) {
+    const card = state.lastCard;
+    addMessage(
+      'bot',
+      `<p>Về <strong>${escapeHtml(card.drugName)}</strong> (đã tra ở trên) với tình trạng <strong>${escapeHtml(card.condition)}</strong>:</p>
+       <p><strong>${escapeHtml(card.safetySummary)}</strong></p>
+       <p class="fine">Bạn xem lại Thẻ an toàn phía trên. Nếu vẫn chưa rõ, bấm <strong>Hỏi dược sĩ Long Châu</strong> hoặc đến nhà thuốc để được tư vấn trực tiếp.</p>`
+    );
+    return;
   }
+
   if (!state.condition) {
     state.flow = 'drug_need_context';
-    addMessage('bot', `<p>Đã nhận thuốc <strong>${escapeHtml(drug)}</strong>. Bạn đang gặp triệu chứng/tình trạng gì? (vd: sốt nhẹ, đau đầu)</p>`);
+    addMessage(
+      'bot',
+      `<p>Để trả lời có nên dùng <strong>${escapeHtml(drug)}</strong>, bạn cho mình biết triệu chứng/tình trạng hiện tại nhé.</p>`
+    );
     return;
   }
   if (state.age == null || !state.gender) {
@@ -603,21 +862,52 @@ function startDrugLookup(text) {
     addMessage('bot', `<p>Tra <strong>${escapeHtml(drug)}</strong> cần thêm tuổi và giới tính (vd: 30 tuổi, nữ).</p>`);
     return;
   }
-  updateProfileBar();
+
   runLookup(null, drug);
+}
+
+function startDrugLookup(text) {
+  applyPatientFromText(text);
+  const query = extractExplicitDrugQuery(text) || extractDrugName(state.db, text);
+  if (!query) {
+    addMessage('bot', '<p>Mình chưa đọc được tên thuốc. Bạn gõ lại tên/hoạt chất hoặc gửi 📷 ảnh nhãn thuốc.</p>');
+    return;
+  }
+  state.drugQuery = query;
+  if (!state.condition && looksLikeSymptom(text)) {
+    state.condition = extractSymptomText(text);
+  }
+  if (!state.condition) {
+    state.flow = 'drug_need_context';
+    addMessage('bot', `<p>Đã nhận thuốc <strong>${escapeHtml(query)}</strong>. Bạn đang gặp triệu chứng/tình trạng gì? (vd: sốt nhẹ, đau đầu)</p>`);
+    return;
+  }
+  if (state.age == null || !state.gender) {
+    state.flow = 'drug_need_context';
+    addMessage('bot', `<p>Tra <strong>${escapeHtml(query)}</strong> cần thêm tuổi và giới tính (vd: 30 tuổi, nữ).</p>`);
+    return;
+  }
+  updateProfileBar();
+  runLookup(null, query);
 }
 
 function handleDrugNeedContext(text) {
   applyPatientFromText(text);
-  state.ctx = parseIntakeAnswers(text, state.ctx);
+  state.ctx = parseExtendedIntake(text, state.ctx);
   if (state.ctx.age != null) state.age = /** @type {number} */ (state.ctx.age);
   if (state.ctx.gender) state.gender = /** @type {'male'|'female'} */ (state.ctx.gender);
   if (!state.condition && looksLikeSymptom(text)) state.condition = extractSymptomText(text);
+  const drugFromText = extractExplicitDrugQuery(text) || extractDrugName(state.db, text);
+  if (drugFromText) state.drugQuery = drugFromText;
   updateProfileBar();
 
   if (state.drugQuery && state.condition && state.age != null && state.gender) {
     state.flow = 'idle';
-    runLookup(null, state.drugQuery);
+    if (state.mainNeed === 'symptom' || state.mainNeed === 'compatibility' || looksLikeSymptom(state.condition)) {
+      startTriage();
+    } else {
+      runLookup(null, state.drugQuery);
+    }
     return;
   }
   addMessage('bot', '<p class="fine">Còn thiếu thông tin — cho mình biết triệu chứng, tuổi và giới tính.</p>');
@@ -671,6 +961,12 @@ function showOcrConfirm(ocr) {
 
 async function handleUserImage(file) {
   if (!file || state.loading) return;
+  state.mainNeed = state.mainNeed || 'ocr';
+  if (!intakeBasicComplete(state.patientProfile) && (state.age == null || !state.gender)) {
+    addMessage('bot', buildIntakePromptHtml('ocr'));
+    state.botStep = 'intake';
+    return;
+  }
   addMessage('user', `<p>📷 Ảnh thuốc: ${escapeHtml(file.name)}</p><img src="${URL.createObjectURL(file)}" alt="Thuốc" class="chat-image" />`);
   const loader = beginLoading('Đang OCR ảnh nhãn thuốc...');
   try {
@@ -722,12 +1018,45 @@ function handleUserText(raw) {
     return;
   }
 
+  if (state.botStep === 'intake' || state.botStep === 'ocr_wait') {
+    addMessage('user', `<p>${escapeHtml(text)}</p>`);
+    pushHistory('user', text);
+    state.lastUserText = text;
+    handleBotIntake(text);
+    return;
+  }
+
+  if (state.botStep === 'triage') {
+    addMessage('user', `<p>${escapeHtml(text)}</p>`);
+    pushHistory('user', text);
+    state.lastUserText = text;
+    handleBotTriage(text);
+    return;
+  }
+
   addMessage('user', `<p>${escapeHtml(text)}</p>`);
   pushHistory('user', text);
-  const intent = classifyTextIntent(state.db, text);
+  state.lastUserText = text;
+  const intent = classifyTextIntent(state.db, text, intentContext());
+
+  if (state.botStep === 'need_select') {
+    let need = intentToMainNeed(intent);
+    if (/ảnh|chụp|ocr|upload|đơn thuốc/i.test(text)) need = 'ocr';
+    if (need) {
+      handleMainNeedSelect(need, true);
+      handleBotIntake(text);
+    } else {
+      addMessage('bot', '<p class="fine">Bạn chọn một mục <strong>A / B / C / D</strong> ở trên, hoặc mô tả nhu cầu rõ hơn.</p>');
+    }
+    return;
+  }
 
   if (intent === 'emergency') {
     showUrgentCard();
+    return;
+  }
+  if (intent === 'follow_up_drug') {
+    handleFollowUpDrugQuestion(text);
     return;
   }
   if (intent === 'drug_recommendation') {
@@ -761,14 +1090,167 @@ function resetFlow() {
   state.pendingOcr = null;
   state.pendingAction = null;
   state.history = [];
+  state.pharmacistHandoffUsed = false;
+  state.lastUserText = '';
+  state.lookupObjectives = [];
+  state.botStep = 'welcome';
+  state.mainNeed = null;
+  state.patientProfile = {};
+  state.triage = { questions: [], answers: {} };
+  state.lastDrug = null;
+  state.lastStructured = null;
   els.messages.innerHTML = '';
   ensureIdleUI();
   updateProfileBar();
   bootWelcome();
 }
 
+function showNeedSelect() {
+  state.botStep = 'need_select';
+  const wrap = addMessage('bot', buildNeedSelectHtml());
+  bindNeedButtons(wrap, handleMainNeedSelect);
+}
+
+function handleMainNeedSelect(needId, skipUserEcho = false) {
+  state.mainNeed = needId;
+  state.botStep = 'intake';
+  if (!skipUserEcho) {
+    addMessage('user', `<p>${escapeHtml(MAIN_NEEDS.find((n) => n.id === needId)?.title || needId)}</p>`);
+  }
+
+  if (needId === 'ocr') {
+    addMessage('bot', buildIntakePromptHtml('ocr'));
+    addMessage('bot', '<p class="fine">Sau khi nhập thông tin cơ bản, bấm 📷 để gửi ảnh thuốc/đơn.</p>');
+    return;
+  }
+
+  addMessage('bot', buildIntakePromptHtml(needId));
+}
+
+function proceedAfterIntake() {
+  state.flow = 'idle';
+
+  if (state.mainNeed === 'symptom') {
+    if (!state.condition) {
+      state.flow = 'drug_need_context';
+      addMessage('bot', '<p>Bạn mô tả <strong>triệu chứng</strong> hiện tại nhé (vd: đau bụng vùng rốn 2 ngày).</p>');
+      return;
+    }
+    startTriage();
+    return;
+  }
+
+  if (state.mainNeed === 'compatibility') {
+    if (!state.drugQuery) {
+      state.flow = 'drug_need_context';
+      addMessage('bot', '<p>Bạn gõ <strong>tên thuốc</strong> cần kiểm tra phù hợp nhé.</p>');
+      return;
+    }
+    if (!state.condition) {
+      state.flow = 'drug_need_context';
+      addMessage('bot', `<p>Thuốc <strong>${escapeHtml(state.drugQuery)}</strong> — bạn đang gặp tình trạng/triệu chứng gì?</p>`);
+      return;
+    }
+    startTriage();
+    return;
+  }
+
+  if (state.mainNeed === 'drug') {
+    const query = state.drugQuery || extractExplicitDrugQuery(state.lastUserText);
+    if (!query) {
+      state.flow = 'drug_need_context';
+      addMessage('bot', '<p>Bạn gõ <strong>tên thuốc/hoạt chất</strong> và câu hỏi nhé.</p>');
+      return;
+    }
+    state.drugQuery = query;
+    if (!state.condition) state.condition = 'tư vấn thuốc';
+    runLookup(null, query);
+    return;
+  }
+}
+
+function startTriage() {
+  if (checkEmergency(state.db, state.condition)) {
+    showUrgentCard();
+    return;
+  }
+  state.triage.questions = getTriageQuestions(state.condition);
+  state.triage.answers = {};
+  state.botStep = 'triage';
+  addMessage('bot', buildTriageHtml(state.triage.questions, state.condition));
+}
+
+function handleBotTriage(text) {
+  state.triage.answers = parseTriageAnswers(text, state.triage.answers, state.triage.questions);
+
+  if (!triageComplete(state.triage.answers, state.triage.questions)) {
+    const missing = state.triage.questions.filter((q) => state.triage.answers[q.id] === undefined);
+    addMessage(
+      'bot',
+      `<p class="fine">Còn ${missing.length} câu chưa rõ — trả lời thêm có/không (vd: <em>tất cả không</em> hoặc liệt kê từng mục).</p>`
+    );
+    return;
+  }
+
+  if (triageHasDanger(state.triage.answers, state.triage.questions)) {
+    state.botStep = 'welcome';
+    state.flow = 'idle';
+    setComposerEnabled(false);
+    addMessage('bot', buildUrgentTriageHtml() + '<div class="card__actions"><button type="button" class="btn btn--primary" id="pharmacist-triage">Chat dược sĩ Long Châu</button></div>');
+    document.getElementById('pharmacist-triage')?.addEventListener('click', showPharmacistHandoff);
+    return;
+  }
+
+  state.botStep = 'welcome';
+  addMessage('bot', '<p class="fine">✓ Không ghi nhận dấu hiệu nguy hiểm — tiếp tục phân loại và tra cứu.</p>');
+  proceedAfterTriage();
+}
+
+function proceedAfterTriage() {
+  if (state.mainNeed === 'compatibility' && state.drugQuery) {
+    runLookup(null, state.drugQuery);
+    return;
+  }
+  proceedSymptomAdvice();
+}
+
+function handleBotIntake(text) {
+  applyPatientFromText(text);
+  state.ctx = parseExtendedIntake(text, state.ctx);
+  if (state.ctx.age != null) {
+    state.age = /** @type {number} */ (state.ctx.age);
+    state.patientProfile.age = state.ctx.age;
+  }
+  if (state.ctx.gender) {
+    state.gender = /** @type {'male'|'female'} */ (state.ctx.gender);
+    state.patientProfile.gender = state.ctx.gender;
+  }
+
+  const drugFromText = extractExplicitDrugQuery(text) || extractDrugName(state.db, text);
+  if (drugFromText && needDrugContext(state.mainNeed)) state.drugQuery = drugFromText;
+  if (looksLikeSymptom(text) && needSymptomContext(state.mainNeed)) {
+    state.condition = extractSymptomText(text) || state.condition;
+  }
+  updateProfileBar();
+
+  if (!intakeBasicComplete(state.patientProfile)) {
+    addMessage('bot', '<p class="fine">Còn thiếu <strong>tuổi</strong> và/hoặc <strong>giới tính</strong> — ghi gọn (vd: 30 tuổi, nữ).</p>');
+    return;
+  }
+
+  if (state.mainNeed === 'ocr') {
+    state.botStep = 'ocr_wait';
+    addMessage('bot', '<p>✓ Đã lưu thông tin. Bấm 📷 gửi ảnh thuốc hoặc đơn để OCR.</p>');
+    return;
+  }
+
+  proceedAfterIntake();
+}
+
 function bootWelcome() {
-  addMessage('bot', '<p><strong>Long Châu Safety Bot xin chào quý khách!</strong></p>');
+  state.botStep = 'welcome';
+  addMessage('bot', buildWelcomeHtml());
+  showNeedSelect();
 }
 
 els.sendBtn?.addEventListener('click', () => {

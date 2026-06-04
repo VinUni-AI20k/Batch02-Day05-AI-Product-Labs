@@ -1,4 +1,4 @@
-import { normalizeText, parseAge, parseGender } from './drug-engine.js';
+import { normalizeText, parseAge, parseGender, extractPatientFromMessage } from './drug-engine.js';
 
 export const INTAKE_PROMPT = `Mình cần hỏi thêm vài thông tin để kiểm tra an toàn trước khi gợi ý thuốc:
 
@@ -44,16 +44,11 @@ export function suggestDrugsForCondition(db, conditionText) {
 /** @param {string} text @param {object} ctx */
 export function parseIntakeAnswers(text, ctx = {}) {
   const out = { ...ctx };
+  const { age, gender } = extractPatientFromMessage(text);
+  if (age != null) out.age = age;
+  if (gender) out.gender = gender;
+
   const t = text;
-
-  const ageMatch = t.match(/(\d{1,3})\s*(tuổi|t\b|years?)/i) || t.match(/^(\d{1,3})$/);
-  if (ageMatch) {
-    const age = parseAge(ageMatch[1]);
-    if (age != null) out.age = age;
-  }
-
-  if (/\bnữ\b|female|girl/i.test(t)) out.gender = 'female';
-  if (/\bnam\b|male|boy/i.test(t) && !/\bnam\s*định/i.test(t)) out.gender = 'male';
 
   if (/mang thai|đang bầu|cho con bú/i.test(t)) out.pregnancy_or_breastfeeding = true;
   if (/không mang thai|không bầu|không cho con bú/i.test(t)) out.pregnancy_or_breastfeeding = false;

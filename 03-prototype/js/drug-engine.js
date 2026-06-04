@@ -77,6 +77,37 @@ export function findDrugCandidates(db, query) {
   return unique;
 }
 
+/** Khớp chính xác tên/hoạt chất/alias — không fuzzy */
+export function isExactDrugInDb(db, query) {
+  const q = normalizeText(query);
+  if (!q) return false;
+  return db.drugs.some(
+    (d) =>
+      normalizeText(d.name) === q ||
+      normalizeText(d.activeIngredient) === q ||
+      (d.aliases || []).some((a) => normalizeText(a) === q)
+  );
+}
+
+/**
+ * @param {object} db
+ * @param {string} query
+ * @param {string|null} drugId
+ */
+export function resolveExactDrug(db, query, drugId = null) {
+  if (drugId) {
+    return db.drugs.find((d) => d.id === drugId) || null;
+  }
+  if (!isExactDrugInDb(db, query)) return null;
+  const candidates = findDrugCandidates(db, query).filter(
+    (d) =>
+      normalizeText(d.name) === normalizeText(query) ||
+      normalizeText(d.activeIngredient) === normalizeText(query) ||
+      (d.aliases || []).some((a) => normalizeText(a) === normalizeText(query))
+  );
+  return candidates.length >= 1 ? candidates[0] : null;
+}
+
 /**
  * @param {object} drug
  * @param {string} condition
@@ -161,6 +192,42 @@ export function parseGender(raw) {
   if (['nam', 'male', 'boy', 'dan ong'].includes(t) || t === '__gender_male__') return 'male';
   if (['nu', 'nữ', 'female', 'girl', 'dan ba'].includes(t) || t === '__gender_female__') return 'female';
   return null;
+}
+
+/**
+ * Trích tuổi + giới tính từ câu chat (vd: "35 tuổi, nữ", "35 tuổi nữ")
+ * @param {string} text
+ * @returns {{ age: number|null, gender: 'male'|'female'|null }}
+ */
+export function extractPatientFromMessage(text) {
+  const t = String(text || '').trim();
+  let age = null;
+  let gender = null;
+
+  const ageMatch =
+    t.match(/(\d{1,3})\s*(?:tuổi|tuoi)/i) ||
+    t.match(/(\d{1,3})\s*t(?=[\s,;·]|$)/i) ||
+    t.match(/^(\d{1,3})(?:\s*[,;·]|\s+(?:nữ|nu|nam)\b)/i);
+  if (ageMatch) age = parseAge(ageMatch[1]);
+
+  const chunks = [t, ...t.split(/[,;·]/).map((s) => s.trim()).filter(Boolean)];
+  for (const chunk of chunks) {
+    const g = parseGender(chunk);
+    if (g) gender = g;
+  }
+
+  const n = normalizeText(t);
+  if (!gender) {
+    if (/(^|[\s,;])nu($|[\s,;])|nữ|female|phu nu|dan ba/.test(n)) gender = 'female';
+    else if (/(^|[\s,;])nam($|[\s,;])|male|dan ong/.test(n) && !/nam dinh/.test(n)) gender = 'male';
+  }
+
+  if (!age) {
+    const bare = t.match(/^(\d{1,3})$/);
+    if (bare) age = parseAge(bare[1]);
+  }
+
+  return { age, gender };
 }
 
 export function formatGender(gender) {

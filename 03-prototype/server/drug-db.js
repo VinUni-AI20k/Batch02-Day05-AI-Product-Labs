@@ -11,6 +11,7 @@ import {
   parseAge,
   parseGender,
 } from '../js/drug-engine.js';
+import { buildStructuredFromCard } from './lookup-structured.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DB_PATH = join(__dirname, '../data/drugs-demo.json');
@@ -89,14 +90,17 @@ export function suggestDrugNames(query, limit = 5) {
 export function lookupLocal(drug, condition, userName, patient = {}) {
   const evaluation = evaluateSafety(drug, condition, patient);
   const card = buildSafetyCardPayload(drug, condition, evaluation, userName, patient);
+  const fullCard = {
+    ...card,
+    sources: [{ title: card.source, link: null, snippet: 'Dữ liệu từ database nội bộ Long Châu (demo)' }],
+  };
   return {
     status: 'ok',
     mode: 'database',
     dataSource: 'database',
-    card: {
-      ...card,
-      sources: [{ title: card.source, link: null, snippet: 'Dữ liệu từ database nội bộ Long Châu (demo)' }],
-    },
+    card: fullCard,
+    structured: buildStructuredFromCard(fullCard, drug),
+    normalizedQuery: drug.name,
   };
 }
 

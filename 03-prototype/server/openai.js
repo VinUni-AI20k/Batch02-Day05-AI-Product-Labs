@@ -279,7 +279,9 @@ Trả về JSON:
   "condition": "tình trạng/triệu chứng để tra cứu hoặc null"
 }
 
-Nếu khách hỏi nên dùng thuốc gì (vd tránh thai, đau đầu), trả lời trực tiếp trong reply và đặt lookupDrug nếu có tên thuốc cụ thể cần kiểm tra an toàn.`;
+- lookupDrug: CHỈ đặt tên thuốc KHÁCH VỪA NHẮC trong tin nhắn cuối (đúng chính tả khách gõ). KHÔNG thay bằng thuốc khác trong danh sách DB.
+- Nếu tên thuốc lạ/sai chính tả/không có trong DB: đặt lookupDrug = null, reply nói sẽ tra cứu và gợi ý tên đúng qua hệ thống.
+- Không gán thuốc không liên quan (vd Levonorgestrel khi khách hỏi thuốc khác).`;
 
   const data = await openaiFetch('/chat/completions', {
     model: OPENAI_MODEL,

@@ -21,9 +21,58 @@ import {
 } from '../ai-provider.js';
 import { hasGoogleCse, searchDrugInfo } from '../google-cse.js';
 import { ocrDrugImage } from '../ocr.js';
-import { handleConversation } from '../conversation.js';
+import { buildStructuredFromCard } from '../lookup-structured.js';
 
 const router = Router();
+
+function mapLocalSuggestions(fuzzyLocal) {
+  return fuzzyLocal.map((s) => ({
+    name: s.drug.name,
+    drugId: s.drug.id,
+    activeIngredient: s.drug.activeIngredient,
+    score: s.score,
+    reason: s.reason,
+  }));
+}
+
+function suggestionsFromAi(ai, db) {
+  const out = [];
+  for (const s of ai?.suggestions || []) {
+    const local = db.drugs.find(
+      (d) =>
+        normalizeText(d.name) === normalizeText(s.name) ||
+        normalizeText(d.activeIngredient) === normalizeText(s.activeIngredient)
+    );
+    if (local) {
+      out.push({
+        name: local.name,
+        drugId: local.id,
+        activeIngredient: local.activeIngredient,
+        reason: s.reason || `AI gợi ý đúng tên (${providerLabel(activeProvider())})`,
+      });
+    } else if (s.name) {
+      out.push({
+        name: s.name,
+        drugId: null,
+        activeIngredient: s.activeIngredient || '—',
+        reason: s.reason || 'AI gợi ý (tra cứu qua API khi chọn)',
+      });
+    }
+  }
+  return out;
+}
+
+function mergeSuggestions(existing, incoming) {
+  const seen = new Set();
+  const out = [];
+  for (const s of [...existing, ...incoming]) {
+    const key = normalizeText(s.name || '');
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(s);
+  }
+  return out.slice(0, 8);
+}
 
 router.get('/health', (_req, res) => {
   const db = getDb();
@@ -59,7 +108,7 @@ router.get('/suggest', async (req, res) => {
 
     /** @type {object} */
     let ai = null;
-    if (hasAi() && exact.length === 0 && local.length === 0) {
+    if (hasAi() && exact.length === 0) {
       try {
         ai = await aiSuggestSpelling(q, local);
       } catch (e) {
@@ -137,65 +186,53 @@ router.post('/lookup', async (req, res) => {
     }
 
     if (!drug) {
-      const suggestions = suggestDrugNames(drugQuery, 5);
+      const fuzzyLocal = suggestDrugNames(drugQuery, 5);
+      let merged = mapLocalSuggestions(fuzzyLocal);
+      let correctedQuery = null;
 
-      if (suggestions.length > 0) {
-        /** @type {object[]} */
-        let merged = suggestions.map((s) => ({
-          name: s.drug.name,
-          drugId: s.drug.id,
-          activeIngredient: s.drug.activeIngredient,
-          score: s.score,
-          reason: s.reason,
-        }));
-
-        if (hasAi() && suggestions.length === 0) {
-          try {
-            const ai = await aiSuggestSpelling(drugQuery, suggestions);
-            for (const s of ai.suggestions || []) {
-              const local = db.drugs.find(
-                (d) =>
-                  normalizeText(d.name) === normalizeText(s.name) ||
-                  normalizeText(d.activeIngredient) === normalizeText(s.activeIngredient)
-              );
-              if (local && !merged.some((m) => m.drugId === local.id)) {
-                merged.push({
-                  name: local.name,
-                  drugId: local.id,
-                  activeIngredient: local.activeIngredient,
-                  reason: s.reason || `AI gợi ý (${providerLabel(activeProvider())})`,
-                });
-              } else if (!local && s.name) {
-                merged.push({
-                  name: s.name,
-                  drugId: null,
-                  activeIngredient: s.activeIngredient || '—',
-                  reason: s.reason || 'AI gợi ý (chưa có trong DB demo)',
-                });
-              }
+      if (hasAi()) {
+        try {
+          const ai = await aiSuggestSpelling(drugQuery, fuzzyLocal);
+          correctedQuery = ai?.correctedQuery || null;
+          if (correctedQuery) {
+            const corrected = findDrugCandidates(db, correctedQuery);
+            const exactCorrected = corrected.filter(
+              (d) =>
+                normalizeText(d.name) === normalizeText(correctedQuery) ||
+                (d.aliases || []).some((a) => normalizeText(a) === normalizeText(correctedQuery))
+            );
+            if (exactCorrected.length === 1) {
+              return res.json(lookupLocal(exactCorrected[0], condition, userName, patient));
             }
-            merged = merged.slice(0, 6);
-          } catch {
-            // giữ gợi ý fuzzy
           }
+          merged = mergeSuggestions(merged, suggestionsFromAi(ai, db));
+        } catch {
+          // tiếp tục với gợi ý local hoặc lookup AI
         }
+      }
 
+      if (merged.length > 0) {
+        const hint = correctedQuery ? ` (gợi ý đúng: ${correctedQuery})` : '';
         return res.json({
           status: 'suggest',
-          message: `Không tìm thấy "${drugQuery}" — có thể bạn muốn:`,
+          message: `Không tìm thấy chính xác "${drugQuery}"${hint} — chọn thuốc:`,
           suggestions: merged,
+          correctedQuery,
         });
       }
 
       if (hasAi()) {
         try {
           const result = await aiLookup(drugQuery, condition, patient);
+          const card = result.card;
           return res.json({
             status: 'ok',
             mode: result.mode,
             dataSource: 'api',
             suggestions: [],
-            card: result.card,
+            card,
+            structured: buildStructuredFromCard(card),
+            normalizedQuery: card.drugName || drugQuery,
           });
         } catch (aiErr) {
           return res.status(502).json({
@@ -206,11 +243,12 @@ router.post('/lookup', async (req, res) => {
         }
       }
 
-      return res.json({
-        status: 'not_found',
-        message: 'Không tìm thấy thuốc. Vui lòng hỏi dược sĩ Long Châu.',
-        suggestions: [],
-      });
+        return res.json({
+          status: 'not_found',
+          message: `Không tìm thấy "${drugQuery}". Vui lòng nhập lại tên thuốc hoặc chọn gợi ý bên dưới.`,
+          suggestions: [],
+          flowStep: 'retry_input',
+        });
     }
 
     // Có trong database → chỉ dùng DB, không gọi API

@@ -62,3 +62,43 @@ DEEPSEEK_API_KEY=sk-...
 ```bash
 lsof -ti:3000 | xargs kill -9 && npm run dev
 ```
+
+## Deploy Streamlit (Streamlit Community Cloud)
+
+Streamlit **nhúng full web Long Châu** qua iframe (cần server Node). Chat-only: `?mode=chat`.
+
+### Chạy local (khuyên dùng — full web)
+
+**Terminal 1** — web + API:
+
+```bash
+cd 03-prototype
+npm install
+npm run dev
+```
+
+**Terminal 2** — Streamlit bọc web:
+
+```bash
+cd 03-prototype
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+Mở http://localhost:8501 — sẽ thấy **trang Long Châu đầy đủ** (header, hero, sản phẩm, nút Tư vấn).
+
+Hoặc mở trực tiếp http://localhost:3000 (không cần Streamlit).
+
+Streamlit cũng **tự thử khởi động** `npm run dev` nếu port 3000 chưa có ai dùng.
+
+### Chỉ chat (không web)
+
+http://localhost:8501/?mode=chat
+
+### Deploy Streamlit Cloud
+
+Streamlit Cloud **không chạy Node** — trên cloud chỉ dùng `?mode=chat` hoặc deploy web riêng (Vercel/Render cho `npm run dev`).
+
+1. Push repo GitHub → [share.streamlit.io](https://share.streamlit.io)
+2. Main file: `streamlit_app.py` (root) hoặc `03-prototype/streamlit_app.py`
+3. Secrets (tuỳ chọn): `OPENAI_API_KEY`

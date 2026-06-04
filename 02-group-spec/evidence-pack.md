@@ -40,20 +40,26 @@ Nguồn: khảo sát của nhóm (Google Form, n=13, mẫu thuận tiện, dữ 
 
 | App / mô hình tham khảo | Họ xử lý task này thế nào? | Pattern học được | Có áp dụng trong 1 ngày không? |
 |---|---|---|---|
-| [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] |
-
+| **Spotify "Made For You" / Netflix "Because you watched"** — analog đề xuất | Đề xuất số lượng giới hạn, kèm lý do ("vì bạn đã nghe/xem X") | Curated top-N + giải thích lý do → tăng niềm tin, bớt cảm giác quảng cáo (đúng pain P2) | CÓ — bắt LLM trả tối đa 3 gợi ý + 1 dòng lý do là việc của prompt |
+| **Domino's "Dom" / Starbucks "My Starbucks Barista"** — analog bot đặt món | Bot nhận order bằng ngôn ngữ tự nhiên/giọng nói qua Messenger hoặc trong app ([Botpress](https://botpress.com/blog/chatbot-for-restaurants)), nhớ "món quen" | Hội thoại thay menu; "đặt món quen" = predictive reorder. Lưu ý: họ là 1 thương hiệu, đơn giản hơn marketplace nhiều quán | Một phần — luồng chat nhận intent: CÓ; tự đặt/thanh toán: KHÔNG (mình giữ Augment) |
+| **ChatGPT / trợ lý LLM tổng quát** — chính là "động cơ" | Mô tả mơ hồ → LLM gợi ý + lý do, hỏi lại khi thiếu thông tin | Cơ chế clarify khi low-confidence (đúng SPEC). Nhược điểm: không biết quán nào CÓ THẬT quanh bạn | CÓ — đây chính là cách dựng MVP: LLM + feed danh sách quán thật + ràng buộc chỉ chọn trong danh sách |
+| **ShopeeFood "Gợi ý cho bạn" hiện tại** — baseline cần vượt | Danh mục gợi ý tĩnh ở trang chủ, không nhận mô tả tự nhiên, không nêu lý do | (Phản diện) Bị xem như quảng cáo, ít tin — khảo sát: 10/13 chấm tin cậy ≤3/5 → khoảng trống để khác biệt | N/A (mốc so sánh) |
 ## 5. Evidence -> Insight
 
 ```text
 Evidence nổi bật nhất:
-[Không có sẵn trong spec.md - Cần bổ sung từ kết quả nghiên cứu thực tế]
+- 12/13 người KHÔNG tìm được món khi gõ ý định mô tả tự nhiên: 8 người "chưa từng thử vì biết app sẽ không hiểu", 4 người "thử nhưng app báo lỗi / ra quán không liên quan", chỉ 1 người ra đúng. (P3)
+- 10/13 người "thỉnh thoảng" đến "rất thường xuyên" mở app rồi thoát ra không đặt. (P1)
+- 10/13 chấm độ tin cậy mục "Gợi ý cho bạn" ≤3/5; quote: "Chạy quảng cáo ạ", "gợi ý toàn quán ở xa". (P2)
+- Lý do bỏ đơn lặp nhiều nhất: "quán muốn ăn thì xa/ship cao, quán gần thì không có món ưng ý".
+(Nguồn: khảo sát nhóm, Google Form, n=13 — dữ liệu pilot, mẫu thuận tiện.)
 
 Insight:
-User không chỉ gặp [vấn đề lựa chọn món ăn quá tải (Choice paralysis)].
-Thật ra họ cần [sự hỗ trợ ra quyết định nhanh chóng, đáng tin cậy và hiểu được nhu cầu mơ hồ bằng ngôn ngữ tự nhiên của họ].
+User không chỉ gặp vấn đề lựa chọn món ăn quá tải (Choice paralysis - P1).
+Rào cản lớn nhất thực ra là họ không có cách diễn đạt nhu cầu MƠ HỒ với nhiều ràng buộc cùng lúc ("gần + rẻ + hợp gu") — search keyword không hiểu, nên phần lớn bỏ cuộc hoặc nhận kết quả lệch. Họ cần nói bằng ngôn ngữ tự nhiên và nhận lại gợi ý CÓ GIẢI THÍCH để đủ tin mà quyết.
 
 Opportunity:
-AI có thể giúp bằng cách [đọc hiểu ý định mơ hồ bằng ngôn ngữ tự nhiên + ngữ cảnh vị trí/thời gian để gợi ý tối đa 3 món/quán phù hợp nhất kèm dòng giải thích lý do thuyết phục].
+AI có thể giúp bằng cách đọc hiểu ý định mơ hồ bằng ngôn ngữ tự nhiên + ngữ cảnh vị trí/thời gian, ưu tiên đúng bán kính giao và tầm giá, để gợi ý tối đa 3 món/quán phù hợp nhất kèm dòng giải thích lý do thuyết phục (chống cảm giác "quảng cáo").
 ```
 
 ## 6. Evidence đổi SPEC như thế nào?

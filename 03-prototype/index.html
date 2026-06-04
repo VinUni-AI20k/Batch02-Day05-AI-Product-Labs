@@ -4,167 +4,250 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nhà thuốc Long Châu</title>
-    <link rel="stylesheet" href="./css/styles.css?v=7" />
+    <link rel="stylesheet" href="./css/styles.css?v=8" />
   </head>
   <body>
     <div class="lc-site">
-      <!-- Top bar -->
       <div class="lc-topbar">
         <div class="lc-container lc-topbar__inner">
-          <span class="lc-topbar__left">
-            <a href="#">Trung Tâm Tiêm Chủng Long Châu</a>
-            <a href="#">Tải ứng dụng</a>
-          </span>
-          <span class="lc-topbar__right">
-            <span>Hotline tư vấn: <strong>1800 6928</strong></span>
+          <div class="lc-topbar__promo">
+            <span class="lc-pill lc-pill--light">MỚI</span>
+            <span>Tải ứng dụng Long Châu - nhận ưu đãi đặc biệt lên đến</span>
+            <strong>200.000đ</strong>
+            <a href="#">Tải ngay</a>
+          </div>
+          <div class="lc-topbar__links">
+            <a href="tel:18006928">1800 6928</a>
+            <a href="#">Hỗ trợ</a>
+            <a href="#">Hệ thống nhà thuốc</a>
+            <a href="#">Theo dõi đơn hàng</a>
             <span id="api-badge" class="api-badge api-badge--top">API</span>
-          </span>
+          </div>
         </div>
       </div>
 
-      <!-- Header xanh -->
       <header class="lc-header">
         <div class="lc-container lc-header__inner">
           <a href="#" class="lc-logo" aria-label="Long Châu">
-            <span class="lc-logo__mark">
-              <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
-                <circle cx="20" cy="20" r="20" fill="#fff"/>
-                <text x="20" y="26" text-anchor="middle" fill="#1565C0" font-size="14" font-weight="800">LC</text>
-              </svg>
-            </span>
+            <span class="lc-logo__mark" aria-hidden="true">LC</span>
             <span class="lc-logo__text">
-              <strong>NHÀ THUỐC LONG CHÂU</strong>
-              <small>FPT Retail</small>
+              <strong>Long Châu</strong>
+              <small>Nhà Thuốc Uy Tín</small>
             </span>
           </a>
 
-          <div class="lc-search">
-            <input type="search" placeholder="Giao hàng nhanh trong 1h..." disabled />
-            <button type="button" class="lc-search__btn" disabled aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </button>
-          </div>
+          <form class="lc-search" role="search">
+            <span class="lc-search__icon" aria-hidden="true">⌕</span>
+            <input
+              type="search"
+              placeholder="Tìm kiếm thuốc, thực phẩm chức năng, sản phẩm chăm sóc sức khỏe..."
+              aria-label="Tìm kiếm sản phẩm"
+            />
+            <button type="button" class="lc-icon-btn" aria-label="Tìm bằng giọng nói">◌</button>
+            <button type="button" class="lc-icon-btn" aria-label="Quét mã">▣</button>
+            <button type="button" class="lc-search__submit">Tìm kiếm</button>
+          </form>
 
           <div class="lc-header__actions">
-            <a href="#" class="lc-header__login">👤 Đăng nhập</a>
-            <button type="button" class="lc-header__cart" disabled>🛒 Giỏ hàng</button>
+            <a href="#" class="lc-header__action"><span aria-hidden="true">♙</span><small>Đăng nhập</small></a>
+            <a href="#" class="lc-header__action lc-header__action--notify">
+              <span aria-hidden="true">◉</span><small>Thông báo</small><b>2</b>
+            </a>
+            <button type="button" class="lc-cart" disabled>
+              <span aria-hidden="true">🛒</span>
+              <span><small>Giỏ hàng</small><strong>3 sản phẩm</strong></span>
+              <b>3</b>
+            </button>
           </div>
         </div>
 
-        <nav class="lc-catnav" aria-label="Danh mục">
-          <div class="lc-container lc-catnav__inner">
-            <a href="#">Thực phẩm chức năng</a>
-            <a href="#">Dược mỹ phẩm</a>
-            <a href="#">Thuốc</a>
-            <a href="#">Chăm sóc cá nhân</a>
-            <a href="#">Thiết bị y tế</a>
-            <a href="#">Bệnh &amp; Góc sức khỏe</a>
-            <a href="#">Tiêm vắc xin</a>
-          </div>
-        </nav>
+        <div class="lc-container lc-quicknav" aria-label="Danh mục nhanh">
+          <a href="#">💊 Thuốc</a>
+          <a href="#">🌿 Vitamin & TPBS</a>
+          <a href="#">✨ Chăm sóc da</a>
+          <a href="#">👶 Mẹ & Bé</a>
+          <a href="#">👁 Chăm sóc mắt</a>
+          <a href="#">🩺 Thiết bị y tế</a>
+          <a href="#">💪 Dinh dưỡng</a>
+          <a href="#">♡ Sức khỏe tim mạch</a>
+          <a href="#" class="lc-quicknav__all">Xem tất cả ˅</a>
+        </div>
       </header>
 
-      <!-- Hero banner -->
-      <section class="lc-hero">
-        <div class="lc-container lc-hero__inner">
-          <button type="button" class="lc-hero__arrow lc-hero__arrow--prev" aria-label="Trước">‹</button>
-          <div class="lc-hero__slide">
-            <div class="lc-hero__content">
-              <span class="lc-hero__badge">Ưu đãi tháng 6</span>
-              <h2>Chăm sóc sức khỏe trẻ em</h2>
-              <p>Vitamin, kẽm, men vi sinh — giao nhanh toàn quốc</p>
-              <button type="button" class="lc-hero__cta">Mua ngay 🛒</button>
+      <nav class="lc-meganav" aria-label="Danh mục sản phẩm">
+        <div class="lc-container lc-meganav__inner">
+          <button type="button" class="lc-meganav__all">▦ Tất cả danh mục ˅</button>
+          <a href="#">🌿 Thực phẩm chức năng</a>
+          <a href="#">✨ Mỹ phẩm</a>
+          <a href="#">💊 Thuốc</a>
+          <a href="#">♡ Chăm sóc cá nhân</a>
+          <a href="#">🩺 Thiết bị y tế</a>
+          <a href="#">💉 Tiêm chủng</a>
+          <a href="#">📖 Kiến thức sức khỏe</a>
+          <a href="#">📍 Hệ thống nhà thuốc</a>
+        </div>
+      </nav>
+
+      <main class="lc-main">
+        <section class="lc-hero" aria-labelledby="hero-title">
+          <div class="lc-hero__content">
+            <div class="lc-hero__badges">
+              <span>ƯU ĐÃI LỚN</span>
+              <strong>Giảm đến 40%</strong>
             </div>
-            <div class="lc-hero__visual" aria-hidden="true">
-              <div class="lc-hero__orb lc-hero__orb--1"></div>
-              <div class="lc-hero__orb lc-hero__orb--2"></div>
-              <div class="lc-hero__product">💊</div>
+            <h1 id="hero-title">Sức khỏe toàn diện</h1>
+            <h2>cho cả gia đình</h2>
+            <p>
+              Hơn 50,000 sản phẩm chính hãng với giá tốt. Tư vấn an toàn thuốc bằng AI,
+              giao hàng nhanh và hỗ trợ dược sĩ khi cần.
+            </p>
+            <div class="lc-hero__meta">🛡 01/06 - 30/06/2026</div>
+            <div class="lc-hero__stats" aria-label="Cam kết dịch vụ">
+              <span><strong>50,000+</strong><small>Sản phẩm</small></span>
+              <span><strong>2h</strong><small>Giao hàng</small></span>
+              <span><strong>98%</strong><small>Hài lòng</small></span>
+            </div>
+            <div class="lc-hero__actions">
+              <a href="#products" class="btn btn--hero">🛒 Mua ngay</a>
+              <button type="button" class="btn btn--outline-light" data-open-chat>Tư vấn thuốc →</button>
             </div>
           </div>
+          <div class="lc-hero__media" aria-hidden="true">
+            <img
+              src="https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=720&h=470&fit=crop&auto=format"
+              alt=""
+            />
+            <div class="lc-glass lc-glass--rating">★ <span><strong>4.9 / 5</strong><small>18,000+ đánh giá</small></span></div>
+            <div class="lc-glass lc-glass--ship">⚡ <span><strong>Giao hàng 2h</strong><small>Hà Nội & TP.HCM</small></span></div>
+          </div>
+          <button type="button" class="lc-hero__arrow lc-hero__arrow--prev" aria-label="Trước">‹</button>
           <button type="button" class="lc-hero__arrow lc-hero__arrow--next" aria-label="Sau">›</button>
-        </div>
-      </section>
+          <div class="lc-dots" aria-hidden="true"><span></span><i></i><i></i></div>
+        </section>
 
-      <!-- Quick actions -->
-      <section class="lc-quick">
-        <div class="lc-container lc-quick__grid">
-          <div class="lc-quick__card"><span class="lc-quick__icon">💊</span><span>Cần mua thuốc</span></div>
-          <button type="button" class="lc-quick__card lc-quick__card--btn" data-open-chat>
-            <span class="lc-quick__icon">👩‍⚕️</span><span>Tư vấn với Dược Sĩ</span>
-          </button>
-          <div class="lc-quick__card"><span class="lc-quick__icon">📋</span><span>Đơn của tôi</span></div>
-          <div class="lc-quick__card"><span class="lc-quick__icon">📍</span><span>Tìm nhà thuốc</span></div>
-          <div class="lc-quick__card"><span class="lc-quick__icon">💉</span><span>Tiêm Vắc xin</span></div>
-          <div class="lc-quick__card"><span class="lc-quick__icon">🔍</span><span>Tra thuốc chính hãng</span></div>
-        </div>
-      </section>
+        <section class="lc-trust" aria-label="Điểm tin cậy">
+          <article><strong>4,000+</strong><span>nhà thuốc toàn quốc</span></article>
+          <article><strong>24/7</strong><span>tư vấn và đặt hàng</span></article>
+          <article><strong>100%</strong><span>sản phẩm chính hãng</span></article>
+          <article><strong>AI + DB</strong><span>tra an toàn thuốc</span></article>
+        </section>
 
-      <!-- Nội dung trang chủ -->
-      <main class="lc-main">
-        <div class="lc-container">
-          <section class="lc-promo">
-            <h2 class="lc-section-title lc-section-title--blue">Ưu đãi độc quyền Online</h2>
-            <div class="lc-promo__grid">
-              <article class="lc-promo__card">
-                <div class="lc-promo__img lc-promo__img--1"></div>
-                <p class="lc-promo__name">Paracetamol 500mg</p>
-                <p class="lc-promo__price"><span class="lc-promo__old">52.000đ</span> 45.000đ</p>
-              </article>
-              <article class="lc-promo__card">
-                <div class="lc-promo__img lc-promo__img--2"></div>
-                <p class="lc-promo__name">Omeprazole 20mg</p>
-                <p class="lc-promo__price"><span class="lc-promo__old">99.000đ</span> 89.000đ</p>
-              </article>
-              <article class="lc-promo__card">
-                <div class="lc-promo__img lc-promo__img--3"></div>
-                <p class="lc-promo__name">Vitamin C 1000mg</p>
-                <p class="lc-promo__price"><span class="lc-promo__old">120.000đ</span> 95.000đ</p>
-              </article>
-              <article class="lc-promo__card">
-                <div class="lc-promo__img lc-promo__img--4"></div>
-                <p class="lc-promo__name">Cetirizine 10mg</p>
-                <p class="lc-promo__price"><span class="lc-promo__old">35.000đ</span> 28.000đ</p>
-              </article>
+        <section class="lc-promo-zone" aria-labelledby="promo-title">
+          <article class="lc-deal-card">
+            <div class="lc-section-head">
+              <div>
+                <span class="lc-kicker">🏷 GÓI ƯU ĐÃI</span>
+                <h2 id="promo-title">Combo tiết kiệm cho gia đình</h2>
+              </div>
+              <a href="#">Xem tất cả →</a>
             </div>
-          </section>
-
-          <section class="lc-health">
-            <h2 class="lc-section-title lc-section-title--blue">Kiểm tra sức khỏe</h2>
-            <p class="fine">Kết quả đánh giá sẽ cho bạn lời khuyên xử trí phù hợp</p>
-            <div class="lc-health__grid">
-              <div class="lc-health__card">Bài kiểm tra nguy cơ tiền đái tháo đường</div>
-              <div class="lc-health__card">Bài kiểm tra nguy cơ tim mạch</div>
-              <div class="lc-health__card">Đánh giá mức độ kiểm soát hen</div>
+            <div class="lc-deal-card__product">
+              <img
+                src="https://images.unsplash.com/photo-1528272252360-5efd274e36fb?w=620&h=320&fit=crop&auto=format"
+                alt="Bộ sản phẩm chăm sóc gia đình"
+              />
+              <span class="lc-badge lc-badge--orange">Bán chạy</span>
+              <span class="lc-badge lc-badge--red">-32%</span>
+              <div>
+                <h3>Bộ sản phẩm chăm sóc gia đình</h3>
+                <p>Vitamin tổng hợp, men vi sinh, canxi cho cả gia đình</p>
+                <div class="lc-price-row">
+                  <span><small>1,250,000đ</small><strong>849,000đ</strong></span>
+                  <button type="button" class="btn btn--primary">Thêm vào giỏ</button>
+                </div>
+              </div>
             </div>
-          </section>
-        </div>
+          </article>
+
+          <div class="lc-info-stack">
+            <article class="lc-info-card lc-info-card--knowledge">
+              <span>📖 Kiến thức sức khỏe</span>
+              <h3>5 dấu hiệu thiếu vitamin D bạn cần biết ngay hôm nay</h3>
+              <p>Nhận biết sớm để bổ sung kịp thời và hỗ trợ miễn dịch.</p>
+              <small>12,400 lượt đọc · 5 phút</small>
+            </article>
+            <article class="lc-info-card lc-info-card--news">
+              <span>🔔 Tin tức nhà thuốc</span>
+              <h3>Long Châu mở rộng hệ thống chi nhánh tháng 6/2026</h3>
+              <p>Đặt thuốc online, giao hàng nhanh và hỗ trợ dược sĩ.</p>
+              <small>4,000+ nhà thuốc · 24/7</small>
+            </article>
+          </div>
+        </section>
+
+        <section id="products" class="lc-products" aria-labelledby="products-title">
+          <div class="lc-section-head">
+            <div class="lc-title-row">
+              <span aria-hidden="true"></span>
+              <h2 id="products-title">Sản phẩm nổi bật</h2>
+            </div>
+            <a href="#">Xem tất cả →</a>
+          </div>
+          <div class="lc-tabs" role="tablist" aria-label="Nhóm sản phẩm">
+            <button type="button" class="is-active">Bán chạy nhất</button>
+            <button type="button">⚡ Vitamin & TPBS</button>
+            <button type="button">Chăm sóc da</button>
+            <button type="button">Thiết bị y tế</button>
+            <button type="button">Sức khỏe mẹ & bé</button>
+          </div>
+          <div class="lc-product-grid">
+            <article class="lc-product-card">
+              <img src="https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=360&h=360&fit=crop&auto=format" alt="Vitamin C 1000mg Blackmores" />
+              <span class="lc-badge lc-badge--orange">Bán chạy</span><b>-18%</b>
+              <div><small>Blackmores</small><h3>Vitamin C 1000mg Blackmores</h3><p>★ 4.8 <span>(2,340)</span></p><strong>285,000đ</strong><button type="button">🛒</button></div>
+            </article>
+            <article class="lc-product-card">
+              <img src="https://images.unsplash.com/photo-1597121870960-7b5391b88b84?w=360&h=360&fit=crop&auto=format" alt="Omega-3 Fish Oil Nature Made" />
+              <span class="lc-badge lc-badge--red">Flash Sale</span><b>-28%</b>
+              <div><small>Nature Made</small><h3>Omega-3 Fish Oil Nature Made</h3><p>★ 4.9 <span>(1,876)</span></p><strong>420,000đ</strong><button type="button">🛒</button></div>
+            </article>
+            <article class="lc-product-card">
+              <img src="https://images.unsplash.com/photo-1576602976047-174e57a47881?w=360&h=360&fit=crop&auto=format" alt="Kem chống nắng La Roche-Posay SPF 50" />
+              <span class="lc-badge lc-badge--green">Chính hãng</span><b>-13%</b>
+              <div><small>La Roche-Posay</small><h3>Kem chống nắng La Roche-Posay SPF 50</h3><p>★ 4.7 <span>(3,210)</span></p><strong>365,000đ</strong><button type="button">🛒</button></div>
+            </article>
+            <article class="lc-product-card">
+              <img src="https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=360&h=360&fit=crop&auto=format" alt="Máy đo huyết áp Omron HEM-7156T" />
+              <span class="lc-badge lc-badge--violet">Top pick</span><b>-21%</b>
+              <div><small>Omron</small><h3>Máy đo huyết áp Omron HEM-7156T</h3><p>★ 4.9 <span>(956)</span></p><strong>1,150,000đ</strong><button type="button">🛒</button></div>
+            </article>
+            <article class="lc-product-card">
+              <img src="https://images.unsplash.com/photo-1528272252360-5efd274e36fb?w=360&h=360&fit=crop&auto=format" alt="Men vi sinh Enterogermina" />
+              <span class="lc-badge lc-badge--orange">Bán chạy</span><b>-19%</b>
+              <div><small>Sanofi</small><h3>Men vi sinh Enterogermina 2 tỷ</h3><p>★ 4.6 <span>(5,420)</span></p><strong>125,000đ</strong><button type="button">🛒</button></div>
+            </article>
+            <article class="lc-product-card">
+              <img src="https://images.unsplash.com/photo-1506836467174-27f1042aa48c?w=360&h=360&fit=crop&auto=format" alt="Sữa bột Nan Optipro 3" />
+              <span class="lc-badge lc-badge--blue">Mới về</span><b>-13%</b>
+              <div><small>Nestlé</small><h3>Sữa bột Nan Optipro 3 cho trẻ 1-3 tuổi</h3><p>★ 4.8 <span>(1,230)</span></p><strong>485,000đ</strong><button type="button">🛒</button></div>
+            </article>
+          </div>
+          <aside class="lc-member-banner">
+            <div>
+              <span>🏷 ĐẶC QUYỀN THÀNH VIÊN</span>
+              <h3>Đăng ký thẻ Long Châu - nhận ngay 200.000đ</h3>
+              <p>Tích điểm mỗi đơn hàng, hoàn tiền và ưu tiên tư vấn dược sĩ 24/7.</p>
+            </div>
+            <a href="#">Đăng ký ngay →</a>
+          </aside>
+        </section>
       </main>
 
       <footer class="lc-footer">
         <div class="lc-container lc-footer__inner">
           <p><strong>Công ty Cổ phần Dược phẩm FPT Long Châu</strong></p>
-          <p class="fine">Thông tin Safety Bot chỉ tham khảo — không thay tư vấn dược sĩ/bác sĩ.</p>
+          <p class="fine">Thông tin Safety Bot chỉ tham khảo - không thay thế tư vấn dược sĩ/bác sĩ.</p>
           <p class="fine">Hotline: 1800 6928 · prototype Day 06</p>
         </div>
       </footer>
     </div>
 
-    <!-- Nút tư vấn nổi -->
     <button type="button" id="chat-fab" class="chat-fab" aria-label="Mở tư vấn dược sĩ AI" aria-expanded="false">
       <span class="chat-fab__pulse" aria-hidden="true"></span>
-      <span class="chat-fab__avatar" aria-hidden="true">
-        <svg viewBox="0 0 64 64" width="56" height="56">
-          <circle cx="32" cy="32" r="32" fill="#E3F2FD"/>
-          <circle cx="32" cy="26" r="12" fill="#FFCCBC"/>
-          <path d="M14 58c2-12 10-18 18-18s16 6 18 18" fill="#1565C0"/>
-          <rect x="22" y="38" width="20" height="14" rx="3" fill="#fff"/>
-          <path d="M26 14h12l4 8H22l4-8z" fill="#1565C0"/>
-        </svg>
-      </span>
+      <span class="chat-fab__avatar" aria-hidden="true">💊</span>
       <span class="chat-fab__label">Tư vấn</span>
     </button>
 
-    <!-- Panel chatbot -->
     <div id="chat-panel" class="chat-panel" hidden aria-hidden="true">
       <div class="chat-panel__backdrop" id="chat-backdrop"></div>
       <div class="chat-panel__drawer" role="dialog" aria-modal="true" aria-labelledby="chat-panel-title">
@@ -191,7 +274,7 @@
               <form id="profile-form" class="profile-form">
                 <div class="profile-form__head">
                   <h2>Thông tin tra cứu</h2>
-                  <p class="fine">Điền một lần — sau đó chỉ nhắn thêm tên thuốc</p>
+                  <p class="fine">Điền một lần - sau đó chỉ nhắn thêm tên thuốc</p>
                 </div>
 
                 <div class="form-grid">
@@ -256,6 +339,6 @@
       </div>
     </div>
 
-    <script type="module" src="./js/app.js?v=7"></script>
+    <script type="module" src="./js/app.js?v=8"></script>
   </body>
 </html>

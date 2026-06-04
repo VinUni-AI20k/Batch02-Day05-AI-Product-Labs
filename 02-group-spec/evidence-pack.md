@@ -5,8 +5,11 @@ Nộp kèm thin SPEC cuối Day 05.
 ## 1. Nhóm và track
 
 **Tên nhóm:** Naughty girls
+
 **Track:** Food & Local Delivery
+
 **Product/app đã chọn:** ShopeeFood  
+
 **Build slice đang nghĩ:** Chatbot gợi ý món ăn / quán gần đây từ ý định mô tả bằng ngôn ngữ tự nhiên (vd: "đói, muốn món nóng dưới 50k gần đây"). AI trả về tối đa 3 gợi ý có thật kèm lý do ngắn; người dùng tự bấm 1-chạm để mở quán và đặt — AI gợi ý, người quyết (Augment).
 
 ## 2. Self-use evidence

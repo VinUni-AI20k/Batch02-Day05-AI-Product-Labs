@@ -21,7 +21,7 @@
             <a href="#">Hỗ trợ</a>
             <a href="#">Hệ thống nhà thuốc</a>
             <a href="#">Theo dõi đơn hàng</a>
-            <span id="api-badge" class="api-badge api-badge--top">API</span>
+            <span id="api-badge" class="api-badge api-badge--top" hidden>API</span>
           </div>
         </div>
       </div>
@@ -29,7 +29,7 @@
       <header class="lc-header">
         <div class="lc-container lc-header__inner">
           <a href="#" class="lc-logo" aria-label="Long Châu">
-            <span class="lc-logo__mark" aria-hidden="true">LC</span>
+            <img src="./assets/fpt-logo.png" alt="FPT Long Châu" class="lc-logo__img" width="120" height="40" />
             <span class="lc-logo__text">
               <strong>Long Châu</strong>
               <small>Nhà Thuốc Uy Tín</small>
@@ -244,7 +244,7 @@
 
     <button type="button" id="chat-fab" class="chat-fab" aria-label="Mở tư vấn dược sĩ AI" aria-expanded="false">
       <span class="chat-fab__pulse" aria-hidden="true"></span>
-      <span class="chat-fab__avatar" aria-hidden="true">💊</span>
+      <img src="./assets/bot-avatar.png" alt="" class="chat-fab__avatar" width="58" height="58" aria-hidden="true" />
       <span class="chat-fab__label">Tư vấn</span>
     </button>
 
@@ -253,7 +253,7 @@
       <div class="chat-panel__drawer" role="dialog" aria-modal="true" aria-labelledby="chat-panel-title">
         <header class="chat-panel__header">
           <div class="chat-panel__brand">
-            <span class="chat-panel__icon">💊</span>
+            <img src="./assets/bot-avatar.png" alt="" class="chat-panel__icon" width="42" height="42" />
             <div>
               <strong id="chat-panel-title">Long Châu Safety Bot</strong>
               <span class="fine">Tư vấn tra an toàn thuốc</span>
@@ -269,56 +269,13 @@
 
           <div id="api-alert" class="api-alert" hidden role="alert"></div>
 
-          <div class="safety-feature__body">
-            <section id="profile-section" class="profile-section" aria-label="Thông tin tra cứu">
-              <form id="profile-form" class="profile-form">
-                <div class="profile-form__head">
-                  <h2>Thông tin tra cứu</h2>
-                  <p class="fine">Điền một lần — sau đó chỉ nhắn thêm tên thuốc</p>
-                </div>
-
-                <div class="form-grid">
-                  <label class="field field--full">
-                    <span class="field__label">Tình trạng hiện tại</span>
-                    <input id="field-condition" name="condition" type="text" placeholder="vd: sốt nhẹ, đau đầu..." required />
-                  </label>
-                  <label class="field field--full">
-                    <span class="field__label">Tên thuốc / hoạt chất</span>
-                    <input id="field-drug" name="drug" type="text" placeholder="vd: Panadol, Paracetamol..." required />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">Tuổi</span>
-                    <input id="field-age" name="age" type="number" min="0" max="120" placeholder="30" required />
-                  </label>
-                  <fieldset class="field field--gender">
-                    <legend class="field__label">Giới tính</legend>
-                    <div class="radio-row">
-                      <label class="radio-pill"><input type="radio" name="gender" value="male" required /> Nam</label>
-                      <label class="radio-pill"><input type="radio" name="gender" value="female" /> Nữ</label>
-                    </div>
-                  </fieldset>
-                </div>
-
-                <p id="form-error" class="form-error" role="alert" hidden></p>
-
-                <button type="submit" id="submit-form-btn" class="btn btn--primary btn--block">Bắt đầu tra cứu</button>
-
-                <div class="demo-row">
-                  <span class="fine">Demo:</span>
-                  <button type="button" class="chip chip--sm" data-demo="happy">30t nữ + Panadol</button>
-                  <button type="button" class="chip chip--sm" data-demo="typo">8t + Panadl</button>
-                  <button type="button" class="chip chip--sm" data-demo="urgent">Khó thở</button>
-                </div>
-              </form>
-
-              <div id="profile-bar" class="profile-bar" hidden>
-                <div class="profile-bar__info">
-                  <span class="profile-bar__title">Hồ sơ tra cứu</span>
-                  <p id="profile-bar-text" class="profile-bar__text"></p>
-                </div>
-                <button type="button" id="edit-profile-btn" class="btn btn--ghost btn--sm">Sửa</button>
+          <div class="safety-feature__body safety-feature__body--chat-only">
+            <div id="profile-bar" class="profile-bar profile-bar--compact" hidden>
+              <div class="profile-bar__info">
+                <span class="profile-bar__title">Ngữ cảnh</span>
+                <p id="profile-bar-text" class="profile-bar__text"></p>
               </div>
-            </section>
+            </div>
 
             <div class="safety-chat">
               <div id="lookup-status" class="lookup-status" hidden role="status" aria-live="polite">
@@ -329,6 +286,13 @@
                 </div>
               </div>
               <main class="chat" id="messages" role="log" aria-live="polite"></main>
+              <div class="demo-row demo-row--chat">
+                <span class="fine">Thử:</span>
+                <button type="button" class="chip chip--sm" data-demo-msg="25 tuổi nữ, đau bụng nên uống gì?">Đau bụng</button>
+                <button type="button" class="chip chip--sm" data-demo-msg="tránh thai dùng thuốc nào hợp lý?">Tránh thai</button>
+                <button type="button" class="chip chip--sm" data-demo-msg="Panadol có dùng khi sốt không? 30 tuổi nữ">Panadol</button>
+                <button type="button" class="chip chip--sm" data-demo-msg="khó thở">Khó thở</button>
+              </div>
               <footer class="composer" id="composer">
                 <label class="composer__attach" title="Gửi ảnh thuốc">
                   📷
@@ -343,6 +307,6 @@
       </div>
     </div>
 
-    <script type="module" src="./js/app.js?v=7"></script>
+    <script type="module" src="./js/app.js?v=13"></script>
   </body>
 </html>

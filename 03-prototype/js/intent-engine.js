@@ -67,15 +67,64 @@ export function extractSymptomText(text) {
   return t || text.trim();
 }
 
+const DRUG_RECOMMEND =
+  /tránh thai|ngừa thai|kế hoạch hóa|tránh mang thai|thuốc nào|dùng thuốc gì|uống gì|nên uống|nên dùng|dùng loại nào|hợp lý|phù hợp/i;
+
+const FOLLOW_UP =
+  /^(tiếp|thế|vậy|ok|oke|còn|mà|cho hỏi|hỏi thêm)/i;
+
+/** @param {object} ctx */
+export function extractRecommendationTopic(text, ctx = {}) {
+  const t = text.trim();
+  const lower = t.toLowerCase();
+
+  if (/tránh thai|ngừa thai|kế hoạch hóa|tránh mang thai/.test(lower)) {
+    return {
+      condition: 'tư vấn tránh thai',
+      drugQuery: 'thuốc tránh thai',
+      label: 'tránh thai',
+    };
+  }
+
+  if (/đau đầu|nhức đầu/.test(lower) && DRUG_RECOMMEND.test(lower)) {
+    return { condition: 'đau đầu', drugQuery: 'Paracetamol', label: 'đau đầu' };
+  }
+
+  if (/sốt/.test(lower) && DRUG_RECOMMEND.test(lower)) {
+    return { condition: 'sốt nhẹ', drugQuery: 'Paracetamol', label: 'sốt' };
+  }
+
+  if (/đau bụng|đau bụng/.test(lower) && DRUG_RECOMMEND.test(lower)) {
+    return { condition: 'đau bụng', drugQuery: 'thuốc giảm đau bụng', label: 'đau bụng' };
+  }
+
+  if (DRUG_RECOMMEND.test(lower)) {
+    const cond = extractSymptomText(t) || ctx.condition || 'tư vấn chung';
+    return {
+      condition: cond,
+      drugQuery: cond,
+      label: cond,
+    };
+  }
+
+  if (FOLLOW_UP.test(lower) && ctx.condition && /thuốc|dùng|uống|tránh/.test(lower)) {
+    return extractRecommendationTopic(`${ctx.condition} ${t}`, ctx);
+  }
+
+  return null;
+}
+
 /**
  * @param {object} db
  * @param {string} text
- * @returns {'emergency'|'drug_lookup'|'symptom_advice'|'general_question'|'unclear'}
+ * @returns {'emergency'|'drug_lookup'|'drug_recommendation'|'symptom_advice'|'general_question'|'unclear'}
  */
 export function classifyTextIntent(db, text) {
   const t = text.trim();
   if (!t) return 'unclear';
   if (checkEmergency(db, t)) return 'emergency';
+
+  if (extractRecommendationTopic(t, {})) return 'drug_recommendation';
 
   const drug = extractDrugName(db, t);
   if (drug && DRUG_QUESTION.test(t)) return 'drug_lookup';

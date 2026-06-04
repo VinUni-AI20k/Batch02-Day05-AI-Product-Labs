@@ -80,6 +80,12 @@ img { display: block; max-width: 100%; }
   gap: 11px;
   flex-shrink: 0;
 }
+.lc-logo__img {
+  display: block;
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
 .lc-logo__mark {
   width: 42px;
   height: 42px;
@@ -698,15 +704,15 @@ img { display: block; max-width: 100%; }
 }
 .chat-fab__avatar {
   position: relative;
-  display: grid;
-  place-items: center;
+  display: block;
   width: 58px;
   height: 58px;
   border: 3px solid #fff;
   border-radius: 999px;
-  background: linear-gradient(135deg, #e8f2ff, #fff);
-  box-shadow: 0 10px 28px rgba(0,82,217,0.32);
-  font-size: 26px;
+  object-fit: cover;
+  object-position: top center;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(0, 82, 217, 0.32);
 }
 .chat-fab__label {
   border-radius: 999px;
@@ -759,12 +765,15 @@ body.chat-open .chat-fab { opacity: 0; pointer-events: none; transform: scale(0.
 .chat-panel__brand { display: flex; align-items: center; gap: 11px; }
 .chat-panel__brand .fine { display: block; color: rgba(255,255,255,0.82); }
 .chat-panel__icon {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 42px;
   height: 42px;
-  border-radius: 13px;
-  background: rgba(255,255,255,0.2);
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: top center;
+  border: 2px solid rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
 }
 .chat-panel__close {
   width: 38px;

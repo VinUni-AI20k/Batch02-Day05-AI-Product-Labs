@@ -502,6 +502,11 @@
     ],
     "conditionRules": [
       {
+        "match": ["tránh thai", "ngừa thai", "tránh mang thai", "kế hoạch hóa"],
+        "level": "yellow",
+        "note": "Levonorgestrel 1.5mg dùng tránh thai khẩn cấp trong 72h — không thay biện pháp tránh thai thường xuyên."
+      },
+      {
         "match": ["quan he khong an toan", "rach bao cao su", "tuot bao cao su"],
         "level": "green",
         "note": "Có thể phù hợp chỉ định tránh thai khẩn cấp nếu còn trong thời gian khuyến cáo."

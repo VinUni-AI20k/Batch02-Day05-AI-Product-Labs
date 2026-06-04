@@ -254,3 +254,51 @@ export async function lookupWithOpenAI(drugQuery, condition, patient = {}) {
 
   return buildCard(parsed, drugQuery, condition, patient, sources, mode);
 }
+
+/**
+ * Hội thoại tự nhiên — có thể gợi ý tra cứu thuốc
+ * @param {{ role: string, content: string }[]} messages
+ */
+export async function chatConversational(messages, profile = {}, drugCatalog = '', disclaimer = '') {
+  const { genderLabel, ageLine } = patientContext(profile);
+
+  const system = `Bạn là Long Châu Safety Bot — trợ lý tư vấn an toàn thuốc OTC tại Việt Nam.
+Trả lời tiếng Việt tự nhiên, thân thiện như dược sĩ, ngắn gọn (2–6 câu).
+Không chẩn đoán bệnh. Triệu chứng khẩn cấp (khó thở, đau ngực, ngất...) → khuyên gọi 115 ngay.
+${disclaimer}
+
+Hồ sơ khách (nếu biết): tuổi ${ageLine}, giới tính ${genderLabel}, tình trạng: "${profile.condition || 'chưa rõ'}".
+
+Thuốc có trong database nội bộ (ưu tiên gợi ý nếu phù hợp):
+${drugCatalog || '(chưa có)'}
+
+Trả về JSON:
+{
+  "reply": "câu trả lời tự nhiên cho khách",
+  "lookupDrug": "tên thuốc/hoạt chất cần tra Thẻ an toàn hoặc null",
+  "condition": "tình trạng/triệu chứng để tra cứu hoặc null"
+}
+
+Nếu khách hỏi nên dùng thuốc gì (vd tránh thai, đau đầu), trả lời trực tiếp trong reply và đặt lookupDrug nếu có tên thuốc cụ thể cần kiểm tra an toàn.`;
+
+  const data = await openaiFetch('/chat/completions', {
+    model: OPENAI_MODEL,
+    temperature: 0.55,
+    response_format: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: system },
+      ...messages.slice(-14).map((m) => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: m.content,
+      })),
+    ],
+  });
+
+  const text = extractResponseText(data);
+  const parsed = parseLlmJson(text);
+  return {
+    reply: parsed?.reply || text || 'Xin lỗi, mình chưa trả lời được — bạn thử hỏi lại hoặc gửi tên thuốc cụ thể nhé.',
+    lookupDrug: parsed?.lookupDrug || null,
+    condition: parsed?.condition || null,
+  };
+}

@@ -1,13 +1,15 @@
-import { hasOpenAI, suggestSpelling as openAiSuggest, lookupWithOpenAI } from './openai.js';
+import { hasOpenAI, suggestSpelling as openAiSuggest, lookupWithOpenAI, chatConversational as openAiChat } from './openai.js';
 import {
   hasGemini,
   suggestSpelling as geminiSuggest,
   lookupWithGoogleGrounding,
+  chatConversational as geminiChat,
 } from './gemini.js';
 import {
   hasDeepSeek,
   suggestSpelling as deepseekSuggest,
   lookupWithDeepSeek,
+  chatConversational as deepseekChat,
 } from './deepseek.js';
 
 export { hasOpenAI, hasGemini, hasDeepSeek };
@@ -72,6 +74,14 @@ export async function aiLookup(drugQuery, condition, patient = {}) {
   if (provider === 'openai') return lookupWithOpenAI(drugQuery, condition, patient);
   if (provider === 'deepseek') return lookupWithDeepSeek(drugQuery, condition, patient);
   if (provider === 'gemini') return lookupWithGoogleGrounding(drugQuery, condition, patient);
+  throw new Error('Chưa cấu hình OPENAI_API_KEY, DEEPSEEK_API_KEY hoặc GEMINI_API_KEY');
+}
+
+export async function aiChat(messages, profile, drugCatalog, disclaimer) {
+  const provider = activeProvider();
+  if (provider === 'openai') return openAiChat(messages, profile, drugCatalog, disclaimer);
+  if (provider === 'deepseek') return deepseekChat(messages, profile, drugCatalog, disclaimer);
+  if (provider === 'gemini') return geminiChat(messages, profile, drugCatalog, disclaimer);
   throw new Error('Chưa cấu hình OPENAI_API_KEY, DEEPSEEK_API_KEY hoặc GEMINI_API_KEY');
 }
 

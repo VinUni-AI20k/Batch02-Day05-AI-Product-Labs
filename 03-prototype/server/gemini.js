@@ -156,3 +156,37 @@ Quy tắc:
     mode: 'google+gemini',
   };
 }
+
+/** @param {{ role: string, content: string }[]} messages */
+export async function chatConversational(messages, profile = {}, drugCatalog = '', disclaimer = '') {
+  const { genderLabel, ageLine } = patientContext(profile);
+  const prompt = `Bạn là Long Châu Safety Bot. Trả lời tiếng Việt tự nhiên. ${disclaimer}
+Hồ sơ: ${ageLine}, ${genderLabel}, tình trạng: "${profile.condition || 'chưa rõ'}".
+Thuốc DB:\n${drugCatalog}
+
+Lịch sử chat:
+${messages
+  .slice(-10)
+  .map((m) => `${m.role}: ${m.content}`)
+  .join('\n')}
+
+Trả JSON thuần: {"reply":"...","lookupDrug":null|"tên thuốc","condition":null|"tình trạng"}`;
+
+  const { text } = await geminiGenerate({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.55, responseMimeType: 'application/json' },
+  });
+  const parsed = parseLlmJson(text);
+  return {
+    reply: parsed?.reply || text,
+    lookupDrug: parsed?.lookupDrug || null,
+    condition: parsed?.condition || null,
+  };
+}
+
+function patientContext(patient) {
+  const { age = null, gender = null } = patient;
+  const genderLabel = gender === 'male' ? 'Nam' : gender === 'female' ? 'Nữ' : '—';
+  const ageLine = age != null ? `${age} tuổi` : 'chưa rõ';
+  return { genderLabel, ageLine, age, gender };
+}

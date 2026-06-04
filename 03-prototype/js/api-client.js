@@ -26,6 +26,17 @@ export async function ocrDrugImage(imageBase64, mimeType = 'image/jpeg') {
   return data;
 }
 
+export async function chatMessage({ messages, profile }) {
+  const res = await fetch(`${API}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, profile }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Chat thất bại');
+  return data;
+}
+
 export async function lookupDrug({ condition, drugQuery, age, gender, userName, drugId }) {
   const res = await fetch(`${API}/lookup`, {
     method: 'POST',

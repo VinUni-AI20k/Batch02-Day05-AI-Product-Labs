@@ -21,6 +21,7 @@ import {
 } from '../ai-provider.js';
 import { hasGoogleCse, searchDrugInfo } from '../google-cse.js';
 import { ocrDrugImage } from '../ocr.js';
+import { handleConversation } from '../conversation.js';
 
 const router = Router();
 
@@ -230,6 +231,21 @@ router.post('/search-google', async (req, res) => {
     res.json({ items });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+/** POST /api/drugs/chat  body: { messages, profile? } */
+router.post('/chat', async (req, res) => {
+  try {
+    const messages = Array.isArray(req.body.messages) ? req.body.messages : [];
+    const profile = req.body.profile || {};
+    if (messages.length === 0) {
+      return res.status(400).json({ error: 'Cần messages' });
+    }
+    const result = await handleConversation({ messages, profile });
+    res.json({ status: 'ok', ...result, provider: activeProvider() });
+  } catch (err) {
+    res.status(502).json({ error: err.message });
   }
 });
 

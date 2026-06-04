@@ -167,3 +167,25 @@ export async function lookupWithDeepSeek(drugQuery, condition, patient = {}) {
 
   return buildCard(parsed, drugQuery, condition, patient, sources, mode);
 }
+
+/** @param {{ role: string, content: string }[]} messages */
+export async function chatConversational(messages, profile = {}, drugCatalog = '', disclaimer = '') {
+  const { genderLabel, ageLine } = patientContext(profile);
+  const system = `Bạn là Long Châu Safety Bot. Trả lời tiếng Việt tự nhiên, ngắn gọn. ${disclaimer}
+Hồ sơ: ${ageLine}, ${genderLabel}, tình trạng: "${profile.condition || 'chưa rõ'}".
+Thuốc DB: ${drugCatalog}
+JSON: {"reply":"...","lookupDrug":null|"tên thuốc","condition":null|"tình trạng"}`;
+
+  const text = await chatJson(
+    `${system}\n\nLịch sử:\n${messages
+      .slice(-10)
+      .map((m) => `${m.role}: ${m.content}`)
+      .join('\n')}\n\nTrả JSON cho tin nhắn cuối của user.`
+  );
+  const parsed = parseLlmJson(text);
+  return {
+    reply: parsed?.reply || text,
+    lookupDrug: parsed?.lookupDrug || null,
+    condition: parsed?.condition || null,
+  };
+}

@@ -1,32 +1,39 @@
 # SPEC sản phẩm — Long Châu Safety Bot
 
-## 0. Tóm tắt
+> Bản Day 6 update từ `02-group-spec/thin-spec-template.md` của Day 5.
+
+---
+
+## 0. Tóm tắt sản phẩm
 
 **Tên sản phẩm:** Long Châu Safety Bot  
 **Track:** Healthcare / Pharmacy  
 **App tham chiếu:** Long Châu — Chuyên gia thuốc  
 **Prototype Day 6:** Chat tra cứu thuốc + Safety Card  
-**Lát cắt build:** User nhập tình trạng sức khỏe + tuổi + giới tính + tên thuốc/hoạt chất → bot tra DB local / fuzzy / API fallback → trả Safety Card có mức cảnh báo, nguồn, disclaimer và CTA hỏi dược sĩ.
+**Lát cắt build:** User nhập **tình trạng sức khỏe + tuổi + giới tính + tên thuốc/hoạt chất** → bot tra **DB local / fuzzy / API fallback** → trả **Safety Card** có mức cảnh báo, nguồn, disclaimer và CTA hỏi dược sĩ.
 
-Long Châu Safety Bot không phải AI bác sĩ và không thay thế dược sĩ/bác sĩ. Prototype chỉ giúp user kiểm tra nhanh một câu hỏi hẹp:
+Long Châu Safety Bot không phải AI bác sĩ, không kê đơn, không thay thế dược sĩ/bác sĩ. Prototype chỉ giải một câu hỏi hẹp:
 
-> “Với tình trạng của tôi, thuốc/hoạt chất này có điểm gì cần lưu ý không?”
+> Với tình trạng, tuổi và giới tính của tôi, thuốc/hoạt chất này có điểm gì cần lưu ý không?
 
 Bot trả lời bằng Safety Card có cấu trúc, có disclaimer, có nguồn và có đường fallback khi không chắc.
 
 ---
 
-# 1. Bằng chứng
+## 1. Bằng chứng
 
-## 1.1. Bằng chứng từ trải nghiệm trực tiếp
+### 1.1. Trải nghiệm trực tiếp của nhóm
 
-Nhóm quan sát app Long Châu và workflow mua/tra thuốc. App đã có chat dược sĩ và disclaimer rằng thông tin chỉ mang tính tham khảo, không thay thế tư vấn y tế chuyên nghiệp. Tuy nhiên, trước khi chat dược sĩ, user chưa có một luồng self-serve chuẩn hóa để tra nhanh:
+Nhóm quan sát workflow mua/tra thuốc trên Long Châu và thấy app đã có chat dược sĩ, nhưng chưa có một luồng self-serve chuẩn hóa để user tra nhanh:
 
 ```text
-1 thuốc/hoạt chất + 1 tình trạng sức khỏe → Safety Card → cảnh báo → hỏi dược sĩ nếu cần.
+1 thuốc/hoạt chất + 1 tình trạng sức khỏe
+→ Safety Card
+→ cảnh báo Xanh/Vàng/Đỏ
+→ hỏi dược sĩ nếu cần
 ```
 
-Trong flow hiện tại, user thường phải:
+Trong flow hiện tại, user thường đi theo một trong hai hướng:
 
 ```text
 Mở app Long Châu
@@ -35,24 +42,24 @@ Mở app Long Châu
 → tự quyết định có nên dùng thuốc hay không
 ```
 
-Điểm gãy là user cần thông tin an toàn nhanh, có nguồn và có giới hạn rõ, nhưng không nên để AI tự kết luận y tế tuyệt đối.
+Điểm gãy là user cần thông tin an toàn nhanh, có nguồn và có giới hạn rõ, nhưng sản phẩm không nên để AI tự kết luận y tế tuyệt đối.
 
 ---
 
-## 1.2. Bằng chứng ngoài nhóm
+### 1.2. Bằng chứng ngoài nhóm
 
 | Evidence | Nguồn | User / pain nói lên điều gì? |
 |---|---|---|
 | “Tư vấn rất dễ thương, ứng dụng rất tiện lợi” | Review app Long Châu | Chat dược sĩ có giá trị khi có người phản hồi. |
-| “Xử lý cực kỳ chậm” | Review app Long Châu | User có nhu cầu được hỗ trợ nhanh hơn. |
+| “Xử lý cực kỳ chậm” | Review app Long Châu | User có nhu cầu được hỗ trợ nhanh hơn trong vài tình huống. |
 | “2h chiều mà bị treo cả tiếng đồng hồ. App ko cho thấy có ai đang hỗ trợ hay không” | Review / AppRecs | User không biết đang chờ ai, trong bao lâu, và nên làm gì tiếp. |
 | App có disclaimer: thông tin chỉ tham khảo, không thay thế tư vấn/chẩn đoán/điều trị y tế chuyên nghiệp | Mô tả app Long Châu | Bot phải giữ giới hạn an toàn, không được đóng vai bác sĩ. |
 
 ---
 
-## 1.3. Bằng chứng từ prototype hiện tại
+### 1.3. Bằng chứng từ prototype hiện tại
 
-Repo Day 6 hiện đã có prototype trong folder:
+Repo Day 6 hiện có prototype trong:
 
 ```text
 03-prototype/
@@ -85,7 +92,7 @@ Các endpoint chính:
 
 ---
 
-## 1.4. Insight
+### 1.4. Insight
 
 User không chỉ cần biết “thuốc này là gì”. Họ cần một quyết định an toàn có cấu trúc:
 
@@ -109,9 +116,9 @@ Tra nhanh
 
 ---
 
-# 2. Lát cắt để build
+## 2. Lát cắt để build
 
-## 2.1. Build slice
+### 2.1. Build slice
 
 ```text
 Cho người dùng Long Châu đang có một tình trạng sức khỏe và muốn tra một tên thuốc hoặc hoạt chất,
@@ -122,7 +129,7 @@ tạo Safety Card gồm hoạt chất, chỉ định, chống chỉ định, lư
 
 ---
 
-## 2.2. Một user, một task, một AI decision, một output
+### 2.2. Một user, một task, một AI decision, một output
 
 | Thành phần | Nội dung |
 |---|---|
@@ -133,13 +140,13 @@ tạo Safety Card gồm hoạt chất, chỉ định, chống chỉ định, lư
 
 ---
 
-## 2.3. Scope Day 6
+### 2.3. Scope Day 6
 
-### Build trong Day 6
+#### Build trong Day 6
 
 ```text
 - Chat UI mô phỏng Long Châu
-- Form nhập tình trạng, tuổi, giới tính, tên thuốc
+- Form/flow nhập tình trạng, tuổi, giới tính, tên thuốc
 - DB local 10 thuốc demo
 - Fuzzy suggestion khi user gõ sai
 - Safety Card từ DB local
@@ -151,7 +158,7 @@ tạo Safety Card gồm hoạt chất, chỉ định, chống chỉ định, lư
 - Demo happy / low-confidence / failure / correction
 ```
 
-### Không build trong Day 6
+#### Không build trong Day 6
 
 ```text
 - AI kê đơn
@@ -166,11 +173,11 @@ tạo Safety Card gồm hoạt chất, chỉ định, chống chỉ định, lư
 
 ---
 
-# 3. AI Product Canvas
+## 3. AI Product Canvas
 
-## 3.1. Value — Giá trị
+### 3.1. Value — Giá trị
 
-### Sản phẩm dành cho ai?
+#### Sản phẩm dành cho ai?
 
 Người dùng Long Châu đang có một thuốc/hoạt chất cần tra, đồng thời có một tình trạng sức khỏe cụ thể, ví dụ:
 
@@ -186,11 +193,11 @@ Người dùng Long Châu đang có một thuốc/hoạt chất cần tra, đồ
 - Trẻ em / người cao tuổi
 ```
 
-### Họ đau ở đâu?
+#### Họ đau ở đâu?
 
 User không chắc thuốc có phù hợp với tình trạng của mình không. Nếu hỏi dược sĩ, họ có thể phải chờ. Nếu tự Google, kết quả rời rạc và khó biết nguồn nào đáng tin. Nếu hỏi AI generic, câu trả lời có thể nghe rất tự tin nhưng sai.
 
-### AI giải điều gì tốt hơn cách hiện tại?
+#### AI giải điều gì tốt hơn cách hiện tại?
 
 AI tạo một bước trung gian an toàn:
 
@@ -210,9 +217,9 @@ Trả lời có cấu trúc, có nguồn, có disclaimer, có giới hạn và c
 
 ---
 
-## 3.2. Trust — Niềm tin
+### 3.2. Trust — Niềm tin
 
-### Khi AI trả lời sai, user nhận ra bằng cách nào?
+#### Khi AI trả lời sai, user nhận ra bằng cách nào?
 
 Prototype phải cho user thấy:
 
@@ -227,7 +234,7 @@ Prototype phải cho user thấy:
 - Disclaimer rõ ràng
 ```
 
-### User sửa, hoàn tác hoặc chuyển người thật ra sao?
+#### User sửa, hoàn tác hoặc chuyển người thật ra sao?
 
 User có thể:
 
@@ -240,7 +247,7 @@ User có thể:
 - Dừng flow khi có cảnh báo khẩn
 ```
 
-### Trust requirement
+#### Trust requirement
 
 ```text
 Bot không được nói “bạn uống được” hoặc “an toàn tuyệt đối”.
@@ -253,9 +260,9 @@ Bot chỉ được nói theo mức cảnh báo:
 
 ---
 
-## 3.3. Feasibility — Tính khả thi
+### 3.3. Feasibility — Tính khả thi
 
-### Vì sao đáng build?
+#### Vì sao đáng build?
 
 Lát cắt đủ nhỏ để demo:
 
@@ -265,7 +272,7 @@ Lát cắt đủ nhỏ để demo:
 
 Prototype hiện có server Express, DB local, fuzzy search, lookup API, AI provider fallback và UI mô phỏng Long Châu. Điều này đủ để demo trong 3–5 phút.
 
-### Chi phí / độ trễ
+#### Chi phí / độ trễ
 
 | Tình huống | Chi phí / độ trễ |
 |---|---|
@@ -275,7 +282,7 @@ Prototype hiện có server Express, DB local, fuzzy search, lookup API, AI prov
 | Không có key hoặc API lỗi | Không bịa, chuyển dược sĩ |
 | OCR ảnh thuốc | Có endpoint nhưng nên coi là demo phụ / optional |
 
-### Dữ liệu cần có
+#### Dữ liệu cần có
 
 DB demo cần có:
 
@@ -297,11 +304,11 @@ disclaimer
 
 Prototype hiện đã có các trường này trong `drugs-demo.json`.
 
-### Rủi ro lớn nhất
+#### Rủi ro lớn nhất
 
 Rủi ro lớn nhất là bot đánh giá cảnh báo quá thấp hoặc nhận nhầm thuốc, khiến user tự ý dùng thuốc có chống chỉ định.
 
-### Ngưỡng dừng
+#### Ngưỡng dừng
 
 Bot phải dừng hoặc handoff nếu:
 
@@ -318,9 +325,9 @@ Bot phải dừng hoặc handoff nếu:
 
 ---
 
-## 3.4. Tín hiệu học
+### 3.4. Tín hiệu học
 
-### Khi user chỉnh sửa kết quả, dữ liệu đi về đâu?
+#### Khi user chỉnh sửa kết quả, dữ liệu đi về đâu?
 
 Trong Day 6, correction chỉ cần lưu ở mức session log hoặc demo log. Không cần production learning.
 
@@ -342,7 +349,7 @@ urgentDetected
 notFoundQuery
 ```
 
-### Tín hiệu nào giúp sản phẩm tốt hơn?
+#### Tín hiệu nào giúp sản phẩm tốt hơn?
 
 ```text
 - Tỷ lệ user chọn fuzzy suggestion
@@ -355,7 +362,7 @@ notFoundQuery
 - Các failure case được thêm vào test set
 ```
 
-### Learning loop
+#### Learning loop
 
 ```text
 Correction log
@@ -367,9 +374,9 @@ Correction log
 
 ---
 
-# 4. Tăng năng lực hay tự động hóa?
+## 4. Tăng năng lực hay tự động hóa?
 
-## 4.1. Quyết định
+### 4.1. Quyết định
 
 Chọn:
 
@@ -381,7 +388,7 @@ AI được tự động tra cứu và draft Safety Card trong phạm vi hẹp. 
 
 ---
 
-## 4.2. AI được tự động làm gì?
+### 4.2. AI được tự động làm gì?
 
 AI / system được phép:
 
@@ -399,7 +406,7 @@ AI / system được phép:
 
 ---
 
-## 4.3. AI không được làm gì?
+### 4.3. AI không được làm gì?
 
 AI không được:
 
@@ -416,7 +423,7 @@ AI không được:
 
 ---
 
-## 4.4. Human giữ quyền ở đâu?
+### 4.4. Human giữ quyền ở đâu?
 
 | Mức cảnh báo | Human role |
 |---|---|
@@ -428,17 +435,17 @@ AI không được:
 
 ---
 
-## 4.5. Vì sao không full automation?
+### 4.5. Vì sao không full automation?
 
 Vì đây là domain y tế/dược phẩm. Nếu AI sai, hậu quả có thể là user dùng sai thuốc, bỏ qua chống chỉ định hoặc chậm đi cấp cứu. Việc “undo” sau khi user uống thuốc là không đơn giản, thậm chí không thể. Vì vậy prototype chỉ automate phần tra cứu/draft Safety Card, không automate quyết định y tế cuối.
 
 ---
 
-# 5. Bốn đường đi của trải nghiệm
+## 5. Bốn đường đi của trải nghiệm
 
-## 5.1. Happy path
+### 5.1. Happy path
 
-### Input demo
+#### Input demo
 
 ```text
 Tình trạng: sốt nhẹ
@@ -447,7 +454,7 @@ Giới tính: nam
 Thuốc: Paracetamol
 ```
 
-### Bot xử lý
+#### Bot xử lý
 
 ```text
 1. Validate đủ condition, age, gender, drugQuery.
@@ -457,7 +464,7 @@ Thuốc: Paracetamol
 5. Trả Safety Card từ DB local.
 ```
 
-### User thấy
+#### User thấy
 
 ```text
 Safety Card — Paracetamol
@@ -487,9 +494,9 @@ CTA:
 
 ---
 
-## 5.2. Low-confidence path
+### 5.2. Low-confidence path
 
-### Case A — Gõ sai tên thuốc
+#### Case A — Gõ sai tên thuốc
 
 Input:
 
@@ -512,7 +519,7 @@ Có thể bạn muốn:
 Vui lòng chọn một thuốc trước khi mình tạo Safety Card.
 ```
 
-### Case B — Tên biệt dược mơ hồ
+#### Case B — Tên biệt dược mơ hồ
 
 Input:
 
@@ -536,7 +543,7 @@ Bạn muốn tra hoạt chất nào?
 Mình cần bạn xác nhận để tránh tạo Safety Card cho nhầm thuốc.
 ```
 
-### Case C — Tình trạng quá mơ hồ
+#### Case C — Tình trạng quá mơ hồ
 
 Input:
 
@@ -556,9 +563,9 @@ Bạn đang đau ở đâu và có bệnh dạ dày, bệnh thận, đang dùng 
 
 ---
 
-## 5.3. Failure path
+### 5.3. Failure path
 
-### Case A — Thuốc không có trong DB và không có API/key
+#### Case A — Thuốc không có trong DB và không có API/key
 
 Input:
 
@@ -584,7 +591,7 @@ CTA:
 [Hỏi dược sĩ Long Châu]
 ```
 
-### Case B — Triệu chứng khẩn cấp
+#### Case B — Triệu chứng khẩn cấp
 
 Input:
 
@@ -613,7 +620,7 @@ CTA:
 [Đến cơ sở y tế]
 ```
 
-### Case C — API/DB lỗi
+#### Case C — API/DB lỗi
 
 Bot xử lý:
 
@@ -625,9 +632,9 @@ Bạn có thể thử lại hoặc hỏi dược sĩ Long Châu.
 
 ---
 
-## 5.4. Correction path
+### 5.4. Correction path
 
-### Input ban đầu
+#### Input ban đầu
 
 ```text
 Tình trạng: đau đầu
@@ -662,11 +669,11 @@ System action:
 
 ---
 
-# 6. Những kiểu lỗi đáng lo nhất
+## 6. Những kiểu lỗi đáng lo nhất
 
-## 6.1. Lỗi 1 — Bỏ sót red flag
+### 6.1. Lỗi 1 — Bỏ sót red flag
 
-### Khi nào xảy ra?
+#### Khi nào xảy ra?
 
 User nhập triệu chứng nguy hiểm bằng ngôn ngữ tự nhiên:
 
@@ -681,11 +688,11 @@ sốc phản vệ
 chảy máu không cầm
 ```
 
-### Ai chịu thiệt?
+#### Ai chịu thiệt?
 
 User chịu thiệt trực tiếp. Đây là lỗi nghiêm trọng vì user có thể chậm đi cấp cứu hoặc tiếp tục dùng thuốc trong tình huống nguy hiểm.
 
-### Prototype xử lý
+#### Prototype xử lý
 
 ```text
 - detectUrgent() kiểm tra urgentKeywords
@@ -696,9 +703,9 @@ User chịu thiệt trực tiếp. Đây là lỗi nghiêm trọng vì user có 
 
 ---
 
-## 6.2. Lỗi 2 — Nhận nhầm tên thuốc
+### 6.2. Lỗi 2 — Nhận nhầm tên thuốc
 
-### Khi nào xảy ra?
+#### Khi nào xảy ra?
 
 ```text
 - User gõ sai tên thuốc
@@ -707,11 +714,11 @@ User chịu thiệt trực tiếp. Đây là lỗi nghiêm trọng vì user có 
 - User nhập hoạt chất không đầy đủ
 ```
 
-### Ai chịu thiệt?
+#### Ai chịu thiệt?
 
 User có thể đọc Safety Card cho thuốc sai và áp dụng sai vào tình trạng của mình.
 
-### Prototype xử lý
+#### Prototype xử lý
 
 ```text
 - Fuzzy match bằng Fuse.js
@@ -722,9 +729,9 @@ User có thể đọc Safety Card cho thuốc sai và áp dụng sai vào tình 
 
 ---
 
-## 6.3. Lỗi 3 — Không có dữ liệu nhưng bot vẫn nói như thật
+### 6.3. Lỗi 3 — Không có dữ liệu nhưng bot vẫn nói như thật
 
-### Khi nào xảy ra?
+#### Khi nào xảy ra?
 
 ```text
 - Thuốc không có trong DB
@@ -734,11 +741,11 @@ User có thể đọc Safety Card cho thuốc sai và áp dụng sai vào tình 
 - Nguồn không đủ tin
 ```
 
-### Ai chịu thiệt?
+#### Ai chịu thiệt?
 
 User có thể tin vào thông tin bịa hoặc không được kiểm chứng.
 
-### Prototype xử lý
+#### Prototype xử lý
 
 ```text
 - Nếu DB không có và không có API: status not_found
@@ -749,11 +756,11 @@ User có thể tin vào thông tin bịa hoặc không được kiểm chứng.
 
 ---
 
-# 7. Kế hoạch kiểm thử và bằng chứng demo
+## 7. Kế hoạch kiểm thử và bằng chứng demo
 
-## 7.1. Test 1 — Happy path
+### 7.1. Test 1 — Happy path
 
-### Input
+#### Input
 
 ```text
 condition: sốt nhẹ
@@ -762,7 +769,7 @@ gender: nam
 drugQuery: Paracetamol
 ```
 
-### Kỳ vọng
+#### Kỳ vọng
 
 ```text
 - status ok
@@ -778,9 +785,9 @@ drugQuery: Paracetamol
 
 ---
 
-## 7.2. Test 2 — Low-confidence / typo
+### 7.2. Test 2 — Low-confidence / typo
 
-### Input
+#### Input
 
 ```text
 condition: sốt nhẹ
@@ -789,7 +796,7 @@ gender: nam
 drugQuery: Panadl
 ```
 
-### Kỳ vọng
+#### Kỳ vọng
 
 ```text
 - không tạo Safety Card ngay
@@ -800,9 +807,9 @@ drugQuery: Panadl
 
 ---
 
-## 7.3. Test 3 — Disambiguation
+### 7.3. Test 3 — Disambiguation
 
-### Input
+#### Input
 
 ```text
 condition: đau đầu
@@ -811,7 +818,7 @@ gender: nữ
 drugQuery: Panadol
 ```
 
-### Kỳ vọng
+#### Kỳ vọng
 
 ```text
 - nếu match nhiều loại thì status disambiguate
@@ -821,9 +828,9 @@ drugQuery: Panadol
 
 ---
 
-## 7.4. Test 4 — Failure / not found
+### 7.4. Test 4 — Failure / not found
 
-### Input
+#### Input
 
 ```text
 condition: sốt nhẹ
@@ -832,7 +839,7 @@ gender: nam
 drugQuery: ABCXYZ
 ```
 
-### Kỳ vọng
+#### Kỳ vọng
 
 ```text
 - nếu không có DB/API: status not_found
@@ -842,9 +849,9 @@ drugQuery: ABCXYZ
 
 ---
 
-## 7.5. Test 5 — Urgent path
+### 7.5. Test 5 — Urgent path
 
-### Input
+#### Input
 
 ```text
 condition: khó thở, sưng mặt sau khi uống thuốc
@@ -853,7 +860,7 @@ gender: nữ
 drugQuery: Ibuprofen
 ```
 
-### Kỳ vọng
+#### Kỳ vọng
 
 ```text
 - status urgent
@@ -864,9 +871,9 @@ drugQuery: Ibuprofen
 
 ---
 
-## 7.6. Test 6 — Correction path
+### 7.6. Test 6 — Correction path
 
-### Input ban đầu
+#### Input ban đầu
 
 ```text
 condition: đau đầu
@@ -881,7 +888,7 @@ User sửa:
 Không phải Ibuprofen, đổi sang Paracetamol.
 ```
 
-### Kỳ vọng
+#### Kỳ vọng
 
 ```text
 - Safety Card cũ không còn là kết quả chính
@@ -891,7 +898,7 @@ Không phải Ibuprofen, đổi sang Paracetamol.
 
 ---
 
-## 7.7. Bằng chứng demo cần giữ
+### 7.7. Bằng chứng demo cần giữ
 
 ```text
 - Screenshot happy path
@@ -906,7 +913,7 @@ Không phải Ibuprofen, đổi sang Paracetamol.
 
 ---
 
-# 8. Phân công
+## 8. Phân công
 
 | Thành viên | Vai trò | Việc cần làm | Khi demo cần giải thích được |
 |---|---|---|---|
@@ -918,9 +925,9 @@ Không phải Ibuprofen, đổi sang Paracetamol.
 
 ---
 
-# 9. Demo script ngắn
+## 9. Demo script ngắn
 
-## 9.1. Mở đầu
+### 9.1. Mở đầu
 
 ```text
 Nhóm em không build AI bác sĩ. Nhóm build Long Châu Safety Bot — một lớp tra cứu an toàn thuốc trước khi hỏi dược sĩ.
@@ -930,7 +937,7 @@ Lát cắt rất hẹp: user nhập tình trạng, tuổi, giới tính và mộ
 
 ---
 
-## 9.2. Demo happy path
+### 9.2. Demo happy path
 
 ```text
 Em nhập: sốt nhẹ, 25 tuổi, nam, Paracetamol.
@@ -948,7 +955,7 @@ Nhưng quyết định y tế cuối vẫn thuộc user/dược sĩ.
 
 ---
 
-## 9.3. Demo low-confidence
+### 9.3. Demo low-confidence
 
 ```text
 Em nhập sai tên thuốc: Panadl.
@@ -964,7 +971,7 @@ Bot không đoán bừa. Bot show gợi ý fuzzy như Panadol / Paracetamol và 
 
 ---
 
-## 9.4. Demo failure / urgent
+### 9.4. Demo failure / urgent
 
 ```text
 Em nhập: khó thở, sưng mặt sau khi uống thuốc.
@@ -980,7 +987,7 @@ Trong y tế, failure path quan trọng hơn happy path. Bot phải biết khi n
 
 ---
 
-## 9.5. Demo correction
+### 9.5. Demo correction
 
 ```text
 Em nhập Ibuprofen nhưng sau đó sửa thành Paracetamol.
@@ -996,7 +1003,7 @@ Correction không chỉ là sửa UI, mà là tín hiệu học để bổ sung 
 
 ---
 
-# 10. Trade-off
+## 10. Trade-off
 
 | Quyết định | Vì sao |
 |---|---|
@@ -1009,7 +1016,7 @@ Correction không chỉ là sửa UI, mà là tín hiệu học để bổ sung 
 
 ---
 
-# 11. Câu chốt sản phẩm
+## 11. Câu chốt sản phẩm
 
 ```text
 Long Châu Safety Bot không cố trở thành AI bác sĩ. Prototype chỉ giải một lát cắt hẹp: khi user có một tình trạng sức khỏe, tuổi, giới tính và một thuốc/hoạt chất cần tra, bot tạo Safety Card có nguồn, cảnh báo an toàn và CTA hỏi dược sĩ. Giá trị chính là trả lời có giới hạn, có căn cứ và biết dừng khi không chắc.

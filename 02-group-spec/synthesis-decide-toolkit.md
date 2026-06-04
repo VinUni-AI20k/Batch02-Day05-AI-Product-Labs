@@ -1,85 +1,114 @@
-# Toolkit — Từ Evidence Đến Build Slice
+# Toolkit — Từ Evidence Đến Build Slice (Long Châu Safety Bot)
 
-Dùng sau khi nhóm đã có evidence. Mục tiêu là chốt một build slice đủ nhỏ cho Day 06.
+Dùng sau khi nhóm đã có evidence. Mục tiêu: chốt build slice đủ nhỏ cho Day 06.
+
+---
 
 ## 1. Gom evidence thành cụm
 
-Gom theo **workflow/pain**, không gom theo tên feature.
+| Cụm workflow/pain | Evidence |
+|---|---|
+| **"Thuốc này có dùng được với tình trạng của tôi không?"** | Self-use mô phỏng; chưa có Safety Card trên app |
+| **Chờ chat dược sĩ lâu / treo** | App Store: "xử lý chậm"; AppRecs: treo cả tiếng |
+| **Thông tin Google/AI generic không tin cậy** | Competitor pattern: cần nguồn whitelist |
+| **Bot hứa nhiều nhưng fail bước cuối** | Analog NEO — API lỗi sau confirm |
+| **App đã disclaimer nhưng chưa gắn product flow** | Play Store: "chỉ tham khảo, không thay chẩn đoán" |
 
-Ví dụ cụm tốt:
-
-- "Không biết chọn chuyên khoa"
-- "Không hiểu vì sao bị tính phí"
-- "Muốn sửa output nhưng không có chỗ sửa"
-- "Bot trả lời tự tin nhưng không dẫn nguồn"
+---
 
 ## 2. Viết insight
 
-Form:
-
 ```text
-User [segment] không chỉ cần [surface need].
-Họ thật ra cần [deeper need],
-vì [evidence pattern].
+User mua thuốc trên app Long Châu không chỉ cần "biết thuốc là gì".
+Họ thật ra cần quyết định an toàn có cấu trúc: thuốc/hoạt chất ↔ tình trạng của mình,
+vì review cho thấy chat dược sĩ không luôn phản hồi kịp và user không có self-serve có nguồn trước khi uống.
 ```
 
-Ví dụ:
-
-```text
-Người lần đầu đi khám không chỉ cần danh sách chuyên khoa.
-Họ cần hỗ trợ ra quyết định an toàn,
-vì nhiều review/observation cho thấy họ không biết triệu chứng của mình nên đi khoa nào.
-```
+---
 
 ## 3. Viết opportunity
 
-Form:
-
 ```text
-Cơ hội là dùng AI để [augment/automate hành động hẹp],
-giúp user [kết quả],
-trong khi vẫn kiểm soát [failure/risk].
+Cơ hội là dùng AI để tra cứu hoạt chất từ nguồn whitelist và đối chiếu với tình trạng user khai báo,
+giúp user nhận Safety Card có trích dẫn trong vài phút,
+trong khi vẫn kiểm soát rủi ro bằng cờ Vàng/Đỏ, disclaimer, và handoff dược sĩ Long Châu khi không chắc.
 ```
+
+---
 
 ## 4. Chọn build slice
 
-Build slice tốt phải qua 5 câu hỏi:
+| Câu hỏi | Đạt? | Ghi chú |
+|---|---|---|
+| User cụ thể chưa? | ✅ | Người cầm thuốc OTC / sắp mua trên Long Châu, có tình trạng cần đối chiếu |
+| Task đủ hẹp chưa? | ✅ | 1 tình trạng + 1 thuốc/hoạt chất → 1 Safety Card — demo 3–5 phút |
+| AI decision rõ chưa? | ✅ | AI tra cứu + draft card + phân loại cảnh báo; không auto đặt hàng/kê đơn |
+| Failure path rõ chưa? | ✅ | DB miss, triệu chứng khẩn, nhập nhầm tên, API lỗi |
+| Có evidence không? | ✅ | App review + app disclaimer + analog NEO + competitor pattern |
 
-| Câu hỏi | Đạt khi |
-|---|---|
-| User cụ thể chưa? | Nói được ai dùng, trong bối cảnh nào. |
-| Task đủ hẹp chưa? | Demo được trong 3-5 phút. |
-| AI decision rõ chưa? | AI gợi ý/tự làm một việc cụ thể. |
-| Failure path rõ chưa? | Có một case AI không chắc hoặc sai để test. |
-| Có evidence không? | Có bằng chứng từ self-use/review/user/competitor. |
+**Quyết định:** **Giữ hướng Long Châu Safety Bot**, không mở rộng thành "chatbot y tế đa năng".
+
+---
 
 ## 5. Quyết định: giữ, giảm scope, hay đổi hướng?
 
-| Tình huống | Quyết định |
+| Tình huống | Quyết định nhóm |
 |---|---|
-| Evidence yếu, user mơ hồ | Dừng build sâu; quay lại research 20 phút. |
-| Ý tưởng quá rộng | Giữ domain, cắt xuống một flow. |
-| AI không cần thiết | Dùng rule/manual prototype; ghi rõ vì sao không dùng AI sâu. |
-| Rủi ro cao | Chọn augmentation hoặc conditional automation. |
-| Không demo được trong 1 ngày | Đưa phần lớn vào backlog, giữ một path nhỏ. |
+| Ý tưởng ban đầu: chatbot tư vấn sức khỏe Long Châu | **Giảm scope** → Safety Bot hẹp |
+| Rủi ro pháp lý cao | **Conditional automation** + disclaimer + dược sĩ |
+| OCR ảnh thuốc / quét mã vạch | **Backlog Day 07+** — Day 06 chỉ nhập text |
+| Tích hợp API Long Châu thật | **Backlog** — Day 06 dùng `drugs-demo.json` |
+| Chat dược sĩ sẵn có | **Giữ** — bot prefill context handoff |
+
+---
 
 ## 6. Câu chốt cuối
 
-Điền câu này trước khi rời lớp:
-
 ```text
-Dựa trên [evidence],
-nhóm sẽ build [prototype slice],
-cho [user],
-để giải quyết [pain],
-bằng cách AI [augment/automate task],
-và sẽ test failure path [failure mode].
+Dựa trên review app Long Châu (chat chậm/treo), disclaimer "chỉ tham khảo",
+và analog failure path từ NEO teardown,
+nhóm sẽ build prototype Safety Bot chat,
+cho người dùng app Long Châu đang cầm một thuốc và có một tình trạng sức khỏe,
+để giải quyết pain "không biết thuốc có an toàn với tình trạng mình không",
+bằng cách AI tra cứu nguồn whitelist + đối chiếu + xuất Safety Card,
+và sẽ test failure path "nhập nhầm thuốc / triệu chứng khẩn / không có trong DB".
 ```
 
-## 7. Backlog
+---
 
-Những thứ **không build trong Day 06**:
+## 7. Backlog (không build Day 06)
 
-- 
-- 
-- 
+- Quét mã vạch / OCR ảnh hộp thuốc → auto điền tên thuốc
+- Tích hợp chat dược sĩ Long Châu thật (prefill API)
+- Tương tác đa thuốc (polypharmacy)
+- Gợi ý mua thuốc thay thế trên catalog Long Châu
+- Đa ngôn ngữ / voice input
+- Learning loop correction → cập nhật DB production
+
+---
+
+## 8. Sketch as-is / to-be (nhóm)
+
+### As-is
+
+```text
+User có thuốc + lo lắng tình trạng sức khỏe
+    → Mở app Long Châu
+    → Chat dược sĩ (chờ / treo) HOẶC Google (không tin cậy)
+    → Tự quyết định uống hay không — rủi ro cao
+```
+
+### To-be (prototype Day 06)
+
+```text
+User mở "Tra cứu an toàn thuốc"
+    → Nhập tình trạng
+    → Nhập thuốc/hoạt chất
+    → Safety Card + cờ Xanh/Vàng/Đỏ + nguồn
+    → [Vàng/Đỏ/Không chắc] → "Chat dược sĩ Long Châu" (prefill)
+    → [Khẩn cấp] → 115 / CSYT — không tra cứu bình thường
+```
+
+---
+
+*Synthesis toolkit — Batch 02 · Long Châu Safety Bot · Day 05*

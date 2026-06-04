@@ -12,6 +12,7 @@ Folder này được chia theo đúng việc cần làm:
 |---|---|
 | `01-invidual-workshop/app-teardown.md` | Bài mổ app AI thật: dùng thử, vẽ flow, tìm path yếu, viết finding thành quyết định product. |
 | `02-group-spec/` | Bộ template cho phần nhóm: gom bằng chứng, chuyển evidence thành insight/opportunity/build slice, và viết thin SPEC cuối Day 05. |
+| `03-prototype/` | Prototype Day 06 — Long Châu Safety Bot (chat + API tra Google + gợi ý tên thuốc). Xem `03-prototype/README.md`. Chạy: `cd 03-prototype && npm install && npm run dev` |
 
 ## Cấu trúc repo nộp bài Day 06
 

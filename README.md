@@ -91,8 +91,7 @@ Prototype hiện dùng **Python FastAPI backend** và **Next.js frontend**.
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-npm install
+pip install -r backend/requirements.txt
 npm --prefix frontend install
 ```
 
@@ -101,13 +100,13 @@ npm --prefix frontend install
 Terminal 1:
 
 ```bash
-npm run backend
+python -m uvicorn backend.app.main:app --reload --port 8000
 ```
 
 Terminal 2:
 
 ```bash
-npm run frontend
+npm --prefix frontend run dev
 ```
 
 Mở `http://localhost:3000`.
@@ -115,8 +114,8 @@ Mở `http://localhost:3000`.
 ### Chạy test
 
 ```bash
-npm run test:backend
-npm run test:e2e
+python -m pytest backend/tests
+npm --prefix frontend run typecheck
 ```
 
 ### Cấu trúc prototype

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nhà thuốc Long Châu</title>
+    <link rel="stylesheet" href="./css/styles.css?v=7" />
+  </head>
+  <body>
+    <div class="lc-site">
+      <!-- Top bar -->
+      <div class="lc-topbar">
+        <div class="lc-container lc-topbar__inner">
+          <span class="lc-topbar__left">
+            <a href="#">Trung Tâm Tiêm Chủng Long Châu</a>
+            <a href="#">Tải ứng dụng</a>
+          </span>
+          <span class="lc-topbar__right">
+            <span>Hotline tư vấn: <strong>1800 6928</strong></span>
+            <span id="api-badge" class="api-badge api-badge--top">API</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Header xanh -->
+      <header class="lc-header">
+        <div class="lc-container lc-header__inner">
+          <a href="#" class="lc-logo" aria-label="Long Châu">
+            <span class="lc-logo__mark">
+              <svg viewBox="0 0 40 40" width="40" height="40" aria-hidden="true">
+                <circle cx="20" cy="20" r="20" fill="#fff"/>
+                <text x="20" y="26" text-anchor="middle" fill="#1565C0" font-size="14" font-weight="800">LC</text>
+              </svg>
+            </span>
+            <span class="lc-logo__text">
+              <strong>NHÀ THUỐC LONG CHÂU</strong>
+              <small>FPT Retail</small>
+            </span>
+          </a>
+
+          <div class="lc-search">
+            <input type="search" placeholder="Giao hàng nhanh trong 1h..." disabled />
+            <button type="button" class="lc-search__btn" disabled aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>
+          </div>
+
+          <div class="lc-header__actions">
+            <a href="#" class="lc-header__login">👤 Đăng nhập</a>
+            <button type="button" class="lc-header__cart" disabled>🛒 Giỏ hàng</button>
+          </div>
+        </div>
+
+        <nav class="lc-catnav" aria-label="Danh mục">
+          <div class="lc-container lc-catnav__inner">
+            <a href="#">Thực phẩm chức năng</a>
+            <a href="#">Dược mỹ phẩm</a>
+            <a href="#">Thuốc</a>
+            <a href="#">Chăm sóc cá nhân</a>
+            <a href="#">Thiết bị y tế</a>
+            <a href="#">Bệnh &amp; Góc sức khỏe</a>
+            <a href="#">Tiêm vắc xin</a>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Hero banner -->
+      <section class="lc-hero">
+        <div class="lc-container lc-hero__inner">
+          <button type="button" class="lc-hero__arrow lc-hero__arrow--prev" aria-label="Trước">‹</button>
+          <div class="lc-hero__slide">
+            <div class="lc-hero__content">
+              <span class="lc-hero__badge">Ưu đãi tháng 6</span>
+              <h2>Chăm sóc sức khỏe trẻ em</h2>
+              <p>Vitamin, kẽm, men vi sinh — giao nhanh toàn quốc</p>
+              <button type="button" class="lc-hero__cta">Mua ngay 🛒</button>
+            </div>
+            <div class="lc-hero__visual" aria-hidden="true">
+              <div class="lc-hero__orb lc-hero__orb--1"></div>
+              <div class="lc-hero__orb lc-hero__orb--2"></div>
+              <div class="lc-hero__product">💊</div>
+            </div>
+          </div>
+          <button type="button" class="lc-hero__arrow lc-hero__arrow--next" aria-label="Sau">›</button>
+        </div>
+      </section>
+
+      <!-- Quick actions -->
+      <section class="lc-quick">
+        <div class="lc-container lc-quick__grid">
+          <div class="lc-quick__card"><span class="lc-quick__icon">💊</span><span>Cần mua thuốc</span></div>
+          <button type="button" class="lc-quick__card lc-quick__card--btn" data-open-chat>
+            <span class="lc-quick__icon">👩‍⚕️</span><span>Tư vấn với Dược Sĩ</span>
+          </button>
+          <div class="lc-quick__card"><span class="lc-quick__icon">📋</span><span>Đơn của tôi</span></div>
+          <div class="lc-quick__card"><span class="lc-quick__icon">📍</span><span>Tìm nhà thuốc</span></div>
+          <div class="lc-quick__card"><span class="lc-quick__icon">💉</span><span>Tiêm Vắc xin</span></div>
+          <div class="lc-quick__card"><span class="lc-quick__icon">🔍</span><span>Tra thuốc chính hãng</span></div>
+        </div>
+      </section>
+
+      <!-- Nội dung trang chủ -->
+      <main class="lc-main">
+        <div class="lc-container">
+          <section class="lc-promo">
+            <h2 class="lc-section-title lc-section-title--blue">Ưu đãi độc quyền Online</h2>
+            <div class="lc-promo__grid">
+              <article class="lc-promo__card">
+                <div class="lc-promo__img lc-promo__img--1"></div>
+                <p class="lc-promo__name">Paracetamol 500mg</p>
+                <p class="lc-promo__price"><span class="lc-promo__old">52.000đ</span> 45.000đ</p>
+              </article>
+              <article class="lc-promo__card">
+                <div class="lc-promo__img lc-promo__img--2"></div>
+                <p class="lc-promo__name">Omeprazole 20mg</p>
+                <p class="lc-promo__price"><span class="lc-promo__old">99.000đ</span> 89.000đ</p>
+              </article>
+              <article class="lc-promo__card">
+                <div class="lc-promo__img lc-promo__img--3"></div>
+                <p class="lc-promo__name">Vitamin C 1000mg</p>
+                <p class="lc-promo__price"><span class="lc-promo__old">120.000đ</span> 95.000đ</p>
+              </article>
+              <article class="lc-promo__card">
+                <div class="lc-promo__img lc-promo__img--4"></div>
+                <p class="lc-promo__name">Cetirizine 10mg</p>
+                <p class="lc-promo__price"><span class="lc-promo__old">35.000đ</span> 28.000đ</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="lc-health">
+            <h2 class="lc-section-title lc-section-title--blue">Kiểm tra sức khỏe</h2>
+            <p class="fine">Kết quả đánh giá sẽ cho bạn lời khuyên xử trí phù hợp</p>
+            <div class="lc-health__grid">
+              <div class="lc-health__card">Bài kiểm tra nguy cơ tiền đái tháo đường</div>
+              <div class="lc-health__card">Bài kiểm tra nguy cơ tim mạch</div>
+              <div class="lc-health__card">Đánh giá mức độ kiểm soát hen</div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="lc-footer">
+        <div class="lc-container lc-footer__inner">
+          <p><strong>Công ty Cổ phần Dược phẩm FPT Long Châu</strong></p>
+          <p class="fine">Thông tin Safety Bot chỉ tham khảo — không thay tư vấn dược sĩ/bác sĩ.</p>
+          <p class="fine">Hotline: 1800 6928 · prototype Day 06</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Nút tư vấn nổi -->
+    <button type="button" id="chat-fab" class="chat-fab" aria-label="Mở tư vấn dược sĩ AI" aria-expanded="false">
+      <span class="chat-fab__pulse" aria-hidden="true"></span>
+      <span class="chat-fab__avatar" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="56" height="56">
+          <circle cx="32" cy="32" r="32" fill="#E3F2FD"/>
+          <circle cx="32" cy="26" r="12" fill="#FFCCBC"/>
+          <path d="M14 58c2-12 10-18 18-18s16 6 18 18" fill="#1565C0"/>
+          <rect x="22" y="38" width="20" height="14" rx="3" fill="#fff"/>
+          <path d="M26 14h12l4 8H22l4-8z" fill="#1565C0"/>
+        </svg>
+      </span>
+      <span class="chat-fab__label">Tư vấn</span>
+    </button>
+
+    <!-- Panel chatbot -->
+    <div id="chat-panel" class="chat-panel" hidden aria-hidden="true">
+      <div class="chat-panel__backdrop" id="chat-backdrop"></div>
+      <div class="chat-panel__drawer" role="dialog" aria-modal="true" aria-labelledby="chat-panel-title">
+        <header class="chat-panel__header">
+          <div class="chat-panel__brand">
+            <span class="chat-panel__icon">💊</span>
+            <div>
+              <strong id="chat-panel-title">Long Châu Safety Bot</strong>
+              <span class="fine">Tư vấn tra an toàn thuốc</span>
+            </div>
+          </div>
+          <button type="button" id="chat-close-btn" class="chat-panel__close" aria-label="Đóng">×</button>
+        </header>
+
+        <section id="safety-feature" class="safety-feature safety-feature--panel">
+          <div class="safety-feature__toolbar">
+            <button type="button" id="reset-btn" class="btn btn--ghost btn--sm">Làm mới</button>
+          </div>
+
+          <div id="api-alert" class="api-alert" hidden role="alert"></div>
+
+          <div class="safety-feature__body">
+            <section id="profile-section" class="profile-section" aria-label="Thông tin tra cứu">
+              <form id="profile-form" class="profile-form">
+                <div class="profile-form__head">
+                  <h2>Thông tin tra cứu</h2>
+                  <p class="fine">Điền một lần — sau đó chỉ nhắn thêm tên thuốc</p>
+                </div>
+
+                <div class="form-grid">
+                  <label class="field field--full">
+                    <span class="field__label">Tình trạng hiện tại</span>
+                    <input id="field-condition" name="condition" type="text" placeholder="vd: sốt nhẹ, đau đầu..." required />
+                  </label>
+                  <label class="field field--full">
+                    <span class="field__label">Tên thuốc / hoạt chất</span>
+                    <input id="field-drug" name="drug" type="text" placeholder="vd: Panadol, Paracetamol..." required />
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Tuổi</span>
+                    <input id="field-age" name="age" type="number" min="0" max="120" placeholder="30" required />
+                  </label>
+                  <fieldset class="field field--gender">
+                    <legend class="field__label">Giới tính</legend>
+                    <div class="radio-row">
+                      <label class="radio-pill"><input type="radio" name="gender" value="male" required /> Nam</label>
+                      <label class="radio-pill"><input type="radio" name="gender" value="female" /> Nữ</label>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <p id="form-error" class="form-error" role="alert" hidden></p>
+
+                <button type="submit" id="submit-form-btn" class="btn btn--primary btn--block">Bắt đầu tra cứu</button>
+
+                <div class="demo-row">
+                  <span class="fine">Demo:</span>
+                  <button type="button" class="chip chip--sm" data-demo="happy">30t nữ + Panadol</button>
+                  <button type="button" class="chip chip--sm" data-demo="typo">8t + Panadl</button>
+                  <button type="button" class="chip chip--sm" data-demo="urgent">Khó thở</button>
+                </div>
+              </form>
+
+              <div id="profile-bar" class="profile-bar" hidden>
+                <div class="profile-bar__info">
+                  <span class="profile-bar__title">Hồ sơ tra cứu</span>
+                  <p id="profile-bar-text" class="profile-bar__text"></p>
+                </div>
+                <button type="button" id="edit-profile-btn" class="btn btn--ghost btn--sm">Sửa</button>
+              </div>
+            </section>
+
+            <div class="safety-chat">
+              <div id="lookup-status" class="lookup-status" hidden role="status" aria-live="polite">
+                <span class="lookup-status__spinner" aria-hidden="true"></span>
+                <div class="lookup-status__text">
+                  <strong id="lookup-status-title">Đang tra cứu...</strong>
+                  <span id="lookup-status-detail" class="fine"></span>
+                </div>
+              </div>
+              <main class="chat" id="messages" role="log" aria-live="polite"></main>
+              <footer class="composer composer--locked" id="composer">
+                <input id="user-input" type="text" autocomplete="off" placeholder="Điền form trước..." disabled />
+                <button type="button" id="send-btn" class="btn btn--primary" disabled>Tra thuốc</button>
+              </footer>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script type="module" src="./js/app.js?v=7"></script>
+  </body>
+</html>

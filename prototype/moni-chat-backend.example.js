@@ -51,6 +51,7 @@ export async function postMoniChat(req, res) {
           "Không tự ghi dữ liệu tài chính.",
           "Không tự tính ngân sách bằng lời.",
           "Mọi thay đổi dữ liệu phải thông qua tool.",
+          "Khi user hỏi có nên mua/đăng ký/nâng cấp/đi du lịch/chi/trả tiền, bắt buộc gọi advisePurchaseDecision.",
           "Trả về function_call nếu cần dữ liệu hoặc cần ghi dữ liệu."
         ].join("\n")
       },
@@ -88,6 +89,11 @@ export async function postMoniChat(req, res) {
           "Bước này tạo câu trả lời cuối cùng bằng tiếng Việt.",
           "Chỉ dùng số liệu từ context hoặc toolResults.",
           "Không tự bịa số liệu tài chính.",
+          "Với purchase advice, phải nêu quyết định, safeToSpendScore và lý do dựa trên ngân sách/forecast.",
+          "assistantMessage phải dùng Markdown thân thiện: đoạn ngắn, bullet points cho số liệu, **bold** cho số tiền/điểm quan trọng.",
+          "Không viết một đoạn văn dài.",
+          "Không expose tên biến nội bộ hoặc implementation details.",
+          "Không output JSON bên trong assistantMessage.",
           "Giải thích ngắn gọn, dễ hiểu."
         ].join("\n")
       },
@@ -162,6 +168,22 @@ function moniToolSchemas() {
           category: { type: "string" },
           month: { type: "string" },
           date: { type: "string" }
+        }
+      }
+    },
+    {
+      type: "function",
+      name: "advisePurchaseDecision",
+      description: "Đánh giá một khoản mua/đăng ký/nâng cấp/du lịch có an toàn về tài chính không.",
+      parameters: {
+        type: "object",
+        additionalProperties: false,
+        required: ["item", "amount", "category", "month"],
+        properties: {
+          item: { type: "string" },
+          amount: { type: "number" },
+          category: { type: "string" },
+          month: { type: "string" }
         }
       }
     },

@@ -99,6 +99,8 @@ async function handleMoniChat({ message, userId = USER_ID, month = CURRENT_MONTH
       "Không tự tính toán ngân sách bằng lời.",
       "Mọi con số tài chính phải đến từ context hoặc tool result.",
       "Nếu thiếu dữ liệu để write an toàn, trả needsConfirmation.",
+      "Khi user hỏi có nên mua, có nên đăng ký, có nên nâng cấp, có nên đi du lịch, có nên chi hoặc có nên trả tiền, BẮT BUỘC gọi advisePurchaseDecision.",
+      "Không trả lời tư vấn mua sắm trực tiếp bằng kiến thức chung.",
       "Trả JSON ngắn gọn, không markdown."
     ].join("\n"),
     user: { message, userId, month, context },
@@ -129,11 +131,17 @@ async function handleMoniChat({ message, userId = USER_ID, month = CURRENT_MONTH
   }
 
   const toolName = normalizeToolName(selectionResponse.tool);
+  const preparedArguments = prepareToolArguments({
+    toolName,
+    args: selectionResponse.arguments || {},
+    message,
+    month
+  });
   const toolCall = {
     name: toolName,
-    arguments: { ...selectionResponse.arguments, userId, month: selectionResponse.arguments?.month || month }
+    arguments: { ...preparedArguments, userId, month: preparedArguments.month || month }
   };
-  const toolResult = executeTool(toolName, selectionResponse.arguments || {});
+  const toolResult = executeTool(toolName, preparedArguments);
 
   if (toolResult.needsConfirmation) {
     return {
@@ -195,6 +203,12 @@ function buildFinalReasoningRequest({ message, userId, month, context, toolResul
       "Bạn là Moni Budget Copilot.",
       "Nhiệm vụ bước 2: dùng tool result để trả lời user bằng tiếng Việt.",
       "Không tự bịa số liệu. Chỉ dùng số trong toolResults hoặc context.",
+      "Với purchase advice, phải nêu quyết định, safeToSpendScore và lý do dựa trên ngân sách/forecast.",
+      "assistantMessage phải là Markdown thân thiện: dùng đoạn ngắn, bullet points cho số liệu, **bold** cho số tiền/điểm quan trọng.",
+      "Không viết một đoạn văn dài.",
+      "Không expose tên biến nội bộ như safeToSpendThresholds.",
+      "Không nhắc implementation details.",
+      "Không output JSON bên trong assistantMessage.",
       "Nếu tool result thiếu dữ liệu, hỏi lại user.",
       "Trả JSON: {\"assistantMessage\":\"...\",\"cards\":[]}."
     ].join("\n"),
@@ -324,11 +338,40 @@ function executeTool(toolName, args) {
       cards: []
     };
   }
-  const data = tools[toolName](args);
+  try {
+    const data = tools[toolName](args);
+    return {
+      ok: true,
+      toolName,
+      ...data
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      toolName,
+      error: {
+        code: error.message || "tool_execution_failed",
+        message: error.message || "Tool execution failed",
+        recoverable: true
+      },
+      cards: []
+    };
+  }
+}
+
+function prepareToolArguments({ toolName, args, message, month }) {
+  if (toolName !== "advisePurchaseDecision") return args;
+  const item = args.item || parsePurchaseItem(message);
+  const category = args.category || parsePurchaseCategory(message);
+  const amount = Number.isFinite(args.amount) && args.amount > 0
+    ? args.amount
+    : inferPurchaseAmount(message);
   return {
-    ok: true,
-    toolName,
-    ...data
+    ...args,
+    item,
+    amount,
+    category,
+    month: args.month || month
   };
 }
 
@@ -471,6 +514,70 @@ const tools = {
     };
   },
 
+  advisePurchaseDecision({ item, amount, category = "Shopping", month = state.month }) {
+    if (!item) item = categoryLabel(category);
+    validateAmount(amount);
+    category = canonicalCategory(category);
+
+    const budgetSnapshot = getBudgetSnapshot({ month });
+    const categorySnapshot = getCategorySnapshot(category, month);
+    const forecastAfterPurchase = budgetSnapshot.forecastEndOfMonth + amount;
+    const remainingCategoryBudget = categorySnapshot.remaining;
+    const remainingMonthlyBudget = budgetSnapshot.remaining;
+    const wouldExceedCategoryBudget = amount > remainingCategoryBudget;
+    const wouldExceedMonthlyBudget = amount > remainingMonthlyBudget;
+    const categorySpentAfterPurchase = categorySnapshot.spent + amount;
+    const totalSpentAfterPurchase = budgetSnapshot.totalSpent + amount;
+    const additionalRisk = determineAdditionalPurchaseRisk({
+      amount,
+      budgetSnapshot,
+      categorySnapshot,
+      forecastAfterPurchase,
+      wouldExceedCategoryBudget,
+      wouldExceedMonthlyBudget
+    });
+    const safeToSpendScore = calculateSafeToSpendScore({
+      amount,
+      budgetSnapshot,
+      categorySnapshot,
+      forecastAfterPurchase,
+      wouldExceedCategoryBudget,
+      wouldExceedMonthlyBudget
+    });
+    const decision = safeToSpendScore >= 80
+      ? "recommended"
+      : safeToSpendScore >= 40
+        ? "warning"
+        : "not_recommended";
+
+    return {
+      decision,
+      confidence: "high",
+      item,
+      amount,
+      category,
+      reasoning: {
+        remainingCategoryBudget,
+        remainingMonthlyBudget,
+        wouldExceedCategoryBudget,
+        wouldExceedMonthlyBudget,
+        currentRiskLevel: budgetSnapshot.riskLevel,
+        categoryRiskLevel: categorySnapshot.riskLevel,
+        forecastAfterPurchase,
+        safeToSpendScore,
+        additionalRisk,
+        categoryBudget: categorySnapshot.budget,
+        categorySpent: categorySnapshot.spent,
+        categorySpentAfterPurchase,
+        monthlyBudget: budgetSnapshot.monthlyBudget,
+        totalSpent: budgetSnapshot.totalSpent,
+        totalSpentAfterPurchase
+      },
+      budgetSnapshot,
+      categorySnapshot
+    };
+  },
+
   getForecastAnalysis({ month = state.month }) {
     const snapshot = getBudgetSnapshot({ month });
     const breakdown = tools.getSpendingBreakdown({ month });
@@ -507,6 +614,18 @@ function mockLLMRoute(message) {
   const amount = parseAmount(message);
   const category = parseCategory(message);
 
+  if (isPurchaseAdviceQuestion(lower)) {
+    return {
+      intent: "purchase_decision_advice",
+      tool: "advisePurchaseDecision",
+      arguments: {
+        item: parsePurchaseItem(message),
+        amount: amount || inferPurchaseAmount(message),
+        category: parsePurchaseCategory(message),
+        month: state.month
+      }
+    };
+  }
   if (/(neu|thi sao|gia su)/.test(lower) && amount) {
     return {
       intent: "simulate_expense",
@@ -726,6 +845,51 @@ function cardsForTool(tool, result) {
       actions: defaultActions(result.simulatedTransaction.category)
     }];
   }
+  if (tool === "advisePurchaseDecision") {
+    const riskLevel = result.decision === "recommended"
+      ? "safe"
+      : result.decision === "warning"
+        ? "warning"
+        : "danger";
+    const categoryLabelText = categoryLabel(result.category);
+    const explanation = result.reasoning.wouldExceedCategoryBudget
+      ? `Khoản mua này có thể khiến bạn vượt ngân sách ${categoryLabelText}.`
+      : result.reasoning.wouldExceedMonthlyBudget
+        ? "Khoản mua này có thể khiến bạn vượt ngân sách tháng."
+        : "Khoản mua này vẫn nằm trong phần ngân sách còn lại.";
+
+    return [{
+      type: "purchase_advice",
+      riskLevel,
+      title: "Đánh giá khoản mua",
+      explanation,
+      data: {
+        decision: result.decision,
+        safeToSpendScore: result.reasoning.safeToSpendScore,
+        purchaseAmount: result.amount,
+        remainingBudget: result.reasoning.remainingMonthlyBudget,
+        remainingCategoryBudget: result.reasoning.remainingCategoryBudget,
+        forecastAfterPurchase: result.reasoning.forecastAfterPurchase,
+        wouldExceedCategoryBudget: result.reasoning.wouldExceedCategoryBudget,
+        wouldExceedMonthlyBudget: result.reasoning.wouldExceedMonthlyBudget
+      },
+      actions: [
+        {
+          label: "Mô phỏng chi tiết",
+          actionType: "tool_call",
+          payload: {
+            tool: "simulateExpense",
+            arguments: {
+              label: result.item,
+              amount: result.amount,
+              category: result.category,
+              month: state.month
+            }
+          }
+        }
+      ]
+    }];
+  }
   if (tool === "getCategorySummary") {
     return [{
       type: "category_summary",
@@ -755,6 +919,15 @@ function assistantMessageForTool(tool, result) {
   if (tool === "getSpendingBreakdown") return result.summary;
   if (tool === "getForecastAnalysis") return result.riskReason;
   if (tool === "simulateExpense") return `Nếu thêm ${money(result.simulatedTransaction.amount)}, dự báo cuối tháng sẽ là ${money(result.after.forecastEndOfMonth)}.`;
+  if (tool === "advisePurchaseDecision") {
+    const score = result.reasoning.safeToSpendScore;
+    const advice = result.decision === "recommended"
+      ? "Mình đánh giá khoản mua này khá an toàn."
+      : result.decision === "warning"
+        ? "Mình khuyên bạn cân nhắc hoặc tìm lựa chọn rẻ hơn."
+        : "Mình không khuyên mua lúc này.";
+    return `${advice} Safe To Spend Score: ${score}/100.`;
+  }
   if (tool === "getCategorySummary") return `${result.categorySnapshot.label} đã chi ${money(result.categorySnapshot.spent)} / ${money(result.categorySnapshot.budget)}.`;
   return "Đã xử lý xong.";
 }
@@ -775,6 +948,15 @@ function buildLLMContext(month) {
     forecastEndOfMonth: snap.forecastEndOfMonth,
     riskLevel: snap.riskLevel,
     topCategories: breakdown.topCategories,
+    purchaseAdviceSignals: {
+      safeToSpendThresholds: {
+        safe: 80,
+        mostlySafe: 60,
+        warning: 40,
+        highRisk: 20
+      },
+      defaultPurchaseCategory: "Shopping"
+    },
     exceptionTransactions: exceptions.map((item) => ({
       id: item.id,
       label: item.label,
@@ -812,6 +994,7 @@ function toolSchemas() {
     { type: "function", name: "getSpendingBreakdown", description: "Phân tích nhóm chi tiêu lớn nhất.", parameters: schema(["month"], { month: "string" }) },
     { type: "function", name: "getRecentTransactions", description: "Lấy các giao dịch gần đây.", parameters: schema(["month"], { month: "string", limit: "number" }) },
     { type: "function", name: "simulateExpense", description: "Mô phỏng một khoản chi tương lai, không ghi dữ liệu thật.", parameters: schema(["label", "amount", "category", "month"], { label: "string", amount: "number", category: "string", date: "string", month: "string" }) },
+    { type: "function", name: "advisePurchaseDecision", description: "Đánh giá có nên mua/đăng ký/nâng cấp/đi du lịch dựa trên ngân sách, forecast và spending velocity.", parameters: schema(["item", "amount", "category", "month"], { item: "string", amount: "number", category: "string", month: "string" }) },
     { type: "function", name: "getForecastAnalysis", description: "Giải thích lý do cảnh báo hoặc nguy cơ vượt ngân sách.", parameters: schema(["month"], { month: "string" }) },
     { type: "function", name: "getCategorySummary", description: "Lấy tổng quan một danh mục.", parameters: schema(["category", "month"], { category: "string", month: "string" }) }
   ];
@@ -860,7 +1043,7 @@ function parseCategory(text) {
   if (/(taxi|xe|di chuyen|bus|grab)/.test(lower)) return "Transport";
   if (/(hoc|hoc phi|sach|giao duc)/.test(lower)) return "Education";
   if (/(no|vay|tra no)/.test(lower)) return "Debt";
-  if (/(mua|shopping|sieu thi)/.test(lower)) return "Shopping";
+  if (/(mua|shopping|sieu thi|tai nghe|dien thoai|laptop|ban phim|pc|nang cap|chatgpt|plus|du lich)/.test(lower)) return "Shopping";
   return "Other";
 }
 
@@ -886,6 +1069,87 @@ function parseLabel(text, category) {
   if (lower.includes("an trua")) return "Ăn trưa";
   if (lower.includes("taxi")) return "Taxi";
   return categoryLabel(category);
+}
+
+function isPurchaseAdviceQuestion(normalizedText) {
+  return /(co nen mua|nen mua khong|co nen dang ky|co nen di du lich|co nen nang cap|co nen chi|co nen tra tien)/.test(normalizedText);
+}
+
+function parsePurchaseItem(text) {
+  const lower = normalize(text);
+  const patterns = [
+    /co nen mua (.+?)(?: \d| khong| không|\?|$)/,
+    /nen mua (.+?)(?: \d| khong| không|\?|$)/,
+    /co nen dang ky (.+?)(?: \d| khong| không|\?|$)/,
+    /co nen di du lich (.+?)(?: \d| khong| không|\?|$)/,
+    /co nen nang cap (.+?)(?: \d| khong| không|\?|$)/,
+    /co nen chi (.+?)(?: \d| khong| không|\?|$)/,
+    /co nen tra tien (.+?)(?: \d| khong| không|\?|$)/
+  ];
+  const match = patterns.map((pattern) => lower.match(pattern)).find(Boolean);
+  if (!match) return parseLabel(text, parseCategory(text));
+  return titleCaseVietnamese(match[1].replace(/\s+/g, " ").trim());
+}
+
+function parsePurchaseCategory(text) {
+  const lower = normalize(text);
+  if (/(du lich|da nang|hotel|ve may bay|khach san)/.test(lower)) return "Entertainment";
+  if (/(chatgpt|plus|dang ky|subscription|phan mem|software)/.test(lower)) return "Education";
+  if (/(dien thoai|tai nghe|laptop|ban phim|pc|nang cap|may tinh|tablet)/.test(lower)) return "Shopping";
+  return parseCategory(text);
+}
+
+function inferPurchaseAmount(text) {
+  const lower = normalize(text);
+  if (/(chatgpt|plus)/.test(lower)) return 500000;
+  if (/(ban phim)/.test(lower)) return 1500000;
+  if (/(tai nghe)/.test(lower)) return 1500000;
+  if (/(dien thoai)/.test(lower)) return 15000000;
+  if (/(laptop)/.test(lower)) return 20000000;
+  if (/(du lich)/.test(lower)) return 5000000;
+  return 1000000;
+}
+
+function titleCaseVietnamese(value) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function calculateSafeToSpendScore({ amount, budgetSnapshot, categorySnapshot, forecastAfterPurchase, wouldExceedCategoryBudget, wouldExceedMonthlyBudget }) {
+  let score = 100;
+  const monthlyUsageAfter = budgetSnapshot.monthlyBudget
+    ? (budgetSnapshot.totalSpent + amount) / budgetSnapshot.monthlyBudget
+    : 1;
+  const categoryUsageAfter = categorySnapshot.budget
+    ? (categorySnapshot.spent + amount) / categorySnapshot.budget
+    : 1;
+  const purchaseMonthlyShare = budgetSnapshot.monthlyBudget ? amount / budgetSnapshot.monthlyBudget : 1;
+  const remainingMonthlyShare = budgetSnapshot.monthlyBudget ? budgetSnapshot.remaining / budgetSnapshot.monthlyBudget : 0;
+
+  score -= Math.max(0, monthlyUsageAfter - 0.7) * 70;
+  score -= Math.max(0, categoryUsageAfter - 0.8) * 45;
+  score -= forecastAfterPurchase > budgetSnapshot.monthlyBudget ? 25 : 0;
+  score -= wouldExceedCategoryBudget ? 20 : 0;
+  score -= wouldExceedMonthlyBudget ? 35 : 0;
+  score -= purchaseMonthlyShare > 0.15 ? 15 : 0;
+  score -= remainingMonthlyShare < 0.2 ? 10 : 0;
+  if (budgetSnapshot.riskLevel === "danger") score -= 15;
+  if (budgetSnapshot.riskLevel === "warning") score -= 8;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function determineAdditionalPurchaseRisk({ amount, budgetSnapshot, categorySnapshot, forecastAfterPurchase, wouldExceedCategoryBudget, wouldExceedMonthlyBudget }) {
+  const reasons = [];
+  if (wouldExceedCategoryBudget) reasons.push("category_budget_exceeded");
+  if (wouldExceedMonthlyBudget) reasons.push("monthly_remaining_exceeded");
+  if (forecastAfterPurchase > budgetSnapshot.monthlyBudget) reasons.push("forecast_over_monthly_budget");
+  if (categorySnapshot.budget && amount / categorySnapshot.budget > 0.5) reasons.push("large_vs_category_budget");
+  if (!reasons.length) reasons.push("no_major_new_risk");
+  return reasons;
 }
 
 function findTransactions(searchQuery) {

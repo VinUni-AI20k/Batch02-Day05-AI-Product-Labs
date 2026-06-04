@@ -184,6 +184,50 @@ button {
   margin-bottom: 0;
 }
 
+.moni-message-markdown {
+  max-width: 82%;
+  width: fit-content;
+  white-space: normal;
+  color: var(--ink);
+}
+
+.moni-message-markdown p {
+  margin: 0 0 8px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.moni-message-markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.moni-message-markdown ul,
+.moni-message-markdown ol {
+  margin: 6px 0 8px 18px;
+  padding: 0;
+}
+
+.moni-message-markdown li {
+  margin: 4px 0;
+  line-height: 1.45;
+}
+
+.moni-message-markdown strong {
+  font-weight: 800;
+}
+
+.moni-message-markdown em {
+  color: var(--muted);
+}
+
+.moni-message-markdown code {
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #f0edf6;
+  color: var(--pink-dark);
+}
+
 .insight-card,
 .transaction-card,
 .confirm-card {

@@ -791,13 +791,68 @@ function addMoniResponse(response) {
   const node = document.createElement("article");
   node.className = "message moni";
   node.innerHTML = `
-    <p>${escapeHtml(response.assistantMessage)}</p>
+    <div class="moni-message-markdown">${renderMarkdown(response.assistantMessage || "")}</div>
     ${renderLLMTrace(response.llmTrace)}
     ${renderToolTrace(response.toolCalls)}
     ${(response.cards || []).map(renderCard).join("")}
   `;
   chatLog.append(node);
   scrollChat();
+}
+
+function renderMarkdown(source) {
+  const lines = escapeHtml(source).replace(/\r\n/g, "\n").split("\n");
+  const html = [];
+  let listType = null;
+
+  const closeList = () => {
+    if (!listType) return;
+    html.push(`</${listType}>`);
+    listType = null;
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      closeList();
+      continue;
+    }
+
+    const unordered = trimmed.match(/^[-*]\s+(.+)$/);
+    if (unordered) {
+      if (listType !== "ul") {
+        closeList();
+        html.push("<ul>");
+        listType = "ul";
+      }
+      html.push(`<li>${renderInlineMarkdown(unordered[1])}</li>`);
+      continue;
+    }
+
+    const ordered = trimmed.match(/^\d+\.\s+(.+)$/);
+    if (ordered) {
+      if (listType !== "ol") {
+        closeList();
+        html.push("<ol>");
+        listType = "ol";
+      }
+      html.push(`<li>${renderInlineMarkdown(ordered[1])}</li>`);
+      continue;
+    }
+
+    closeList();
+    html.push(`<p>${renderInlineMarkdown(trimmed)}</p>`);
+  }
+
+  closeList();
+  return html.join("");
+}
+
+function renderInlineMarkdown(text) {
+  return text
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 }
 
 function renderLLMTrace(trace) {
@@ -868,6 +923,14 @@ function renderCardData(data) {
       { label: "Chi thêm", value: money(data.impact.additionalSpent) },
       { label: "Dự báo đổi", value: money(data.impact.forecastChange) },
       { label: "Vượt dự kiến", value: money(data.impact.overBudgetAmount) }
+    );
+  }
+  if (data.safeToSpendScore !== undefined) {
+    rows.push(
+      { label: "Safe score", value: `${data.safeToSpendScore}/100` },
+      { label: "Khoản mua", value: money(data.purchaseAmount || 0) },
+      { label: "Còn tháng", value: money(data.remainingBudget || 0) },
+      { label: "Dự báo sau mua", value: money(data.forecastAfterPurchase || 0) }
     );
   }
   if (!rows.length) return "";

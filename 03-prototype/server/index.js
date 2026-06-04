@@ -12,7 +12,7 @@ const PORT = Number(process.env.PORT) || 3000;
 loadDb();
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '8mb' }));
 app.use('/api/drugs', drugsRouter);
 app.use(
   express.static(ROOT, {

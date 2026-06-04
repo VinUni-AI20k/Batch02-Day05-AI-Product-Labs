@@ -15,6 +15,17 @@ export async function fetchSuggestions(query) {
   return res.json();
 }
 
+export async function ocrDrugImage(imageBase64, mimeType = 'image/jpeg') {
+  const res = await fetch(`${API}/ocr`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageBase64, mimeType }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'OCR thất bại');
+  return data;
+}
+
 export async function lookupDrug({ condition, drugQuery, age, gender, userName, drugId }) {
   const res = await fetch(`${API}/lookup`, {
     method: 'POST',

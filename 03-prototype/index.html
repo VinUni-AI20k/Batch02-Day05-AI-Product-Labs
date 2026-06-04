@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nhà thuốc Long Châu</title>
-    <link rel="stylesheet" href="./css/styles.css?v=7" />
+    <link rel="stylesheet" href="./css/styles.css?v=9" />
   </head>
   <body>
     <div class="lc-site">
@@ -186,56 +186,27 @@
 
           <div id="api-alert" class="api-alert" hidden role="alert"></div>
 
-          <div class="safety-feature__body">
-            <section id="profile-section" class="profile-section" aria-label="Thông tin tra cứu">
-              <form id="profile-form" class="profile-form">
-                <div class="profile-form__head">
-                  <h2>Thông tin tra cứu</h2>
-                  <p class="fine">Điền một lần — sau đó chỉ nhắn thêm tên thuốc</p>
-                </div>
-
-                <div class="form-grid">
-                  <label class="field field--full">
-                    <span class="field__label">Tình trạng hiện tại</span>
-                    <input id="field-condition" name="condition" type="text" placeholder="vd: sốt nhẹ, đau đầu..." required />
-                  </label>
-                  <label class="field field--full">
-                    <span class="field__label">Tên thuốc / hoạt chất</span>
-                    <input id="field-drug" name="drug" type="text" placeholder="vd: Panadol, Paracetamol..." required />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">Tuổi</span>
-                    <input id="field-age" name="age" type="number" min="0" max="120" placeholder="30" required />
-                  </label>
-                  <fieldset class="field field--gender">
-                    <legend class="field__label">Giới tính</legend>
-                    <div class="radio-row">
-                      <label class="radio-pill"><input type="radio" name="gender" value="male" required /> Nam</label>
-                      <label class="radio-pill"><input type="radio" name="gender" value="female" /> Nữ</label>
-                    </div>
-                  </fieldset>
-                </div>
-
-                <p id="form-error" class="form-error" role="alert" hidden></p>
-
-                <button type="submit" id="submit-form-btn" class="btn btn--primary btn--block">Bắt đầu tra cứu</button>
-
-                <div class="demo-row">
-                  <span class="fine">Demo:</span>
-                  <button type="button" class="chip chip--sm" data-demo="happy">30t nữ + Panadol</button>
-                  <button type="button" class="chip chip--sm" data-demo="typo">8t + Panadl</button>
-                  <button type="button" class="chip chip--sm" data-demo="urgent">Khó thở</button>
-                </div>
-              </form>
-
-              <div id="profile-bar" class="profile-bar" hidden>
-                <div class="profile-bar__info">
-                  <span class="profile-bar__title">Hồ sơ tra cứu</span>
-                  <p id="profile-bar-text" class="profile-bar__text"></p>
-                </div>
-                <button type="button" id="edit-profile-btn" class="btn btn--ghost btn--sm">Sửa</button>
+          <div class="safety-feature__body safety-feature__body--chat-only">
+            <div id="profile-bar" class="profile-bar profile-bar--compact" hidden>
+              <div class="profile-bar__info">
+                <span class="profile-bar__title">Hồ sơ tra cứu</span>
+                <p id="profile-bar-text" class="profile-bar__text"></p>
               </div>
-            </section>
+            </div>
+
+            <!-- hidden sync fields -->
+            <form id="profile-form" class="profile-form profile-form--hidden" hidden aria-hidden="true">
+              <input id="field-condition" type="hidden" />
+              <input id="field-drug" type="hidden" />
+              <input id="field-age" type="hidden" />
+            </form>
+
+            <div class="demo-row demo-row--chat">
+              <span class="fine">Thử nhanh:</span>
+              <button type="button" class="chip chip--sm" data-demo-msg="Panadol có dùng được không? Tôi sốt nhẹ, 30 tuổi nữ">Panadol + sốt</button>
+              <button type="button" class="chip chip--sm" data-demo-msg="Tôi đang bị đau bụng thì nên dùng thuốc gì?">Đau bụng</button>
+              <button type="button" class="chip chip--sm" data-demo-msg="Tôi bị khó thở và đau ngực">Khẩn cấp</button>
+            </div>
 
             <div class="safety-chat">
               <div id="lookup-status" class="lookup-status" hidden role="status" aria-live="polite">
@@ -246,9 +217,13 @@
                 </div>
               </div>
               <main class="chat" id="messages" role="log" aria-live="polite"></main>
-              <footer class="composer composer--locked" id="composer">
-                <input id="user-input" type="text" autocomplete="off" placeholder="Điền form trước..." disabled />
-                <button type="button" id="send-btn" class="btn btn--primary" disabled>Tra thuốc</button>
+              <footer class="composer" id="composer">
+                <label class="composer__attach" title="Gửi ảnh thuốc">
+                  📷
+                  <input id="image-input" type="file" accept="image/*" capture="environment" hidden />
+                </label>
+                <input id="user-input" type="text" autocomplete="off" placeholder="Nhập triệu chứng, tên thuốc hoặc câu hỏi..." />
+                <button type="button" id="send-btn" class="btn btn--primary">Gửi</button>
               </footer>
             </div>
           </div>
@@ -256,6 +231,6 @@
       </div>
     </div>
 
-    <script type="module" src="./js/app.js?v=7"></script>
+    <script type="module" src="./js/app.js?v=9"></script>
   </body>
 </html>

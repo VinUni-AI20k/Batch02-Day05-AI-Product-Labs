@@ -20,6 +20,7 @@ import {
   providerLabel,
 } from '../ai-provider.js';
 import { hasGoogleCse, searchDrugInfo } from '../google-cse.js';
+import { ocrDrugImage } from '../ocr.js';
 
 const router = Router();
 
@@ -227,6 +228,24 @@ router.post('/search-google', async (req, res) => {
     const { query, condition } = req.body;
     const items = await searchDrugInfo(query, condition || '');
     res.json({ items });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/** POST /api/drugs/ocr  body: { imageBase64, mimeType? } */
+router.post('/ocr', async (req, res) => {
+  try {
+    const raw = String(req.body.imageBase64 || '');
+    if (!raw) return res.status(400).json({ error: 'Thiếu imageBase64' });
+    const imageBase64 = raw.replace(/^data:[^;]+;base64,/, '');
+    const mimeType = req.body.mimeType || 'image/jpeg';
+    const ocr_result = await ocrDrugImage(imageBase64, mimeType);
+    res.json({
+      intent: 'image_lookup',
+      input_type: 'image',
+      ocr_result,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

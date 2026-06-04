@@ -242,6 +242,39 @@ button {
   background: #ffe3df;
 }
 
+.status-chip.low_confidence {
+  color: #5f5868;
+  background: #eeebf4;
+}
+
+.card-explain {
+  margin: -2px 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.tool-trace {
+  max-width: 82%;
+  margin: 8px 0 0;
+  padding: 9px 11px;
+  border-radius: 7px;
+  color: #5f5868;
+  background: #f8f6fb;
+  border: 1px solid var(--line);
+  font-size: 12px;
+}
+
+.tool-trace summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.tool-trace pre {
+  overflow-x: auto;
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+}
+
 .budget-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -310,6 +343,35 @@ button {
   background: #f7f5fb;
   text-align: left;
   font-weight: 800;
+}
+
+.review-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.review-list article {
+  padding: 10px;
+  border-radius: 7px;
+  background: #f8f6fb;
+}
+
+.review-list strong,
+.review-list span {
+  display: block;
+}
+
+.review-list span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.review-list p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .transaction-card h3 {

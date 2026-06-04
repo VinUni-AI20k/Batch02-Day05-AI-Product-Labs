@@ -193,6 +193,333 @@
         { "match": ["sỏi thận"], "level": "yellow", "note": "Thận trọng liều cao kéo dài." }
       ],
       "source": "Demo DB — supplement"
-    }
+    },
+    {
+    "id": "amlodipine",
+    "name": "Amlodipine",
+    "aliases": ["amlor", "amlodipine 5", "amlodipine 10"],
+    "activeIngredient": "Amlodipine",
+    "indications": "Tăng huyết áp, đau thắt ngực.",
+    "contraindications": ["Hạ huyết áp nặng", "Dị ứng amlodipine"],
+    "warnings": ["Có thể gây chóng mặt", "Không tự ý ngưng thuốc"],
+    "conditionRules": [
+      {
+        "match": ["cao huyet ap", "tăng huyết áp"],
+        "level": "yellow",
+        "note": "Thuốc kê đơn điều trị tăng huyết áp."
+      },
+      {
+        "match": ["huyet ap thap", "hạ huyết áp"],
+        "level": "red",
+        "note": "Có thể làm tụt huyết áp thêm."
+      }
+    ],
+    "source": "Demo DB — antihypertensive"
+  },
+  {
+    "id": "atorvastatin",
+    "name": "Atorvastatin",
+    "aliases": ["lipitor", "atorvastatin 10", "atorvastatin 20"],
+    "activeIngredient": "Atorvastatin",
+    "indications": "Giảm cholesterol máu.",
+    "contraindications": ["Bệnh gan tiến triển", "Mang thai"],
+    "warnings": ["Theo dõi men gan", "Có thể đau cơ"],
+    "conditionRules": [
+      {
+        "match": ["mo mau", "cholesterol cao"],
+        "level": "yellow",
+        "note": "Thuốc kê đơn điều trị rối loạn lipid máu."
+      },
+      {
+        "match": ["mang thai", "bầu"],
+        "level": "red",
+        "note": "Chống chỉ định khi mang thai."
+      }
+    ],
+    "source": "Demo DB — statin"
+  },
+  {
+    "id": "bisoprolol",
+    "name": "Bisoprolol",
+    "aliases": ["bisoprolol 2.5", "bisoprolol 5"],
+    "activeIngredient": "Bisoprolol fumarate",
+    "indications": "Tăng huyết áp, suy tim, đau thắt ngực.",
+    "contraindications": ["Nhịp tim chậm", "Block tim nặng"],
+    "warnings": ["Không ngưng đột ngột"],
+    "conditionRules": [
+      {
+        "match": ["cao huyet ap", "tăng huyết áp"],
+        "level": "yellow",
+        "note": "Thuốc tim mạch kê đơn."
+      },
+      {
+        "match": ["mach cham", "nhịp tim chậm"],
+        "level": "red",
+        "note": "Có thể làm nhịp tim giảm thêm."
+      }
+    ],
+    "source": "Demo DB — beta blocker"
+  },
+  {
+    "id": "pantoprazole",
+    "name": "Pantoprazole",
+    "aliases": ["pantoloc", "pantoprazole 40"],
+    "activeIngredient": "Pantoprazole",
+    "indications": "Trào ngược dạ dày, viêm loét dạ dày.",
+    "contraindications": ["Dị ứng pantoprazole"],
+    "warnings": ["Không dùng kéo dài nếu chưa được đánh giá"],
+    "conditionRules": [
+      {
+        "match": ["ợ nóng", "trào ngược", "đau thượng vị"],
+        "level": "green",
+        "note": "Khớp chỉ định nhóm PPI."
+      }
+    ],
+    "source": "Demo DB — PPI"
+  },
+  {
+    "id": "esomeprazole",
+    "name": "Esomeprazole",
+    "aliases": ["nexium", "esomeprazole 20", "esomeprazole 40"],
+    "activeIngredient": "Esomeprazole",
+    "indications": "GERD, viêm loét dạ dày.",
+    "contraindications": ["Dị ứng esomeprazole"],
+    "warnings": ["Không lạm dụng dài ngày"],
+    "conditionRules": [
+      {
+        "match": ["trào ngược", "ợ nóng"],
+        "level": "green",
+        "note": "Phù hợp điều trị triệu chứng acid dạ dày."
+      }
+    ],
+    "source": "Demo DB — PPI"
+  },
+  {
+    "id": "allopurinol",
+    "name": "Allopurinol",
+    "aliases": ["zyloric", "allopurinol 300"],
+    "activeIngredient": "Allopurinol",
+    "indications": "Điều trị gout, tăng acid uric.",
+    "contraindications": ["Dị ứng allopurinol"],
+    "warnings": ["Có thể gây phản ứng da nghiêm trọng"],
+    "conditionRules": [
+      {
+        "match": ["gout", "acid uric cao"],
+        "level": "yellow",
+        "note": "Thuốc điều trị gout theo chỉ định."
+      }
+    ],
+    "source": "Demo DB — gout"
+  },
+  {
+    "id": "diclofenac",
+    "name": "Diclofenac",
+    "aliases": ["voltaren", "diclofenac 50"],
+    "activeIngredient": "Diclofenac",
+    "indications": "Giảm đau, chống viêm.",
+    "contraindications": ["Loét dạ dày", "Suy thận nặng"],
+    "warnings": ["Uống sau ăn"],
+    "conditionRules": [
+      {
+        "match": ["đau khớp", "viêm khớp"],
+        "level": "yellow",
+        "note": "NSAID cần thận trọng."
+      },
+      {
+        "match": ["đau dạ dày", "xuất huyết tiêu hóa"],
+        "level": "red",
+        "note": "Nguy cơ chảy máu tiêu hóa."
+      }
+    ],
+    "source": "Demo DB — NSAID"
+  },
+  {
+    "id": "meloxicam",
+    "name": "Meloxicam",
+    "aliases": ["meloxicam 7.5", "meloxicam 15"],
+    "activeIngredient": "Meloxicam",
+    "indications": "Viêm khớp, đau cơ xương khớp.",
+    "contraindications": ["Loét dạ dày tiến triển"],
+    "warnings": ["Nguy cơ tim mạch và tiêu hóa"],
+    "conditionRules": [
+      {
+        "match": ["đau khớp", "thoái hóa khớp"],
+        "level": "yellow",
+        "note": "NSAID dùng theo hướng dẫn."
+      }
+    ],
+    "source": "Demo DB — NSAID"
+  },
+  {
+    "id": "domperidone",
+    "name": "Domperidone",
+    "aliases": ["motilium", "domperidone 10"],
+    "activeIngredient": "Domperidone",
+    "indications": "Buồn nôn, nôn.",
+    "contraindications": ["Rối loạn nhịp tim"],
+    "warnings": ["Không tự ý dùng kéo dài"],
+    "conditionRules": [
+      {
+        "match": ["buồn nôn", "nôn"],
+        "level": "yellow",
+        "note": "Có thể phù hợp nếu được đánh giá nguyên nhân."
+      }
+    ],
+    "source": "Demo DB — antiemetic"
+  },
+  {
+    "id": "loperamide",
+    "name": "Loperamide",
+    "aliases": ["imodium", "loperamide 2"],
+    "activeIngredient": "Loperamide",
+    "indications": "Tiêu chảy cấp không biến chứng.",
+    "contraindications": ["Tiêu chảy có máu", "Sốt cao"],
+    "warnings": ["Bù nước điện giải đầy đủ"],
+    "conditionRules": [
+      {
+        "match": ["tiêu chảy"],
+        "level": "yellow",
+        "note": "Có thể hỗ trợ triệu chứng."
+      },
+      {
+        "match": ["tiêu chảy ra máu", "sốt cao"],
+        "level": "red",
+        "note": "Cần khám y tế."
+      }
+    ],
+    "source": "Demo DB — antidiarrheal"
+  },
+  {
+    "id": "acetylcysteine",
+    "name": "Acetylcysteine",
+    "aliases": ["acc", "acetylcysteine 200"],
+    "activeIngredient": "Acetylcysteine",
+    "indications": "Long đờm.",
+    "contraindications": ["Dị ứng acetylcysteine"],
+    "warnings": ["Uống nhiều nước"],
+    "conditionRules": [
+      {
+        "match": ["đờm", "ho có đờm"],
+        "level": "green",
+        "note": "Phù hợp chỉ định long đờm."
+      }
+    ],
+    "source": "Demo DB — mucolytic"
+  },
+  {
+    "id": "ambroxol",
+    "name": "Ambroxol",
+    "aliases": ["halixol", "ambroxol 30"],
+    "activeIngredient": "Ambroxol",
+    "indications": "Long đờm, giảm độ quánh đờm.",
+    "contraindications": ["Dị ứng ambroxol"],
+    "warnings": ["Không dùng thay thế điều trị hen cấp"],
+    "conditionRules": [
+      {
+        "match": ["ho có đờm", "đờm đặc"],
+        "level": "green",
+        "note": "Có thể giúp long đờm."
+      }
+    ],
+    "source": "Demo DB — mucolytic"
+  },
+  {
+    "id": "levocetirizine",
+    "name": "Levocetirizine",
+    "aliases": ["levocet", "levocetirizine 5"],
+    "activeIngredient": "Levocetirizine",
+    "indications": "Viêm mũi dị ứng, mề đay.",
+    "contraindications": ["Dị ứng levocetirizine"],
+    "warnings": ["Có thể gây buồn ngủ"],
+    "conditionRules": [
+      {
+        "match": ["dị ứng", "mề đay", "hắt hơi"],
+        "level": "green",
+        "note": "Khớp chỉ định kháng histamine."
+      }
+    ],
+    "source": "Demo DB — antihistamine"
+  },
+  {
+    "id": "losartan",
+    "name": "Losartan",
+    "aliases": ["cozaar", "losartan 50"],
+    "activeIngredient": "Losartan",
+    "indications": "Tăng huyết áp.",
+    "contraindications": ["Mang thai"],
+    "warnings": ["Theo dõi chức năng thận"],
+    "conditionRules": [
+      {
+        "match": ["cao huyet ap", "tăng huyết áp"],
+        "level": "yellow",
+        "note": "Thuốc kê đơn."
+      },
+      {
+        "match": ["mang thai", "bầu"],
+        "level": "red",
+        "note": "Không dùng khi mang thai."
+      }
+    ],
+    "source": "Demo DB — ARB"
+  },
+  {
+    "id": "metoprolol",
+    "name": "Metoprolol",
+    "aliases": ["betaloc", "metoprolol 50"],
+    "activeIngredient": "Metoprolol",
+    "indications": "Tăng huyết áp, đau thắt ngực.",
+    "contraindications": ["Nhịp tim chậm", "Block tim"],
+    "warnings": ["Không ngừng thuốc đột ngột"],
+    "conditionRules": [
+      {
+        "match": ["cao huyet ap", "tim mach"],
+        "level": "yellow",
+        "note": "Thuốc tim mạch kê đơn."
+      }
+    ],
+    "source": "Demo DB — beta blocker"
+  },
+  {
+    "id": "levonorgestrel-emergency",
+    "name": "Levonorgestrel",
+    "aliases": [
+      "cerciorat",
+      "postinor 1",
+      "levonorgestrel 1.5mg",
+      "thuoc tranh thai khan cap 72h"
+    ],
+    "activeIngredient": "Levonorgestrel 1.5mg",
+    "indications": "Tránh thai khẩn cấp trong vòng 72 giờ sau quan hệ tình dục không được bảo vệ hoặc khi biện pháp tránh thai thất bại.",
+    "contraindications": [
+      "Dị ứng levonorgestrel",
+      "Đang mang thai"
+    ],
+    "warnings": [
+      "Uống càng sớm càng hiệu quả",
+      "Không dùng thay thế biện pháp tránh thai thường xuyên",
+      "Không phòng ngừa bệnh lây truyền qua đường tình dục",
+      "Có thể gây rối loạn kinh nguyệt tạm thời"
+    ],
+    "conditionRules": [
+      {
+        "match": ["quan he khong an toan", "rach bao cao su", "tuot bao cao su"],
+        "level": "green",
+        "note": "Có thể phù hợp chỉ định tránh thai khẩn cấp nếu còn trong thời gian khuyến cáo."
+      },
+      {
+        "match": ["mang thai", "co thai", "duong tinh que thu thai"],
+        "level": "red",
+        "note": "Không có tác dụng tránh thai khi đã mang thai."
+      }
+    ],
+    "genderRules": [
+      {
+        "gender": "male",
+        "level": "red",
+        "note": "Thuốc chỉ dành cho nữ giới."
+      }
+    ],
+    "source": "Long Chau — Cerciorat 1.5mg (Levonorgestrel)"
+  }
   ]
 }

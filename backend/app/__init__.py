@@ -1,0 +1,1 @@
+"""SmartTravel AI backend package."""

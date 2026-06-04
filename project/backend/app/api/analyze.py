@@ -16,6 +16,7 @@ import httpx
 
 from middleware.cost_logger import log_cost
 from middleware.data_masking import mask_sensitive_data
+from middleware.guardrails import guardrail_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -103,6 +104,16 @@ async def analyze_profile(req: AnalyzeRequest):
     if req.background:
         req.background = mask_sensitive_data(req.background)
         
+    # Guardrail check
+    for text_to_check, field_name in [(req.goal_description, "goal_description"), (req.current_job, "current_job")]:
+        if text_to_check:
+            guard_result = guardrail_manager.check_message(text_to_check)
+            if guard_result and guard_result.get("blocked"):
+                reason = guard_result.get("reason", "blocked")
+                response_text = guard_result.get("response", "Yêu cầu vi phạm quy tắc an toàn.")
+                logger.warning(f"🚫 Analyze request blocked due to {field_name}: {reason}")
+                raise HTTPException(status_code=400, detail=response_text)
+
     logger.info(f"📊 Analyze request | user={req.user_id} | job={req.current_job} | score={req.quiz_score}/10")
     
     # Build user context prompt
@@ -168,7 +179,7 @@ Trả về JSON theo đúng schema đã định nghĩa. KHÔNG thêm text ngoài
                 }
                 
                 # Check for deepseek/thinking parameters vs standard JSON response format
-                if "deepseek" in model_lower:
+                if "deepseek" in model_lower and "nvidia" not in base_url.lower():
                     kwargs["extra_body"] = {"chat_template_kwargs": {"thinking": True, "reasoning_effort": "high"}}
                 else:
                     kwargs["response_format"] = {"type": "json_object"}
@@ -270,12 +281,23 @@ Trả về JSON theo đúng schema đã định nghĩa. KHÔNG thêm text ngoài
         except Exception as ex:
             logger.error(f"❌ Failed to process sandbox storage save: {ex}")
 
+    # Phân loại path_type dựa trên confidence_score theo đúng quy tắc SPEC:
+    # > 0.80 -> "happy"
+    # 0.50 - 0.80 -> "low_conf"
+    # < 0.50 -> "failure"
+    if confidence_score > 0.80:
+        path_type = "happy"
+    elif confidence_score >= 0.50:
+        path_type = "low_conf"
+    else:
+        path_type = "failure"
+
     # Validate và trả về kết quả
     try:
         return AnalyzeResponse(
             milestones=[Milestone(**m) for m in roadmap_data.get("milestones", [])],
             confidence_score=confidence_score,
-            path_type=roadmap_data.get("path_type", "low_conf"),
+            path_type=path_type,
             reasoning=roadmap_data.get("reasoning", "Phân tích tự động"),
             personalization_notes=roadmap_data.get("personalization_notes", ""),
             cost_info=cost_info

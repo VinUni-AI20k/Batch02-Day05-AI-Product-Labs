@@ -78,14 +78,23 @@ async def health_check():
     }
 
 
-@app.get("/", tags=["System"])
-async def root():
-    """Root endpoint"""
-    return {
-        "message": "🧠 Chào mừng đến với AI Path API!",
-        "docs": "/docs",
-        "health": "/health"
-    }
+# @app.get("/", tags=["System"])
+# async def root():
+#     """Root endpoint"""
+#     return {
+#         "message": "🧠 Chào mừng đến với AI Path API!",
+#         "docs": "/docs",
+#         "health": "/health"
+#     }
+
+# Mount frontend static files
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+frontend_dir = os.path.join(project_root, "frontend")
+if os.path.exists(frontend_dir):
+    logger.info(f"📁 Mounting frontend static files from: {frontend_dir}")
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+else:
+    logger.warning(f"⚠️ Frontend directory not found at: {frontend_dir}")
 
 
 if __name__ == "__main__":

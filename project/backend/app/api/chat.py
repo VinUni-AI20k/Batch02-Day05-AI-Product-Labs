@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 from middleware.cost_logger import log_cost, is_user_rate_limited
 from models.database import upsert_session, get_session
 from middleware.data_masking import mask_sensitive_data
+from middleware.guardrails import guardrail_manager
 
 logger = logging.getLogger(__name__)
 
@@ -338,16 +339,18 @@ async def chat(payload: ChatRequest):
         )
 
     # ── Bước 2: Guardrail / Step 2: Content guardrail ────────────────────────
-    block_reason = check_guardrails(message)
-    if block_reason:
-        logger.info(f"🚫 Message blocked for user '{user_id}': {block_reason}")
+    guard_result = guardrail_manager.check_message(message)
+    if guard_result and guard_result.get("blocked"):
+        reason = guard_result.get("reason", "blocked")
+        response_text = guard_result.get("response", "[Yêu cầu truy cập thông tin hệ thống bị từ chối do vi phạm quy tắc an toàn quốc tế]")
+        logger.info(f"🚫 Message blocked for user '{user_id}': {reason}")
         return ChatResponse(
-            response="[Yêu cầu truy cập thông tin hệ thống bị từ chối do vi phạm quy tắc an toàn quốc tế]",
+            response=response_text,
             session_id=session_id,
             tokens_used={"input": 0, "output": 0, "total": 0},
             cost={"request_cost_usd": 0.0, "daily_cost_usd": 0.0, "rate_limited": False},
             blocked=True,
-            block_reason=block_reason,
+            block_reason=reason,
         )
 
     # ── Bước 3: Quiz gate / Step 3: Quiz completion gate ─────────────────────
@@ -409,6 +412,26 @@ async def chat(payload: ChatRequest):
     ai_response   = llm_result["content"]
     input_tokens  = llm_result["input_tokens"]
     output_tokens = llm_result["output_tokens"]
+
+    # Phản hồi fallback khi không chắc chắn câu trả lời / Fallback response if AI is uncertain
+    uncertainty_keywords = [
+        "tôi không biết", "tôi không chắc", "nằm ngoài phạm vi", 
+        "không thể trả lời", "không thuộc chuyên môn", "không rõ", 
+        "chưa có câu trả lời", "không thể hỗ trợ", "sorry, i don't know", 
+        "i'm not sure", "out of scope", "i cannot answer"
+    ]
+    
+    ai_response_lower = ai_response.lower()
+    is_uncertain = any(uk in ai_response_lower for uk in uncertainty_keywords)
+    
+    if is_uncertain:
+        logger.info(f"⚠️ Detected low-confidence/uncertain AI chat response for user '{user_id}'. Appending human fallback information.")
+        ai_response += (
+            "\n\n---"
+            "\n💡 *Chú ý: Câu hỏi này có vẻ nằm ngoài phạm vi học tập thông thường của tôi hoặc tôi chưa hoàn toàn chắc chắn. "
+            "Nếu bạn cần thêm thông tin chính xác, bạn có thể liên hệ trực tiếp với Cố vấn học tập VinUni qua email: "
+            "[ai-support@vinuni.edu.vn](mailto:ai-support@vinuni.edu.vn) hoặc bấm nút Trợ giúp (biểu tượng 🛠️ ở góc trên bên phải) để được hỗ trợ.*"
+        )
 
     # ── Bước 7: Lưu lịch sử & ghi chi phí / Step 7: Save history & log cost ─
     conversation_history.append({"role": "assistant", "content": ai_response})

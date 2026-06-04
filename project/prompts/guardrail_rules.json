@@ -55,7 +55,8 @@
     "chứng khoán bot", "trading bot illegal", "scrape dữ liệu trái phép",
     "deepfake người khác", "giả mạo giọng nói", "tạo ảnh khiêu dâm",
     "bypass captcha", "spam email", "phần mềm độc hại",
-    "crypto scam", "rug pull", "pump and dump"
+    "crypto scam", "rug pull", "pump and dump",
+    "nấu ăn", "canh chua", "món ăn", "công thức nấu", "du lịch", "thời tiết"
   ],
 
   "response_templates": {

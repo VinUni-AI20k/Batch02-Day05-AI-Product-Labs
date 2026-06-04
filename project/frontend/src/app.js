@@ -1455,13 +1455,11 @@ Lộ trình học của bạn đã được tạo trong tab **Lộ trình học*
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          message:    content,
-          history:    AppState.chat.history.slice(-10).map(h => ({ role: h.role, content: h.content })),
-          user_data:  AppState.userData,
-          quiz_score: AppState.results.score,
-          level:      AppState.results.level,
-          roadmap:    AppState.results.roadmap ? AppState.results.roadmap.title : null,
-          session_id: AppState.results.sessionId,
+          user_id:            AppState.ui.userId || 'guest_user',
+          message:            content,
+          session_id:         AppState.results.sessionId || 'session_' + Date.now(),
+          quiz_completed:     true,
+          questions_answered: AppState.quiz.answers.filter(a => a !== null).length,
         }),
       });
 
@@ -1469,11 +1467,13 @@ Lộ trình học của bạn đã được tạo trong tab **Lộ trình học*
       const data = await response.json();
 
       this._removeTyping();
-      this._appendMessage('ai', data.message || 'Xin lỗi, tôi không thể trả lời lúc này.');
+      this._appendMessage('ai', data.response || data.message || 'Xin lỗi, tôi không thể trả lời lúc này.');
 
       // Update cost
-      if (data.usage) {
-        CostDisplay.update(data.usage.total_tokens || 0, data.usage.cost_usd || 0);
+      if (data.tokens_used) {
+        const totalTokens = data.tokens_used.total || 0;
+        const costUsd = data.cost ? (data.cost.request_cost_usd || 0.0) : 0.0;
+        CostDisplay.update(totalTokens, costUsd);
       }
 
     } catch (err) {

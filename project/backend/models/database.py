@@ -60,13 +60,15 @@ def init_cost_db():
             CREATE TABLE IF NOT EXISTS cost_logs (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id         TEXT NOT NULL,
+                session_id      TEXT,
                 timestamp       TEXT NOT NULL,
+                model_name      TEXT NOT NULL,
                 input_tokens    INTEGER NOT NULL DEFAULT 0,
                 output_tokens   INTEGER NOT NULL DEFAULT 0,
                 calculated_cost REAL NOT NULL DEFAULT 0.0,
                 confidence_score REAL,
-                model_name      TEXT NOT NULL,
                 endpoint        TEXT,           -- e.g. /api/analyze, /api/chat
+                rate_limited    INTEGER DEFAULT 0,
                 created_at      TEXT DEFAULT (datetime('now'))
             );
 

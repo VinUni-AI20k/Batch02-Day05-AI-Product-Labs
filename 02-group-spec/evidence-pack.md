@@ -47,37 +47,46 @@ Nguồn: khảo sát của nhóm (Google Form, n=13, mẫu thuận tiện, dữ 
 ## 5. Evidence -> Insight
 
 ```text
-Evidence nổi bật nhất:
-- 12/13 người KHÔNG tìm được món khi gõ ý định mô tả tự nhiên: 8 người "chưa từng thử vì biết app sẽ không hiểu", 4 người "thử nhưng app báo lỗi / ra quán không liên quan", chỉ 1 người ra đúng. (P3)
-- 10/13 người "thỉnh thoảng" đến "rất thường xuyên" mở app rồi thoát ra không đặt. (P1)
-- 10/13 chấm độ tin cậy mục "Gợi ý cho bạn" ≤3/5; quote: "Chạy quảng cáo ạ", "gợi ý toàn quán ở xa". (P2)
-- Lý do bỏ đơn lặp nhiều nhất: "quán muốn ăn thì xa/ship cao, quán gần thì không có món ưng ý".
-(Nguồn: khảo sát nhóm, Google Form, n=13 — dữ liệu pilot, mẫu thuận tiện.)
+Evidence nổi bật nhất (xếp theo độ mạnh):
+1. ĐẦU VÀO hỏng — 92% (12/13) không diễn đạt được ý định mô tả tự nhiên: 8 người không buồn thử vì "biết app sẽ không hiểu", 4 người thử thì lỗi / ra quán không liên quan, chỉ 1 người thành công. (P3)
+2. NIỀM TIN hỏng — 77% (10/13) chấm độ tin cậy mục "Gợi ý cho bạn" ≤3/5; quote: "Chạy quảng cáo ạ", "gợi ý toàn quán ở xa". (P2)
+3. HỆ QUẢ — 77% (10/13) từng mở app rồi bỏ giữa chừng, không đặt. (P1)
+4. Rào cản lặp nhiều nhất khi bỏ đơn: "quán muốn ăn thì xa/ship cao, quán gần thì không có món ưng ý" → khoảng cách + giá + khẩu vị phải xử lý CÙNG LÚC.
+(Nguồn: khảo sát nhóm, Google Form, n=13 — pilot, mẫu thuận tiện.)
 
 Insight:
-User không chỉ gặp vấn đề lựa chọn món ăn quá tải (Choice paralysis - P1).
-Rào cản lớn nhất thực ra là họ không có cách diễn đạt nhu cầu MƠ HỒ với nhiều ràng buộc cùng lúc ("gần + rẻ + hợp gu") — search keyword không hiểu, nên phần lớn bỏ cuộc hoặc nhận kết quả lệch. Họ cần nói bằng ngôn ngữ tự nhiên và nhận lại gợi ý CÓ GIẢI THÍCH để đủ tin mà quyết.
+Nhìn bề mặt giống bài toán "quá nhiều lựa chọn" (choice paralysis – P1). Nhưng evidence chỉ ra điểm gãy thật nằm ở HAI ĐẦU của hành trình, không phải khúc giữa:
+- Đầu vào: user không có cách NÓI ra cơn thèm mơ hồ nhiều ràng buộc cùng lúc ("gần + rẻ + hợp gu") — search keyword không hiểu.
+- Niềm tin: khi app có gợi ý sẵn, user lại KHÔNG TIN, coi như quảng cáo tài trợ.
+=> Họ không "chọn mãi không xong"; họ bỏ cuộc vì vừa không diễn đạt được mong muốn, vừa không tin thứ được gợi ý.
 
 Opportunity:
-AI có thể giúp bằng cách đọc hiểu ý định mơ hồ bằng ngôn ngữ tự nhiên + ngữ cảnh vị trí/thời gian, ưu tiên đúng bán kính giao và tầm giá, để gợi ý tối đa 3 món/quán phù hợp nhất kèm dòng giải thích lý do thuyết phục (chống cảm giác "quảng cáo").
+AI giải đúng hai đầu đó: (1) đọc hiểu ý định mơ hồ bằng ngôn ngữ tự nhiên + ngữ cảnh vị trí/thời gian, ưu tiên đúng bán kính giao và tầm giá; (2) trả tối đa 3 gợi ý kèm DÒNG LÝ DO minh bạch để khôi phục niềm tin (chống cảm giác "quảng cáo"). User vẫn tự bấm chọn — Augment
 ```
 
 ## 6. Evidence đổi SPEC như thế nào?
 
-- [ ] Đổi user chính.
-- [ ] Đổi pain statement.
+- [x] Đổi user chính.          (Thu hẹp: dân văn phòng bận rộn, ăn trưa một mình, giờ nghỉ ngắn)
+- [x] Đổi pain statement.       (Cập nhật số liệu thực tế + bổ sung rào cản khoảng cách/giá)
 - [ ] Đổi build slice.
 - [ ] Đổi Auto/Aug decision.
 - [ ] Đổi 4 paths.
-- [ ] Đổi failure mode.
-- [ ] Đổi owner/test plan.
+- [x] Đổi failure mode.         (Tập trung chặn gợi ý quán xa / quán đóng cửa ở tầng code tiền lọc)
+- [x] Đổi owner/test plan.      (Phân chia công việc theo vai trò thực tế)
 
 *(Lưu ý: Đánh dấu [x] vào các mục tương ứng sau khi có kết quả research thực tế)*
 
 Ghi rõ 1-2 thay đổi quan trọng:
 
 ```text
-Trước evidence, nhóm định... [Xây dựng chatbot gợi ý món ăn dựa trên giả thuyết người dùng bị tê liệt lựa chọn và không tìm được món theo ý định mơ hồ]
-Sau evidence, nhóm đổi thành... [Giữ nguyên theo spec.md hiện tại hoặc cần cập nhật sau khi có kết quả research thực tế]
-Lý do: [Chưa tiến hành research thực tế để đối chiếu, hiện tại spec.md đang ở dạng Draft v0.1]
+Trước evidence, nhóm định...
+Xây chatbot gợi ý món cho người đặt đồ ăn nói chung, dựa trên giả thuyết người dùng bị tê liệt lựa chọn (P1) và không tìm được món theo ý định mơ hồ (P3).
+
+Sau evidence, nhóm đổi thành...
+(1) Thu hẹp đối tượng chính: dân văn phòng bận rộn, ăn trưa một mình trong khung nghỉ ngắn.
+(2) Cập nhật pain statement theo số liệu: 77% (10/13) từng mở app rồi bỏ giữa chừng không đặt; 92% (12/13) thất bại khi gõ ý định tự nhiên vào search; và bổ sung rào cản "quán xa/ship cao – quán gần không hợp gu" làm ràng buộc cốt lõi.
+(3) Thắt chặt failure mode: bắt buộc chặn gợi ý quán xa / quán đã đóng ngay ở tầng code tiền lọc, không để LLM tự quyết.
+
+Lý do:
+Kết quả khảo sát chỉ ra khoảng cách địa lý và giá cả là rào cản bỏ đơn phổ biến nhất, nên đây phải là ràng buộc chatbot xử lý đồng thời với khẩu vị. Phần lớn người trả lời là dân văn phòng, nên thu hẹp persona giúp MVP sắc nét hơn. Quyết định Augment giữ nguyên (nhiều người nói "dùng thử xem AI có chuẩn không" → muốn kiểm soát, không muốn tự động).
 ```

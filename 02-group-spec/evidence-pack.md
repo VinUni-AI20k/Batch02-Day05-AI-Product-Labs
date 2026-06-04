@@ -24,14 +24,16 @@ Nguồn có thể là review App Store/Play, group, comment, phỏng vấn nhanh
 
 | Quote / review / observation | Nguồn | User là ai? | Pain/failure mode |
 |---|---|---|---|
-| [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] |
-| [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] |
-| [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] | [Cần điền thủ công] |
-
-Nếu chưa có nguồn ngoài nhóm, ghi rõ:
+| "Chạy quảng cáo ạ" (chấm độ tin cậy mục Gợi ý 1/5) | Khảo sát nhóm (Google Form, n=13) | NVVP, đặt 3–4 lần/tuần | P2 — Không tin mục gợi ý, coi là quảng cáo tài trợ |
+| "Có khi gợi ý món thích ăn, có khi gợi ý món không thích" (tin cậy 3/5) | Khảo sát nhóm (n=13) | Sinh viên, đặt hằng ngày | P2 — Gợi ý thiếu nhất quán, không bám gu |
+| "Vì gợi ý toàn quán ở xa" (tin cậy 4/5) | Khảo sát nhóm (n=13) | Sinh viên, đặt 3–4 lần/tuần | P2 — Gợi ý không tính bán kính giao |
+| "Quán xa, nhiều món không hợp ý" | Khảo sát nhóm (n=13) | NVVP, đặt 1–2 lần/tuần | P2 — Gợi ý vừa xa vừa lệch gu |
+| 10/13 người "thỉnh thoảng" đến "rất thường xuyên" mở app rồi thoát ra không đặt | Khảo sát nhóm, tổng hợp (n=13) | Hỗn hợp NVVP/SV | P1 — Bỏ giữa chừng do quá tải lựa chọn |
+| 12/13 không thỏa mãn khi gõ câu mô tả tự nhiên (8 chưa thử vì nghĩ app không hiểu, 4 thử bị lỗi/lệch); chỉ 1 ra đúng | Khảo sát nhóm, tổng hợp (n=13) | Hỗn hợp NVVP/SV | P3 — Search keyword không xử lý được ý định mơ hồ |
+| Lý do thoát app phổ biến nhất: "quán muốn ăn thì xa/ship cao, quán gần không có món ưng" và "quá nhiều quán, không biết chọn" | Khảo sát nhóm, tổng hợp (n=13) | Hỗn hợp NVVP/SV | P1 + ràng buộc khoảng cách/giá |
 
 ```text
-Đây là giả định. Nhóm sẽ kiểm bằng [phỏng vấn nhanh 5–7 người, đào review App Store/CH Play, và quan sát trực tiếp 3–5 người đặt đồ ăn] trước checkpoint M1 Day 06.
+Nguồn: khảo sát của nhóm (Google Form, n=13, mẫu thuận tiện, dữ liệu pilot — đang tiếp tục thu). Đây là phản hồi từ người dùng thật ngoài nhóm, không phải giả định. Trước M1 Day 06 sẽ bổ sung review App Store/CH Play, comment group Facebook và phỏng vấn sâu 5–7 người.
 ```
 
 ## 4. Competitor / analog evidence
